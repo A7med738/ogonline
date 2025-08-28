@@ -603,22 +603,22 @@ const Admin = () => {
                     value={newContact.order_priority}
                     onChange={(e) => setNewContact({ ...newContact, order_priority: parseInt(e.target.value) || 0 })}
                   />
-                  <Select 
-                    value={newContact.station_id} 
-                    onValueChange={(value) => setNewContact({ ...newContact, station_id: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="اختر مركز الشرطة (اختياري)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">بدون مركز</SelectItem>
-                      {stations.map((station) => (
-                        <SelectItem key={station.id} value={station.id}>
-                          {station.name} - {station.area}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                   <Select 
+                     value={newContact.station_id || "none"} 
+                     onValueChange={(value) => setNewContact({ ...newContact, station_id: value === "none" ? "" : value })}
+                   >
+                     <SelectTrigger>
+                       <SelectValue placeholder="اختر مركز الشرطة (اختياري)" />
+                     </SelectTrigger>
+                     <SelectContent>
+                       <SelectItem value="none">بدون مركز</SelectItem>
+                       {stations.map((station) => (
+                         <SelectItem key={station.id} value={station.id}>
+                           {station.name} - {station.area}
+                         </SelectItem>
+                       ))}
+                     </SelectContent>
+                   </Select>
                   <Textarea
                     placeholder="الوصف"
                     value={newContact.description}
@@ -655,22 +655,22 @@ const Admin = () => {
                             value={editingContact.order_priority}
                             onChange={(e) => setEditingContact({ ...editingContact, order_priority: parseInt(e.target.value) || 0 })}
                           />
-                          <Select 
-                            value={editingContact.station_id || ""} 
-                            onValueChange={(value) => setEditingContact({ ...editingContact, station_id: value })}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="اختر مركز الشرطة (اختياري)" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="">بدون مركز</SelectItem>
-                              {stations.map((station) => (
-                                <SelectItem key={station.id} value={station.id}>
-                                  {station.name} - {station.area}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                           <Select 
+                             value={editingContact.station_id || "none"} 
+                             onValueChange={(value) => setEditingContact({ ...editingContact, station_id: value === "none" ? "" : value })}
+                           >
+                             <SelectTrigger>
+                               <SelectValue placeholder="اختر مركز الشرطة (اختياري)" />
+                             </SelectTrigger>
+                             <SelectContent>
+                               <SelectItem value="none">بدون مركز</SelectItem>
+                               {stations.map((station) => (
+                                 <SelectItem key={station.id} value={station.id}>
+                                   {station.name} - {station.area}
+                                 </SelectItem>
+                               ))}
+                             </SelectContent>
+                           </Select>
                           <Textarea
                             value={editingContact.description || ''}
                             onChange={(e) => setEditingContact({ ...editingContact, description: e.target.value })}
