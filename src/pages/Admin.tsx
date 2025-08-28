@@ -623,11 +623,11 @@ const Admin = () => {
         {/* Main Content */}
         <GlassCard className="max-w-6xl mx-auto">
           <Tabs defaultValue="news" className="space-y-4">
-            <TabsList className="w-full flex md:grid md:grid-cols-4 overflow-x-auto scrollbar-hide bg-background/50 backdrop-blur-sm border border-border/50">
-              <TabsTrigger value="news" className="min-w-fit px-6 py-3 text-sm font-medium whitespace-nowrap">الأخبار</TabsTrigger>
-              <TabsTrigger value="contacts" className="min-w-fit px-6 py-3 text-sm font-medium whitespace-nowrap">جهات الاتصال</TabsTrigger>
-              <TabsTrigger value="stations" className="min-w-fit px-6 py-3 text-sm font-medium whitespace-nowrap">مراكز الشرطة</TabsTrigger>
-              <TabsTrigger value="departments" className="min-w-fit px-6 py-3 text-sm font-medium whitespace-nowrap">إدارات المدينة</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
+              <TabsTrigger value="news">الأخبار</TabsTrigger>
+              <TabsTrigger value="contacts">جهات الاتصال</TabsTrigger>
+              <TabsTrigger value="stations">مراكز الشرطة</TabsTrigger>
+              <TabsTrigger value="departments">إدارات المدينة</TabsTrigger>
             </TabsList>
 
             {/* News Tab */}
