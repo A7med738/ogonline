@@ -60,13 +60,28 @@ const Police = () => {
   };
 
   const scrollToSection = (stationId: string) => {
-    const element = document.getElementById(`station-contacts-${stationId}`);
-    if (element) {
-      element.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start' 
-      });
-    }
+    console.log('Clicking station:', stationId); // للتتبع
+    // انتظار قليل للتأكد من أن DOM محدث
+    setTimeout(() => {
+      const element = document.getElementById(`station-contacts-${stationId}`);
+      console.log('Found element:', element); // للتتبع
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start',
+          inline: 'nearest'
+        });
+      } else {
+        // إذا لم يكن هناك جهات اتصال، انتقل إلى رأس المركز
+        const stationHeader = document.getElementById(`station-header-${stationId}`);
+        if (stationHeader) {
+          stationHeader.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center'
+          });
+        }
+      }
+    }, 100);
   };
   return <div className="min-h-screen bg-gradient-hero">
       <div className="container mx-auto px-4 py-8">
@@ -126,7 +141,8 @@ const Police = () => {
           }}>
                   {/* Station Header */}
                   <GlassCard 
-                    className="mb-4 cursor-pointer hover:scale-[1.02] transition-all duration-300 hover:shadow-elegant"
+                    id={`station-header-${station.id}`}
+                    className="mb-4 cursor-pointer hover:scale-[1.02] transition-all duration-300 hover:shadow-elegant hover:bg-white/20"
                     onClick={() => scrollToSection(station.id)}
                   >
                     <div className="text-center">
@@ -137,7 +153,7 @@ const Police = () => {
                           <MapPin className="h-4 w-4" />
                           <span>{station.address}</span>
                         </div>}
-                      <p className="text-xs text-muted-foreground/70 mt-2">اضغط للانتقال إلى أرقام المركز</p>
+                      <p className="text-xs text-primary/80 mt-2 animate-pulse">👆 اضغط للانتقال إلى أرقام المركز</p>
                     </div>
                   </GlassCard>
 
