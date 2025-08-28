@@ -1,9 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Newspaper, Shield, Building, User, Settings } from 'lucide-react';
+import { Home, User, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNewsNotifications } from '@/hooks/useNewsNotifications';
-import { NewsNotificationBadge } from '@/components/NewsNotificationBadge';
 
 interface BottomNavigationProps {
   isAdmin?: boolean;
@@ -13,7 +11,6 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ isAdmin }) =
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const { unreadCount } = useNewsNotifications();
 
   const navigationItems = [
     {
@@ -21,25 +18,6 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ isAdmin }) =
       label: 'الرئيسية',
       path: '/',
       onClick: () => navigate('/')
-    },
-    {
-      icon: Newspaper,
-      label: 'الأخبار',
-      path: '/news',
-      onClick: () => navigate('/news'),
-      badge: unreadCount > 0 ? <NewsNotificationBadge count={unreadCount} /> : undefined
-    },
-    {
-      icon: Shield,
-      label: 'الشرطة',
-      path: '/police',
-      onClick: () => navigate('/police')
-    },
-    {
-      icon: Building,
-      label: 'المدينة',
-      path: '/city',
-      onClick: () => navigate('/city')
     },
     ...(user ? [
       {
@@ -82,7 +60,6 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ isAdmin }) =
               >
                 <div className="relative">
                   <Icon className="h-5 w-5 mb-1" />
-                  {item.badge}
                 </div>
                 <span className="text-xs font-medium">{item.label}</span>
               </button>
