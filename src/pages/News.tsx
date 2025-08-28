@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { formatDistanceToNow } from 'date-fns'
 import { ar } from 'date-fns/locale'
+import { useNewsNotifications } from "@/hooks/useNewsNotifications"
 
 interface NewsItem {
   id: string
@@ -24,9 +25,12 @@ const News = () => {
   const navigate = useNavigate()
   const [newsData, setNewsData] = useState<NewsItem[]>([])
   const [loading, setLoading] = useState(true)
+  const { markNewsAsRead } = useNewsNotifications()
 
   useEffect(() => {
     fetchNews()
+    // Mark news as read when user visits the page
+    markNewsAsRead()
   }, [])
 
   const fetchNews = async () => {

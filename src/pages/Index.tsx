@@ -6,11 +6,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import cityHeroImage from "@/assets/city-hero.jpg";
+import { useNewsNotifications } from "@/hooks/useNewsNotifications";
+import { NewsNotificationBadge } from "@/components/NewsNotificationBadge";
 
 const Index = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
+  const { unreadCount } = useNewsNotifications();
 
   useEffect(() => {
     if (user) {
@@ -38,7 +41,8 @@ const Index = () => {
     title: "أخبار المدينة",
     description: "تابع آخر الأخبار والمستجدات في مدينتك",
     icon: Newspaper,
-    onClick: () => navigate("/news")
+    onClick: () => navigate("/news"),
+    badge: unreadCount > 0 ? <NewsNotificationBadge count={unreadCount} /> : undefined
   }, {
     title: "أرقام الشرطة",
     description: "أرقام التواصل مع مركز الشرطة للطوارئ والخدمات",
@@ -112,9 +116,18 @@ const Index = () => {
 
         {/* Navigation Cards */}
         <div className="grid gap-8 max-w-4xl mx-auto sm:grid-cols-2 lg:grid-cols-3">
-          {navigationItems.map((item, index) => <NavigationCard key={item.title} title={item.title} description={item.description} icon={item.icon} onClick={item.onClick} className="animate-slide-up" style={{
-          animationDelay: `${0.6 + index * 0.1}s`
-        }} />)}
+          {navigationItems.map((item, index) => <NavigationCard 
+            key={item.title} 
+            title={item.title} 
+            description={item.description} 
+            icon={item.icon} 
+            onClick={item.onClick} 
+            badge={item.badge}
+            className="animate-slide-up" 
+            style={{
+              animationDelay: `${0.6 + index * 0.1}s`
+            }} 
+          />)}
         </div>
 
         {/* Footer */}

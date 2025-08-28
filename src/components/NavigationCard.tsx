@@ -9,6 +9,7 @@ interface NavigationCardProps {
   onClick: () => void
   className?: string
   style?: React.CSSProperties
+  badge?: React.ReactNode
 }
 
 export const NavigationCard = ({ 
@@ -17,7 +18,8 @@ export const NavigationCard = ({
   icon: Icon, 
   onClick, 
   className,
-  style 
+  style,
+  badge 
 }: NavigationCardProps) => {
   return (
     <GlassCard 
@@ -37,6 +39,7 @@ export const NavigationCard = ({
             <Icon className="h-7 w-7 text-white drop-shadow-sm" />
           </div>
           <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary-glow to-primary rounded-2xl opacity-0 group-hover:opacity-20 blur-xl transition-all duration-500"></div>
+          {badge}
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors duration-300">
