@@ -623,7 +623,7 @@ const Admin = () => {
         {/* Main Content */}
         <GlassCard className="max-w-6xl mx-auto">
           <Tabs defaultValue="news" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="news">الأخبار</TabsTrigger>
               <TabsTrigger value="contacts">جهات الاتصال</TabsTrigger>
               <TabsTrigger value="stations">مراكز الشرطة</TabsTrigger>
