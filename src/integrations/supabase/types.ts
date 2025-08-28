@@ -56,6 +56,33 @@ export type Database = {
         }
         Relationships: []
       }
+      email_subscriptions: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          subscribed: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          subscribed?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          subscribed?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       emergency_contacts: {
         Row: {
           available: boolean
