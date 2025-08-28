@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Edit, Trash2, Save, X, Shield } from 'lucide-react';
+import { ArrowLeft, Plus, Edit, Trash2, Save, X, Shield, Newspaper, Phone, Building } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { GlassCard } from '@/components/ui/glass-card';
 import { Input } from '@/components/ui/input';
@@ -624,10 +624,18 @@ const Admin = () => {
         <GlassCard className="max-w-6xl mx-auto">
           <Tabs defaultValue="news" className="space-y-4">
             <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="news">الأخبار</TabsTrigger>
-              <TabsTrigger value="contacts">جهات الاتصال</TabsTrigger>
-              <TabsTrigger value="stations">مراكز الشرطة</TabsTrigger>
-              <TabsTrigger value="departments">إدارات المدينة</TabsTrigger>
+              <TabsTrigger value="news" className="flex items-center justify-center p-3">
+                <Newspaper className="h-5 w-5" />
+              </TabsTrigger>
+              <TabsTrigger value="contacts" className="flex items-center justify-center p-3">
+                <Phone className="h-5 w-5" />
+              </TabsTrigger>
+              <TabsTrigger value="stations" className="flex items-center justify-center p-3">
+                <Shield className="h-5 w-5" />
+              </TabsTrigger>
+              <TabsTrigger value="departments" className="flex items-center justify-center p-3">
+                <Building className="h-5 w-5" />
+              </TabsTrigger>
             </TabsList>
 
             {/* News Tab */}
