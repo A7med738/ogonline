@@ -22,25 +22,34 @@ export const NavigationCard = ({
   return (
     <GlassCard 
       className={cn(
-        "cursor-pointer group hover:scale-105 transition-all duration-300 active:scale-95",
+        "cursor-pointer group hover:scale-[1.02] transition-all duration-500 active:scale-[0.98] p-6",
+        "hover:shadow-xl hover:shadow-primary/20 border-white/10 hover:border-primary/30",
+        "before:absolute before:inset-0 before:bg-gradient-to-br before:from-primary/5 before:to-transparent before:opacity-0 before:transition-opacity before:duration-500 hover:before:opacity-100",
+        "relative overflow-hidden",
         className
       )} 
       onClick={onClick}
       style={style}
     >
-      <div className="flex items-center space-x-4 space-x-reverse">
-        <div className="bg-gradient-primary p-3 rounded-xl group-hover:shadow-elegant transition-all duration-300">
-          <Icon className="h-6 w-6 text-white" />
+      <div className="flex items-start space-x-6 space-x-reverse relative z-10">
+        <div className="relative group/icon">
+          <div className="bg-gradient-to-br from-primary via-primary-glow to-primary p-4 rounded-2xl shadow-lg group-hover:shadow-primary/30 transition-all duration-500 group-hover:scale-110">
+            <Icon className="h-7 w-7 text-white drop-shadow-sm" />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary-glow to-primary rounded-2xl opacity-0 group-hover:opacity-20 blur-xl transition-all duration-500"></div>
         </div>
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+        <div className="flex-1 min-w-0">
+          <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors duration-300">
             {title}
           </h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground leading-relaxed group-hover:text-foreground/80 transition-colors duration-300">
             {description}
           </p>
         </div>
       </div>
+      
+      {/* Decorative gradient overlay */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-bl-full"></div>
     </GlassCard>
   )
 }

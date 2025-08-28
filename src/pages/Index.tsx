@@ -73,7 +73,7 @@ const Index = () => {
         </div>
 
         {/* Navigation Cards */}
-        <div className="grid gap-6 max-w-2xl mx-auto">
+        <div className="grid gap-8 max-w-4xl mx-auto sm:grid-cols-2 lg:grid-cols-3">
           {navigationItems.map((item, index) => <NavigationCard key={item.title} title={item.title} description={item.description} icon={item.icon} onClick={item.onClick} className="animate-slide-up" style={{
           animationDelay: `${0.6 + index * 0.1}s`
         }} />)}
