@@ -106,7 +106,7 @@ const News = () => {
                   </h2>
 
                   {/* Summary */}
-                  <p className="text-muted-foreground leading-relaxed">
+                  <p className="text-foreground/90 leading-relaxed">
                     {news.summary}
                   </p>
 
