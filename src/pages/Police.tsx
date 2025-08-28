@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, MapPin, Clock, ArrowRight, Shield } from "lucide-react";
+import { Phone, MapPin, Clock, ArrowRight, Shield, LogIn } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 interface EmergencyContact {
   id: string;
   title: string;
@@ -23,6 +24,7 @@ interface PoliceStation {
 }
 const Police = () => {
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
   const [policeStations, setPoliceStations] = useState<PoliceStation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -126,15 +128,44 @@ const Police = () => {
           </GlassCard>
         )}
 
-        {/* Police Numbers Grid */}
-        {loading ? <div className="text-center py-8">
+        {/* Authentication Check */}
+        {authLoading ? (
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-2 text-white/80">جاري التحقق من الهوية...</p>
+          </div>
+        ) : !user ? (
+          <GlassCard className="text-center max-w-2xl mx-auto">
+            <div className="py-8">
+              <LogIn className="h-16 w-16 text-primary mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-foreground mb-4">تسجيل الدخول مطلوب</h2>
+              <p className="text-muted-foreground mb-6">
+                لعرض أرقام الطوارئ وتفاصيل الاتصال، يجب تسجيل الدخول أولاً لحماية معلومات الاتصال الحساسة.
+              </p>
+              <Button 
+                onClick={() => navigate('/auth')}
+                className="bg-gradient-primary hover:shadow-elegant transition-all duration-300"
+              >
+                <LogIn className="ml-2 h-4 w-4" />
+                تسجيل الدخول
+              </Button>
+            </div>
+          </GlassCard>
+        ) : loading ? (
+          <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
             <p className="mt-2 text-white/80">جاري تحميل أرقام الطوارئ...</p>
-          </div> : emergencyContacts.length === 0 ? <div className="text-center py-8">
+          </div>
+        ) : emergencyContacts.length === 0 ? (
+          <div className="text-center py-8">
             <p className="text-white/80">لا توجد أرقام طوارئ متاحة حالياً</p>
-          </div> : policeStations.length === 0 ? <div className="text-center py-8">
+          </div>
+        ) : policeStations.length === 0 ? (
+          <div className="text-center py-8">
             <p className="text-white/80">لا توجد مراكز شرطة متاحة حالياً</p>
-          </div> : <div className="space-y-8 max-w-4xl mx-auto">
+          </div>
+        ) : (
+          <div className="space-y-8 max-w-4xl mx-auto">
             {policeStations.map((station, stationIndex) => {
           const stationContacts = emergencyContacts.filter(c => c.station_id === station.id && c.type !== 'emergency');
           return <div key={station.id} className="animate-slide-up" style={{
@@ -292,7 +323,8 @@ const Police = () => {
                     </GlassCard>)}
                 </div>
               </div>}
-          </div>}
+          </div>
+        )}
 
         {/* Location Info */}
         <GlassCard className="mt-8 max-w-4xl mx-auto animate-fade-in">
