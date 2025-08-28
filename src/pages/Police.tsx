@@ -25,6 +25,7 @@ const Police = () => {
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
   const [policeStations, setPoliceStations] = useState<PoliceStation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [openStations, setOpenStations] = useState<Set<string>>(new Set());
   useEffect(() => {
     fetchData();
   }, []);
@@ -59,29 +60,28 @@ const Police = () => {
     window.open(`tel:${number}`, '_self');
   };
 
-  const scrollToSection = (stationId: string) => {
-    console.log('Clicking station:', stationId); // للتتبع
-    // انتظار قليل للتأكد من أن DOM محدث
-    setTimeout(() => {
-      const element = document.getElementById(`station-contacts-${stationId}`);
-      console.log('Found element:', element); // للتتبع
-      if (element) {
-        element.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start',
-          inline: 'nearest'
-        });
+  const toggleStation = (stationId: string) => {
+    console.log('Toggling station:', stationId);
+    setOpenStations(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(stationId)) {
+        newSet.delete(stationId);
       } else {
-        // إذا لم يكن هناك جهات اتصال، انتقل إلى رأس المركز
-        const stationHeader = document.getElementById(`station-header-${stationId}`);
-        if (stationHeader) {
-          stationHeader.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'center'
-          });
-        }
+        newSet.add(stationId);
+        // انتقال سلس إلى المحتوى بعد فتحه
+        setTimeout(() => {
+          const element = document.getElementById(`station-contacts-${stationId}`);
+          if (element) {
+            element.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'start',
+              inline: 'nearest'
+            });
+          }
+        }, 100);
       }
-    }, 100);
+      return newSet;
+    });
   };
   return <div className="min-h-screen bg-gradient-hero">
       <div className="container mx-auto px-4 py-8">
@@ -143,7 +143,7 @@ const Police = () => {
                   <GlassCard 
                     id={`station-header-${station.id}`}
                     className="mb-4 cursor-pointer hover:scale-[1.02] transition-all duration-300 hover:shadow-elegant hover:bg-white/20"
-                    onClick={() => scrollToSection(station.id)}
+                    onClick={() => toggleStation(station.id)}
                   >
                     <div className="text-center">
                       <h2 className="text-2xl font-bold text-foreground mb-2">{station.name}</h2>
@@ -153,12 +153,15 @@ const Police = () => {
                           <MapPin className="h-4 w-4" />
                           <span>{station.address}</span>
                         </div>}
-                      <p className="text-xs text-primary/80 mt-2 animate-pulse">👆 اضغط للانتقال إلى أرقام المركز</p>
+                      <p className="text-xs text-primary/80 mt-2 animate-pulse">
+                        {openStations.has(station.id) ? "👆 اضغط لإخفاء الأرقام" : "👆 اضغط لإظهار أرقام المركز"}
+                      </p>
                     </div>
                   </GlassCard>
 
                   {/* Station Contacts */}
-                  {stationContacts.length > 0 ? <div id={`station-contacts-${station.id}`} className="grid gap-4">
+                  {openStations.has(station.id) && stationContacts.length > 0 && (
+                    <div id={`station-contacts-${station.id}`} className="grid gap-4 animate-fade-in">
                       {stationContacts.map((contact, contactIndex) => <GlassCard key={contact.id} className="hover:scale-[1.02] transition-all duration-300">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
@@ -185,9 +188,14 @@ const Police = () => {
                             </div>
                           </div>
                         </GlassCard>)}
-                    </div> : <div className="text-center py-4">
+                    </div>
+                  )}
+                  
+                  {openStations.has(station.id) && stationContacts.length === 0 && (
+                    <div className="text-center py-4 animate-fade-in">
                       <p className="text-white/60">لا توجد أرقام متاحة لهذا المركز</p>
-                    </div>}
+                    </div>
+                  )}
                 </div>;
         })}
 
