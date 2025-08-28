@@ -15,7 +15,7 @@ const Index = () => {
     icon: Shield,
     onClick: () => navigate("/police")
   }, {
-    title: "هيئة المدينة",
+    title: "جهاز المدينة",
     description: "تواصل مع إدارات المدينة المختلفة",
     icon: Building,
     onClick: () => navigate("/city")
