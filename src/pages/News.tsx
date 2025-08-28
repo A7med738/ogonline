@@ -16,6 +16,7 @@ interface NewsItem {
   category: string
   published_at: string
   created_at: string
+  image_url?: string
 }
 
 const News = () => {
@@ -99,6 +100,17 @@ const News = () => {
                       </span>
                     </div>
                   </div>
+
+                  {/* News Image */}
+                  {news.image_url && (
+                    <div className="rounded-lg overflow-hidden">
+                      <img 
+                        src={news.image_url} 
+                        alt={news.title}
+                        className="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
+                      />
+                    </div>
+                  )}
 
                   {/* Title */}
                   <h2 className="text-xl font-bold text-foreground hover:text-primary transition-colors cursor-pointer">

@@ -18,6 +18,7 @@ interface NewsItem {
   content: string;
   category: string;
   published_at: string;
+  image_url?: string;
 }
 
 interface EmergencyContact {
@@ -66,8 +67,12 @@ const Admin = () => {
     title: '',
     summary: '',
     content: '',
-    category: ''
+    category: '',
+    image_url: ''
   });
+  const [newNewsImage, setNewNewsImage] = useState<File | null>(null);
+  const [editingNewsImage, setEditingNewsImage] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   // Emergency contacts state
   const [contacts, setContacts] = useState<EmergencyContact[]>([]);
@@ -217,11 +222,67 @@ const Admin = () => {
     }
   };
 
+  // Image upload functions
+  const uploadImage = async (file: File): Promise<string | null> => {
+    try {
+      setUploading(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = fileName;
+
+      const { error: uploadError } = await supabase.storage
+        .from('news-images')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data } = supabase.storage
+        .from('news-images')
+        .getPublicUrl(filePath);
+
+      return data.publicUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في رفع الصورة",
+        variant: "destructive"
+      });
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const deleteImage = async (imageUrl: string) => {
+    try {
+      const fileName = imageUrl.split('/').pop();
+      if (fileName) {
+        await supabase.storage
+          .from('news-images')
+          .remove([fileName]);
+      }
+    } catch (error) {
+      console.error('Error deleting image:', error);
+    }
+  };
+
   const handleAddNews = async () => {
     try {
+      let imageUrl = '';
+      
+      if (newNewsImage) {
+        const uploadedUrl = await uploadImage(newNewsImage);
+        if (uploadedUrl) {
+          imageUrl = uploadedUrl;
+        }
+      }
+
       const { error } = await supabase
         .from('news')
-        .insert([newNews]);
+        .insert([{ ...newNews, image_url: imageUrl }]);
 
       if (error) throw error;
 
@@ -230,7 +291,8 @@ const Admin = () => {
         description: "تم إضافة الخبر بنجاح"
       });
 
-      setNewNews({ title: '', summary: '', content: '', category: '' });
+      setNewNews({ title: '', summary: '', content: '', category: '', image_url: '' });
+      setNewNewsImage(null);
       fetchNews();
     } catch (error) {
       console.error('Error adding news:', error);
@@ -246,13 +308,28 @@ const Admin = () => {
     if (!editingNews) return;
 
     try {
+      let imageUrl = editingNews.image_url || '';
+      
+      if (editingNewsImage) {
+        // Delete old image if exists
+        if (editingNews.image_url) {
+          await deleteImage(editingNews.image_url);
+        }
+        
+        const uploadedUrl = await uploadImage(editingNewsImage);
+        if (uploadedUrl) {
+          imageUrl = uploadedUrl;
+        }
+      }
+
       const { error } = await supabase
         .from('news')
         .update({
           title: editingNews.title,
           summary: editingNews.summary,
           content: editingNews.content,
-          category: editingNews.category
+          category: editingNews.category,
+          image_url: imageUrl
         })
         .eq('id', editingNews.id);
 
@@ -264,6 +341,7 @@ const Admin = () => {
       });
 
       setEditingNews(null);
+      setEditingNewsImage(null);
       fetchNews();
     } catch (error) {
       console.error('Error updating news:', error);
@@ -664,9 +742,37 @@ const Admin = () => {
                     onChange={(e) => setNewNews({ ...newNews, content: e.target.value })}
                     rows={4}
                   />
-                  <Button onClick={handleAddNews} className="w-fit">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">صورة الخبر (اختياري)</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setNewNewsImage(file);
+                        }
+                      }}
+                      className="w-full p-2 border rounded-md"
+                      disabled={uploading}
+                    />
+                    {newNewsImage && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span>الملف المحدد: {newNewsImage.name}</span>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => setNewNewsImage(null)}
+                          disabled={uploading}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                  <Button onClick={handleAddNews} className="w-fit" disabled={uploading}>
                     <Plus className="ml-2 h-4 w-4" />
-                    إضافة خبر
+                    {uploading ? 'جاري الرفع...' : 'إضافة خبر'}
                   </Button>
                 </div>
               </div>
@@ -690,38 +796,89 @@ const Admin = () => {
                             value={editingNews.summary}
                             onChange={(e) => setEditingNews({ ...editingNews, summary: e.target.value })}
                           />
-                          <Textarea
-                            value={editingNews.content || ''}
-                            onChange={(e) => setEditingNews({ ...editingNews, content: e.target.value })}
-                            rows={4}
-                          />
-                          <div className="flex gap-2">
-                            <Button onClick={handleUpdateNews} size="sm">
-                              <Save className="ml-2 h-4 w-4" />
-                              حفظ
-                            </Button>
+                           <Textarea
+                             value={editingNews.content || ''}
+                             onChange={(e) => setEditingNews({ ...editingNews, content: e.target.value })}
+                             rows={4}
+                           />
+                           <div className="space-y-2">
+                             <label className="text-sm font-medium">تحديث صورة الخبر (اختياري)</label>
+                             <input
+                               type="file"
+                               accept="image/*"
+                               onChange={(e) => {
+                                 const file = e.target.files?.[0];
+                                 if (file) {
+                                   setEditingNewsImage(file);
+                                 }
+                               }}
+                               className="w-full p-2 border rounded-md"
+                               disabled={uploading}
+                             />
+                             {editingNewsImage && (
+                               <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                 <span>الملف الجديد: {editingNewsImage.name}</span>
+                                 <Button 
+                                   variant="ghost" 
+                                   size="sm"
+                                   onClick={() => setEditingNewsImage(null)}
+                                   disabled={uploading}
+                                 >
+                                   <X className="h-3 w-3" />
+                                 </Button>
+                               </div>
+                             )}
+                             {editingNews.image_url && !editingNewsImage && (
+                               <div className="mt-2">
+                                 <img 
+                                   src={editingNews.image_url} 
+                                   alt="الصورة الحالية للخبر" 
+                                   className="max-w-xs rounded-md border"
+                                 />
+                                 <p className="text-xs text-muted-foreground mt-1">الصورة الحالية</p>
+                               </div>
+                             )}
+                           </div>
+                           <div className="flex gap-2">
+                             <Button onClick={handleUpdateNews} size="sm" disabled={uploading}>
+                               <Save className="ml-2 h-4 w-4" />
+                               {uploading ? 'جاري الحفظ...' : 'حفظ'}
+                             </Button>
                             <Button onClick={() => setEditingNews(null)} variant="outline" size="sm">
                               <X className="ml-2 h-4 w-4" />
                               إلغاء
                             </Button>
                           </div>
                         </div>
-                      ) : (
-                        <div>
-                          <h4 className="font-semibold">{item.title}</h4>
-                          <p className="text-sm text-muted-foreground">{item.category}</p>
-                          <p className="text-sm mt-2">{item.summary}</p>
-                          <div className="flex gap-2 mt-4">
-                            <Button onClick={() => setEditingNews(item)} variant="outline" size="sm">
-                              <Edit className="ml-2 h-4 w-4" />
-                              تعديل
-                            </Button>
-                            <Button onClick={() => handleDeleteNews(item.id)} variant="destructive" size="sm">
-                              <Trash2 className="ml-2 h-4 w-4" />
-                              حذف
-                            </Button>
-                          </div>
-                        </div>
+                       ) : (
+                         <div>
+                           <div className="flex flex-col md:flex-row gap-4">
+                             <div className="flex-1">
+                               <h4 className="font-semibold">{item.title}</h4>
+                               <p className="text-sm text-muted-foreground">{item.category}</p>
+                               <p className="text-sm mt-2">{item.summary}</p>
+                               <div className="flex gap-2 mt-4">
+                                 <Button onClick={() => setEditingNews(item)} variant="outline" size="sm">
+                                   <Edit className="ml-2 h-4 w-4" />
+                                   تعديل
+                                 </Button>
+                                 <Button onClick={() => handleDeleteNews(item.id)} variant="destructive" size="sm">
+                                   <Trash2 className="ml-2 h-4 w-4" />
+                                   حذف
+                                 </Button>
+                               </div>
+                             </div>
+                             {item.image_url && (
+                               <div className="md:w-48 flex-shrink-0">
+                                 <img 
+                                   src={item.image_url} 
+                                   alt={item.title}
+                                   className="w-full h-32 object-cover rounded-md border"
+                                 />
+                               </div>
+                             )}
+                           </div>
+                         </div>
                       )}
                     </div>
                   ))}
