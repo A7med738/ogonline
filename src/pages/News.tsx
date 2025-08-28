@@ -1,6 +1,7 @@
-import { ArrowRight, Calendar, Clock } from "lucide-react"
+import { ArrowRight, Calendar, Clock, X } from "lucide-react"
 import { GlassCard } from "@/components/ui/glass-card"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { NewsInteractions } from "@/components/NewsInteractions"
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from 'react'
@@ -124,14 +125,62 @@ const News = () => {
 
                   {/* Read More */}
                   <div className="pt-2">
-                    <Button variant="ghost" className="text-primary hover:text-primary/80 p-0">
-                      اقرأ المزيد
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" className="text-primary hover:text-primary/80 p-0">
+                          اقرأ المزيد
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle className="text-xl font-bold text-right">
+                            {news.title}
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 mt-4">
+                          {/* Category and Date */}
+                          <div className="flex justify-between items-center">
+                            <span className="bg-gradient-primary text-white px-3 py-1 rounded-full text-sm font-medium">
+                              {news.category}
+                            </span>
+                            <div className="flex items-center space-x-2 space-x-reverse text-muted-foreground text-sm">
+                              <Calendar className="h-4 w-4" />
+                              <span>
+                                {formatDistanceToNow(new Date(news.published_at), {
+                                  addSuffix: true,
+                                  locale: ar
+                                })}
+                              </span>
+                            </div>
+                          </div>
 
-                  {/* News Interactions */}
-                  <NewsInteractions newsId={news.id} />
+                          {/* News Image in Modal */}
+                          {news.image_url && (
+                            <div className="rounded-lg overflow-hidden">
+                              <img 
+                                src={news.image_url} 
+                                alt={news.title}
+                                className="w-full h-64 object-cover"
+                              />
+                            </div>
+                          )}
+
+                          {/* Full Content */}
+                          <div className="prose prose-lg max-w-none text-right">
+                            <p className="text-foreground/90 leading-relaxed whitespace-pre-wrap">
+                              {news.content || news.summary}
+                            </p>
+                          </div>
+
+                          {/* News Interactions in Modal */}
+                          <div className="border-t pt-4">
+                            <NewsInteractions newsId={news.id} />
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                 </div>
               </GlassCard>
             ))
