@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, Mail, MapPin, Clock, ArrowRight, Building, Users, Wrench, Banknote } from "lucide-react"
-import { GlassCard } from "@/components/ui/glass-card"
-import { Button } from "@/components/ui/button"
+import { Phone, Mail, MapPin, Clock, ArrowRight, Building, Users, Wrench, Banknote } from "lucide-react";
+import { GlassCard } from "@/components/ui/glass-card";
+import { Button } from "@/components/ui/button";
 import { supabase } from '@/integrations/supabase/client';
-
 interface CityDepartment {
   id: string;
   title: string;
@@ -17,28 +16,28 @@ interface CityDepartment {
 }
 
 // Icon mapping for lucide icons
-const iconMap: { [key: string]: React.ComponentType<any> } = {
+const iconMap: {
+  [key: string]: React.ComponentType<any>;
+} = {
   Building,
   Users,
   Wrench,
-  Banknote,
+  Banknote
 };
-
 const City = () => {
   const [departments, setDepartments] = useState<CityDepartment[]>([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     fetchDepartments();
   }, []);
-
   const fetchDepartments = async () => {
     try {
-      const { data, error } = await supabase
-        .from('city_departments')
-        .select('*')
-        .order('order_priority', { ascending: true });
-      
+      const {
+        data,
+        error
+      } = await supabase.from('city_departments').select('*').order('order_priority', {
+        ascending: true
+      });
       if (error) throw error;
       setDepartments(data || []);
     } catch (error) {
@@ -47,17 +46,13 @@ const City = () => {
       setLoading(false);
     }
   };
-
   const handleCall = (number: string) => {
-    window.open(`tel:${number}`, '_self')
-  }
-
+    window.open(`tel:${number}`, '_self');
+  };
   const handleEmail = (email: string) => {
-    window.open(`mailto:${email}`, '_self')
-  }
-
-  return (
-    <div className="min-h-screen bg-gradient-hero">
+    window.open(`mailto:${email}`, '_self');
+  };
+  return <div className="min-h-screen bg-gradient-hero">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
@@ -72,53 +67,27 @@ const City = () => {
 
         {/* Back Button */}
         <div className="mb-6">
-          <Button 
-            variant="outline" 
-            onClick={() => window.history.back()}
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-          >
+          <Button variant="outline" onClick={() => window.history.back()} className="bg-white/10 border-white/20 text-white hover:bg-white/20">
             <ArrowRight className="ml-2 h-4 w-4" />
             العودة للرئيسية
           </Button>
         </div>
 
         {/* Main Contact Info */}
-        <GlassCard className="mb-8 animate-scale-in">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-foreground mb-4">معلومات عامة</h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="flex items-center justify-center space-x-2 space-x-reverse">
-                <MapPin className="h-5 w-5 text-primary" />
-                <span className="text-muted-foreground">شارع الأمير محمد بن سعود - المركز الإداري</span>
-              </div>
-              <div className="flex items-center justify-center space-x-2 space-x-reverse">
-                <Phone className="h-5 w-5 text-primary" />
-                <span className="text-muted-foreground">الخط الساخن: 920-001-234</span>
-              </div>
-            </div>
-          </div>
-        </GlassCard>
+        
 
         {/* Departments Grid */}
-        {loading ? (
-          <div className="text-center py-8">
+        {loading ? <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
             <p className="mt-2 text-white/80">جاري تحميل الإدارات...</p>
-          </div>
-        ) : departments.length === 0 ? (
-          <div className="text-center py-8">
+          </div> : departments.length === 0 ? <div className="text-center py-8">
             <p className="text-white/80">لا توجد إدارات متاحة حالياً</p>
-          </div>
-        ) : (
-          <div className="grid gap-6 max-w-4xl mx-auto">
+          </div> : <div className="grid gap-6 max-w-4xl mx-auto">
             {departments.map((dept, index) => {
-              const IconComponent = iconMap[dept.icon] || Building;
-              return (
-              <GlassCard 
-                key={dept.id} 
-                className="animate-slide-up hover:scale-[1.02] transition-all duration-300"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
+          const IconComponent = iconMap[dept.icon] || Building;
+          return <GlassCard key={dept.id} className="animate-slide-up hover:scale-[1.02] transition-all duration-300" style={{
+            animationDelay: `${index * 0.1}s`
+          }}>
                 <div className="space-y-4">
                   {/* Header */}
                   <div className="flex items-center space-x-4 space-x-reverse">
@@ -151,41 +120,23 @@ const City = () => {
 
                 {/* Action Buttons */}
                 <div className="flex space-x-3 space-x-reverse pt-2">
-                  <Button 
-                    onClick={() => handleCall(dept.phone)}
-                    className="bg-gradient-primary hover:shadow-elegant transition-all duration-300 flex-1"
-                  >
+                  <Button onClick={() => handleCall(dept.phone)} className="bg-gradient-primary hover:shadow-elegant transition-all duration-300 flex-1">
                     <Phone className="ml-2 h-4 w-4" />
                     اتصال
                   </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => handleEmail(dept.email)}
-                    className="flex-1 border-primary/20 hover:bg-primary/10"
-                  >
+                  <Button variant="outline" onClick={() => handleEmail(dept.email)} className="flex-1 border-primary/20 hover:bg-primary/10">
                     <Mail className="ml-2 h-4 w-4" />
                     بريد إلكتروني
                   </Button>
                   </div>
                 </div>
-              </GlassCard>
-              );
-            })}
-          </div>
-        )}
+              </GlassCard>;
+        })}
+          </div>}
 
         {/* Emergency Notice */}
-        <GlassCard className="mt-8 max-w-4xl mx-auto animate-fade-in bg-gradient-to-r from-blue-500/20 to-blue-600/20 border-blue-400/30">
-          <div className="text-center">
-            <h3 className="text-xl font-bold text-white mb-2">ملاحظة هامة</h3>
-            <p className="text-white/90">
-              في حالة الطوارئ أو الحالات العاجلة، يرجى الاتصال بالشرطة على الرقم 999 أو الدفاع المدني على الرقم 998
-            </p>
-          </div>
-        </GlassCard>
+        
       </div>
-    </div>
-  )
-}
-
-export default City
+    </div>;
+};
+export default City;
