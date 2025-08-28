@@ -29,9 +29,8 @@ const Index = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent rounded-3xl"></div>
           </div>
           
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 animate-slide-up">
-            مركز المدينة
-          </h1>
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 animate-slide-up">مركز مدينة 
+حدائق أكتوبر</h1>
           <p className="text-xl md:text-2xl text-white/90 mb-8 animate-slide-up" style={{
           animationDelay: '0.2s'
         }}>
