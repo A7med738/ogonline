@@ -69,10 +69,18 @@ const Auth = () => {
   const handleGoogleSignIn = async () => {
     try {
       setLoading(true)
+      
+      // Check if running in a Capacitor mobile app
+      const isCapacitor = typeof window !== 'undefined' && 
+                         window.Capacitor?.isNativePlatform?.() === true
+      const redirectTo = isCapacitor 
+        ? 'app.lovable.3e2213cabd164ff28f6945d0069c6783://auth/callback'
+        : `${window.location.origin}/`
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/`
+          redirectTo
         }
       })
       
