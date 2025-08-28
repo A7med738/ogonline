@@ -79,26 +79,6 @@ const Police = () => {
           </Button>
         </div>
 
-        {/* Emergency Banner */}
-        {emergencyContacts.find(c => c.type === 'emergency') && (
-          <GlassCard className="mb-6 border-red-500/30 bg-red-500/10">
-            <div className="text-center">
-              <div className="text-red-500 text-2xl font-bold mb-2">
-                {emergencyContacts.find(c => c.type === 'emergency')?.number}
-              </div>
-              <p className="text-red-400 font-semibold">
-                {emergencyContacts.find(c => c.type === 'emergency')?.title}
-              </p>
-              <Button 
-                onClick={() => handleCall(emergencyContacts.find(c => c.type === 'emergency')?.number || '')}
-                className="mt-4 bg-red-600 hover:bg-red-700"
-              >
-                <Phone className="ml-2 h-4 w-4" />
-                اتصال طوارئ
-              </Button>
-            </div>
-          </GlassCard>
-        )}
 
         {/* Police Numbers Grid */}
         {loading ? <div className="text-center py-8">
