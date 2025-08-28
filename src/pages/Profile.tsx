@@ -238,7 +238,7 @@ const Profile = () => {
           <Alert className="mb-6 border-primary/20 bg-primary/10 animate-fade-in">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription className="text-primary">
-              <strong>ملاحظة هامة:</strong> يرجى كتابة المعلومات بدقة وصحة تامة لتتمكن من الاستفادة من جميع خدمات المدينة على أكمل وجه.
+              <strong>تنبيه مهم:</strong> تأكد من إدخال معلوماتك الشخصية بشكل صحيح ودقيق. هذه المعلومات ضرورية للحصول على أفضل خدمة من خدمات المدينة الذكية ولضمان وصول الخدمات إليك بنجاح.
             </AlertDescription>
           </Alert>
 
