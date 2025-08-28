@@ -1,6 +1,7 @@
 import { Phone, MapPin, Clock, ArrowRight, Shield } from "lucide-react"
 import { GlassCard } from "@/components/ui/glass-card"
 import { Button } from "@/components/ui/button"
+import { useNavigate } from "react-router-dom"
 
 const policeData = [
   {
@@ -46,6 +47,8 @@ const policeData = [
 ]
 
 const Police = () => {
+  const navigate = useNavigate()
+  
   const handleCall = (number: string) => {
     window.open(`tel:${number}`, '_self')
   }
@@ -68,7 +71,7 @@ const Police = () => {
         <div className="mb-6">
           <Button 
             variant="outline" 
-            onClick={() => window.history.back()}
+            onClick={() => navigate('/')}
             className="bg-white/10 border-white/20 text-white hover:bg-white/20"
           >
             <ArrowRight className="ml-2 h-4 w-4" />
