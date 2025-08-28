@@ -58,6 +58,16 @@ const Police = () => {
   const handleCall = (number: string) => {
     window.open(`tel:${number}`, '_self');
   };
+
+  const scrollToSection = (stationId: string) => {
+    const element = document.getElementById(`station-contacts-${stationId}`);
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }
+  };
   return <div className="min-h-screen bg-gradient-hero">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
@@ -115,7 +125,10 @@ const Police = () => {
             animationDelay: `${stationIndex * 0.1}s`
           }}>
                   {/* Station Header */}
-                  <GlassCard className="mb-4">
+                  <GlassCard 
+                    className="mb-4 cursor-pointer hover:scale-[1.02] transition-all duration-300 hover:shadow-elegant"
+                    onClick={() => scrollToSection(station.id)}
+                  >
                     <div className="text-center">
                       <h2 className="text-2xl font-bold text-foreground mb-2">{station.name}</h2>
                       <p className="text-lg text-primary font-semibold mb-2">{station.area}</p>
@@ -124,11 +137,12 @@ const Police = () => {
                           <MapPin className="h-4 w-4" />
                           <span>{station.address}</span>
                         </div>}
+                      <p className="text-xs text-muted-foreground/70 mt-2">اضغط للانتقال إلى أرقام المركز</p>
                     </div>
                   </GlassCard>
 
                   {/* Station Contacts */}
-                  {stationContacts.length > 0 ? <div className="grid gap-4">
+                  {stationContacts.length > 0 ? <div id={`station-contacts-${station.id}`} className="grid gap-4">
                       {stationContacts.map((contact, contactIndex) => <GlassCard key={contact.id} className="hover:scale-[1.02] transition-all duration-300">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
