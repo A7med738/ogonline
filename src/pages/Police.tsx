@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, MapPin, Clock, ArrowRight, Shield } from "lucide-react"
-import { GlassCard } from "@/components/ui/glass-card"
-import { Button } from "@/components/ui/button"
-import { useNavigate } from "react-router-dom"
+import { Phone, MapPin, Clock, ArrowRight, Shield } from "lucide-react";
+import { GlassCard } from "@/components/ui/glass-card";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import { supabase } from '@/integrations/supabase/client';
-
 interface EmergencyContact {
   id: string;
   title: string;
@@ -14,7 +13,6 @@ interface EmergencyContact {
   available: boolean;
   station_id?: string;
 }
-
 interface PoliceStation {
   id: string;
   name: string;
@@ -22,35 +20,33 @@ interface PoliceStation {
   address?: string;
   description?: string;
 }
-
 const Police = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
   const [policeStations, setPoliceStations] = useState<PoliceStation[]>([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     fetchData();
   }, []);
-
   const fetchData = async () => {
     try {
       // Fetch police stations
-      const { data: stationsData, error: stationsError } = await supabase
-        .from('police_stations')
-        .select('*')
-        .order('area', { ascending: true });
-
+      const {
+        data: stationsData,
+        error: stationsError
+      } = await supabase.from('police_stations').select('*').order('area', {
+        ascending: true
+      });
       if (stationsError) throw stationsError;
       setPoliceStations(stationsData || []);
 
       // Fetch emergency contacts
-      const { data: contactsData, error: contactsError } = await supabase
-        .from('emergency_contacts')
-        .select('*')
-        .eq('available', true)
-        .order('order_priority', { ascending: true });
-
+      const {
+        data: contactsData,
+        error: contactsError
+      } = await supabase.from('emergency_contacts').select('*').eq('available', true).order('order_priority', {
+        ascending: true
+      });
       if (contactsError) throw contactsError;
       setEmergencyContacts(contactsData || []);
     } catch (error) {
@@ -59,13 +55,10 @@ const Police = () => {
       setLoading(false);
     }
   };
-  
   const handleCall = (number: string) => {
-    window.open(`tel:${number}`, '_self')
-  }
-
-  return (
-    <div className="min-h-screen bg-gradient-hero">
+    window.open(`tel:${number}`, '_self');
+  };
+  return <div className="min-h-screen bg-gradient-hero">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
@@ -80,82 +73,45 @@ const Police = () => {
 
         {/* Back Button */}
         <div className="mb-6">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/')}
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-          >
+          <Button variant="outline" onClick={() => navigate('/')} className="bg-white/10 border-white/20 text-white hover:bg-white/20">
             <ArrowRight className="ml-2 h-4 w-4" />
             العودة للرئيسية
           </Button>
         </div>
 
         {/* Emergency Banner */}
-        {emergencyContacts.find(c => c.type === 'emergency') && (
-          <GlassCard className="mb-8 bg-gradient-to-r from-red-500/20 to-red-600/20 border-red-400/30 animate-scale-in">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-white mb-2">في حالة الطوارئ</h2>
-              <p className="text-white/90 mb-4">اتصل فوراً على الرقم المجاني</p>
-              <Button 
-                size="lg"
-                onClick={() => handleCall(emergencyContacts.find(c => c.type === 'emergency')?.number || '999')}
-                className="bg-red-500 hover:bg-red-600 text-white font-bold text-xl px-8 py-4 shadow-elegant"
-              >
-                <Phone className="ml-2 h-6 w-6" />
-                {emergencyContacts.find(c => c.type === 'emergency')?.number || '999'}
-              </Button>
-            </div>
-          </GlassCard>
-        )}
+        {emergencyContacts.find(c => c.type === 'emergency')}
 
         {/* Police Numbers Grid */}
-        {loading ? (
-          <div className="text-center py-8">
+        {loading ? <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
             <p className="mt-2 text-white/80">جاري تحميل أرقام الطوارئ...</p>
-          </div>
-        ) : emergencyContacts.length === 0 ? (
-          <div className="text-center py-8">
+          </div> : emergencyContacts.length === 0 ? <div className="text-center py-8">
             <p className="text-white/80">لا توجد أرقام طوارئ متاحة حالياً</p>
-          </div>
-        ) : policeStations.length === 0 ? (
-          <div className="text-center py-8">
+          </div> : policeStations.length === 0 ? <div className="text-center py-8">
             <p className="text-white/80">لا توجد مراكز شرطة متاحة حالياً</p>
-          </div>
-        ) : (
-          <div className="space-y-8 max-w-4xl mx-auto">
+          </div> : <div className="space-y-8 max-w-4xl mx-auto">
             {policeStations.map((station, stationIndex) => {
-              const stationContacts = emergencyContacts.filter(c => 
-                c.station_id === station.id && c.type !== 'emergency'
-              );
-              
-              return (
-                <div key={station.id} className="animate-slide-up" style={{ animationDelay: `${stationIndex * 0.1}s` }}>
+          const stationContacts = emergencyContacts.filter(c => c.station_id === station.id && c.type !== 'emergency');
+          return <div key={station.id} className="animate-slide-up" style={{
+            animationDelay: `${stationIndex * 0.1}s`
+          }}>
                   {/* Station Header */}
                   <GlassCard className="mb-4">
                     <div className="text-center">
                       <h2 className="text-2xl font-bold text-foreground mb-2">{station.name}</h2>
                       <p className="text-lg text-primary font-semibold mb-2">{station.area}</p>
-                      {station.description && (
-                        <p className="text-muted-foreground mb-2">{station.description}</p>
-                      )}
-                      {station.address && (
-                        <div className="flex items-center justify-center space-x-2 space-x-reverse text-sm text-muted-foreground">
+                      {station.description && <p className="text-muted-foreground mb-2">{station.description}</p>}
+                      {station.address && <div className="flex items-center justify-center space-x-2 space-x-reverse text-sm text-muted-foreground">
                           <MapPin className="h-4 w-4" />
                           <span>{station.address}</span>
-                        </div>
-                      )}
+                        </div>}
                     </div>
                   </GlassCard>
 
                   {/* Station Contacts */}
-                  {stationContacts.length > 0 ? (
-                    <div className="grid gap-4">
-                      {stationContacts.map((contact, contactIndex) => (
-                        <GlassCard 
-                          key={contact.id} 
-                          className="hover:scale-[1.02] transition-all duration-300"
-                        >
+                  {stationContacts.length > 0 ? <div className="grid gap-4">
+                      {stationContacts.map((contact, contactIndex) => <GlassCard key={contact.id} className="hover:scale-[1.02] transition-all duration-300">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
                               <h3 className="text-xl font-bold text-foreground mb-2">
@@ -174,30 +130,21 @@ const Police = () => {
                               <div className="text-2xl font-bold text-primary mb-2">
                                 {contact.number}
                               </div>
-                              <Button 
-                                onClick={() => handleCall(contact.number)}
-                                className="bg-gradient-primary hover:shadow-elegant transition-all duration-300"
-                              >
+                              <Button onClick={() => handleCall(contact.number)} className="bg-gradient-primary hover:shadow-elegant transition-all duration-300">
                                 <Phone className="ml-2 h-4 w-4" />
                                 اتصال
                               </Button>
                             </div>
                           </div>
-                        </GlassCard>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-4">
+                        </GlassCard>)}
+                    </div> : <div className="text-center py-4">
                       <p className="text-white/60">لا توجد أرقام متاحة لهذا المركز</p>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                    </div>}
+                </div>;
+        })}
 
             {/* General contacts without station */}
-            {emergencyContacts.filter(c => !c.station_id && c.type !== 'emergency').length > 0 && (
-              <div className="animate-slide-up">
+            {emergencyContacts.filter(c => !c.station_id && c.type !== 'emergency').length > 0 && <div className="animate-slide-up">
                 <GlassCard className="mb-4">
                   <div className="text-center">
                     <h2 className="text-2xl font-bold text-foreground mb-2">أرقام عامة</h2>
@@ -206,11 +153,7 @@ const Police = () => {
                 </GlassCard>
 
                 <div className="grid gap-4">
-                  {emergencyContacts.filter(c => !c.station_id && c.type !== 'emergency').map((contact) => (
-                    <GlassCard 
-                      key={contact.id} 
-                      className="hover:scale-[1.02] transition-all duration-300"
-                    >
+                  {emergencyContacts.filter(c => !c.station_id && c.type !== 'emergency').map(contact => <GlassCard key={contact.id} className="hover:scale-[1.02] transition-all duration-300">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <h3 className="text-xl font-bold text-foreground mb-2">
@@ -229,22 +172,16 @@ const Police = () => {
                           <div className="text-2xl font-bold text-primary mb-2">
                             {contact.number}
                           </div>
-                          <Button 
-                            onClick={() => handleCall(contact.number)}
-                            className="bg-gradient-primary hover:shadow-elegant transition-all duration-300"
-                          >
+                          <Button onClick={() => handleCall(contact.number)} className="bg-gradient-primary hover:shadow-elegant transition-all duration-300">
                             <Phone className="ml-2 h-4 w-4" />
                             اتصال
                           </Button>
                         </div>
                       </div>
-                    </GlassCard>
-                  ))}
+                    </GlassCard>)}
                 </div>
-              </div>
-            )}
-          </div>
-        )}
+              </div>}
+          </div>}
 
         {/* Location Info */}
         <GlassCard className="mt-8 max-w-4xl mx-auto animate-fade-in">
@@ -257,8 +194,6 @@ const Police = () => {
           </div>
         </GlassCard>
       </div>
-    </div>
-  )
-}
-
-export default Police
+    </div>;
+};
+export default Police;
