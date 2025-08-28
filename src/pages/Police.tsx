@@ -12,6 +12,7 @@ interface EmergencyContact {
   type: string;
   available: boolean;
   station_id?: string;
+  order_priority: number;
 }
 interface PoliceStation {
   id: string;
@@ -165,25 +166,52 @@ const Police = () => {
                       {stationContacts.map((contact, contactIndex) => <GlassCard key={contact.id} className="hover:scale-[1.02] transition-all duration-300">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
-                              <h3 className="text-xl font-bold text-foreground mb-2">
-                                {contact.title}
-                              </h3>
+                              <div className="flex items-center gap-2 mb-2">
+                                <h3 className="text-xl font-bold text-foreground">
+                                  {contact.title}
+                                </h3>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  contact.available ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                                }`}>
+                                  {contact.available ? 'متاح' : 'غير متاح'}
+                                </span>
+                              </div>
+                              
                               <p className="text-muted-foreground mb-2">
                                 {contact.description}
                               </p>
-                              <div className="flex items-center space-x-2 space-x-reverse text-sm text-muted-foreground">
-                                <Clock className="h-4 w-4" />
-                                <span>متاح على مدار الساعة</span>
+                              
+                              <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+                                <div className="flex items-center space-x-2 space-x-reverse">
+                                  <Clock className="h-4 w-4" />
+                                  <span>متاح على مدار الساعة</span>
+                                </div>
+                                {contact.type && (
+                                  <div className="flex items-center space-x-2 space-x-reverse">
+                                    <Shield className="h-4 w-4" />
+                                    <span className="capitalize">{contact.type}</span>
+                                  </div>
+                                )}
                               </div>
+                              
+                              {contact.order_priority > 0 && (
+                                <div className="text-xs text-primary/70">
+                                  أولوية: {contact.order_priority}
+                                </div>
+                              )}
                             </div>
                             
                             <div className="text-left">
                               <div className="text-2xl font-bold text-primary mb-2">
                                 {contact.number}
                               </div>
-                              <Button onClick={() => handleCall(contact.number)} className="bg-gradient-primary hover:shadow-elegant transition-all duration-300">
+                              <Button 
+                                onClick={() => handleCall(contact.number)} 
+                                disabled={!contact.available}
+                                className="bg-gradient-primary hover:shadow-elegant transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
                                 <Phone className="ml-2 h-4 w-4" />
-                                اتصال
+                                {contact.available ? 'اتصال' : 'غير متاح'}
                               </Button>
                             </div>
                           </div>
@@ -212,25 +240,52 @@ const Police = () => {
                   {emergencyContacts.filter(c => !c.station_id && c.type !== 'emergency').map(contact => <GlassCard key={contact.id} className="hover:scale-[1.02] transition-all duration-300">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <h3 className="text-xl font-bold text-foreground mb-2">
-                            {contact.title}
-                          </h3>
+                          <div className="flex items-center gap-2 mb-2">
+                            <h3 className="text-xl font-bold text-foreground">
+                              {contact.title}
+                            </h3>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              contact.available ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                            }`}>
+                              {contact.available ? 'متاح' : 'غير متاح'}
+                            </span>
+                          </div>
+                          
                           <p className="text-muted-foreground mb-2">
                             {contact.description}
                           </p>
-                          <div className="flex items-center space-x-2 space-x-reverse text-sm text-muted-foreground">
-                            <Clock className="h-4 w-4" />
-                            <span>متاح على مدار الساعة</span>
+                          
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+                            <div className="flex items-center space-x-2 space-x-reverse">
+                              <Clock className="h-4 w-4" />
+                              <span>متاح على مدار الساعة</span>
+                            </div>
+                            {contact.type && (
+                              <div className="flex items-center space-x-2 space-x-reverse">
+                                <Shield className="h-4 w-4" />
+                                <span className="capitalize">{contact.type}</span>
+                              </div>
+                            )}
                           </div>
+                          
+                          {contact.order_priority > 0 && (
+                            <div className="text-xs text-primary/70">
+                              أولوية: {contact.order_priority}
+                            </div>
+                          )}
                         </div>
                         
                         <div className="text-left">
                           <div className="text-2xl font-bold text-primary mb-2">
                             {contact.number}
                           </div>
-                          <Button onClick={() => handleCall(contact.number)} className="bg-gradient-primary hover:shadow-elegant transition-all duration-300">
+                          <Button 
+                            onClick={() => handleCall(contact.number)}
+                            disabled={!contact.available}
+                            className="bg-gradient-primary hover:shadow-elegant transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
                             <Phone className="ml-2 h-4 w-4" />
-                            اتصال
+                            {contact.available ? 'اتصال' : 'غير متاح'}
                           </Button>
                         </div>
                       </div>
