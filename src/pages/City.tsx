@@ -96,7 +96,7 @@ const City = () => {
                     </div>
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-foreground">{dept.title}</h3>
-                    <p className="text-muted-foreground">{dept.description}</p>
+                    <p className="text-foreground/90">{dept.description}</p>
                   </div>
                 </div>
 
