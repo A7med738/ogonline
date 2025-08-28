@@ -3,40 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import cityHeroImage from "@/assets/city-hero.jpg";
 import { useNewsNotifications } from "@/hooks/useNewsNotifications";
 import { NewsNotificationBadge } from "@/components/NewsNotificationBadge";
-import { BottomNavigation } from "@/components/BottomNavigation";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [isAdmin, setIsAdmin] = useState(false);
   const { unreadCount } = useNewsNotifications();
-
-  useEffect(() => {
-    if (user) {
-      checkAdminRole();
-    }
-  }, [user]);
-
-  const checkAdminRole = async () => {
-    try {
-      const { data } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user?.id)
-        .eq('role', 'admin')
-        .single();
-
-      setIsAdmin(!!data);
-    } catch (error) {
-      // User is not admin
-      setIsAdmin(false);
-    }
-  };
   
   const navigationItems = [{
     title: "أخبار المدينة",
@@ -104,8 +78,6 @@ const Index = () => {
         </div>
       </div>
       
-      {/* Bottom Navigation */}
-      <BottomNavigation isAdmin={isAdmin} />
     </div>;
 };
 export default Index;
