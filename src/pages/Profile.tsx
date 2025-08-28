@@ -236,10 +236,10 @@ const Profile = () => {
           </GlassCard>
 
           {/* Important Notice */}
-          <Alert className="mb-6 border-primary/20 bg-primary/10 animate-fade-in">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription className="text-primary">
-              <strong>تنبيه مهم:</strong> تأكد من إدخال معلوماتك الشخصية بشكل صحيح ودقيق. هذه المعلومات ضرورية للحصول على أفضل خدمة من خدمات المدينة الذكية ولضمان وصول الخدمات إليك بنجاح.
+          <Alert className="mb-6 border-primary/30 bg-primary/5 animate-fade-in">
+            <AlertCircle className="h-4 w-4 text-primary" />
+            <AlertDescription className="text-foreground text-sm font-medium leading-relaxed">
+              <strong className="text-primary">تنبيه مهم:</strong> تأكد من إدخال معلوماتك الشخصية بشكل صحيح ودقيق. هذه المعلومات ضرورية للحصول على أفضل خدمة من خدمات المدينة الذكية ولضمان وصول الخدمات إليك بنجاح.
             </AlertDescription>
           </Alert>
 
