@@ -6,6 +6,7 @@ import { GlassCard } from '@/components/ui/glass-card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -27,6 +28,15 @@ interface EmergencyContact {
   type: string;
   available: boolean;
   order_priority: number;
+  station_id?: string;
+}
+
+interface PoliceStation {
+  id: string;
+  name: string;
+  area: string;
+  address?: string;
+  description?: string;
 }
 
 const Admin = () => {
@@ -56,7 +66,18 @@ const Admin = () => {
     description: '',
     type: '',
     available: true,
-    order_priority: 0
+    order_priority: 0,
+    station_id: ''
+  });
+
+  // Police stations state
+  const [stations, setStations] = useState<PoliceStation[]>([]);
+  const [editingStation, setEditingStation] = useState<PoliceStation | null>(null);
+  const [newStation, setNewStation] = useState({
+    name: '',
+    area: '',
+    address: '',
+    description: ''
   });
 
   useEffect(() => {
@@ -71,6 +92,7 @@ const Admin = () => {
     if (isAdmin) {
       fetchNews();
       fetchContacts();
+      fetchStations();
     }
   }, [isAdmin]);
 
@@ -128,6 +150,20 @@ const Admin = () => {
       setContacts(data || []);
     } catch (error) {
       console.error('Error fetching contacts:', error);
+    }
+  };
+
+  const fetchStations = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('police_stations')
+        .select('*')
+        .order('area', { ascending: true });
+
+      if (error) throw error;
+      setStations(data || []);
+    } catch (error) {
+      console.error('Error fetching stations:', error);
     }
   };
 
@@ -235,7 +271,8 @@ const Admin = () => {
         description: '',
         type: '',
         available: true,
-        order_priority: 0
+        order_priority: 0,
+        station_id: ''
       });
       fetchContacts();
     } catch (error) {
@@ -260,7 +297,8 @@ const Admin = () => {
           description: editingContact.description,
           type: editingContact.type,
           available: editingContact.available,
-          order_priority: editingContact.order_priority
+          order_priority: editingContact.order_priority,
+          station_id: editingContact.station_id || null
         })
         .eq('id', editingContact.id);
 
@@ -310,6 +348,97 @@ const Admin = () => {
     }
   };
 
+  const handleAddStation = async () => {
+    try {
+      const { error } = await supabase
+        .from('police_stations')
+        .insert([newStation]);
+
+      if (error) throw error;
+
+      toast({
+        title: "تم إضافة المركز",
+        description: "تم إضافة مركز الشرطة بنجاح"
+      });
+
+      setNewStation({
+        name: '',
+        area: '',
+        address: '',
+        description: ''
+      });
+      fetchStations();
+    } catch (error) {
+      console.error('Error adding station:', error);
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ أثناء إضافة المركز",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleUpdateStation = async () => {
+    if (!editingStation) return;
+
+    try {
+      const { error } = await supabase
+        .from('police_stations')
+        .update({
+          name: editingStation.name,
+          area: editingStation.area,
+          address: editingStation.address,
+          description: editingStation.description
+        })
+        .eq('id', editingStation.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "تم تحديث المركز",
+        description: "تم تحديث مركز الشرطة بنجاح"
+      });
+
+      setEditingStation(null);
+      fetchStations();
+    } catch (error) {
+      console.error('Error updating station:', error);
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ أثناء تحديث المركز",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeleteStation = async (id: string) => {
+    if (!confirm('هل أنت متأكد من حذف هذا المركز؟ سيتم إزالة ربط جميع الأرقام بهذا المركز.')) return;
+
+    try {
+      const { error } = await supabase
+        .from('police_stations')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "تم حذف المركز",
+        description: "تم حذف مركز الشرطة بنجاح"
+      });
+
+      fetchStations();
+      fetchContacts(); // Refresh contacts to show updated station links
+    } catch (error) {
+      console.error('Error deleting station:', error);
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ أثناء حذف المركز",
+        variant: "destructive"
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-hero flex items-center justify-center">
@@ -332,7 +461,7 @@ const Admin = () => {
           </div>
           <h1 className="text-4xl font-bold text-white mb-4">لوحة الإدارة</h1>
           <p className="text-white/80 text-lg">
-            إدارة الأخبار وأرقام الطوارئ
+            إدارة الأخبار ومراكز الشرطة وأرقام الطوارئ
           </p>
         </div>
 
@@ -351,8 +480,9 @@ const Admin = () => {
         {/* Main Content */}
         <GlassCard className="max-w-6xl mx-auto">
           <Tabs defaultValue="news" className="w-full" dir="rtl">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="news">إدارة الأخبار</TabsTrigger>
+              <TabsTrigger value="stations">إدارة مراكز الشرطة</TabsTrigger>
               <TabsTrigger value="contacts">إدارة أرقام الطوارئ</TabsTrigger>
             </TabsList>
 
@@ -473,6 +603,22 @@ const Admin = () => {
                     value={newContact.order_priority}
                     onChange={(e) => setNewContact({ ...newContact, order_priority: parseInt(e.target.value) || 0 })}
                   />
+                  <Select 
+                    value={newContact.station_id} 
+                    onValueChange={(value) => setNewContact({ ...newContact, station_id: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="اختر مركز الشرطة (اختياري)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">بدون مركز</SelectItem>
+                      {stations.map((station) => (
+                        <SelectItem key={station.id} value={station.id}>
+                          {station.name} - {station.area}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <Textarea
                     placeholder="الوصف"
                     value={newContact.description}
@@ -509,6 +655,22 @@ const Admin = () => {
                             value={editingContact.order_priority}
                             onChange={(e) => setEditingContact({ ...editingContact, order_priority: parseInt(e.target.value) || 0 })}
                           />
+                          <Select 
+                            value={editingContact.station_id || ""} 
+                            onValueChange={(value) => setEditingContact({ ...editingContact, station_id: value })}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="اختر مركز الشرطة (اختياري)" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="">بدون مركز</SelectItem>
+                              {stations.map((station) => (
+                                <SelectItem key={station.id} value={station.id}>
+                                  {station.name} - {station.area}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <Textarea
                             value={editingContact.description || ''}
                             onChange={(e) => setEditingContact({ ...editingContact, description: e.target.value })}
@@ -531,6 +693,11 @@ const Admin = () => {
                               <h4 className="font-semibold">{contact.title}</h4>
                               <p className="text-lg font-mono">{contact.number}</p>
                               <p className="text-sm text-muted-foreground">{contact.type}</p>
+                              {contact.station_id && (
+                                <p className="text-sm text-blue-600">
+                                  المركز: {stations.find(s => s.id === contact.station_id)?.name}
+                                </p>
+                              )}
                               <p className="text-sm mt-2">{contact.description}</p>
                               <p className="text-xs text-muted-foreground">الأولوية: {contact.order_priority}</p>
                             </div>
@@ -548,6 +715,107 @@ const Admin = () => {
                               تعديل
                             </Button>
                             <Button onClick={() => handleDeleteContact(contact.id)} variant="destructive" size="sm">
+                              <Trash2 className="ml-2 h-4 w-4" />
+                              حذف
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Police Stations Management */}
+            <TabsContent value="stations" className="space-y-6">
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">إضافة مركز شرطة جديد</h3>
+                <div className="grid gap-4">
+                  <Input
+                    placeholder="اسم المركز"
+                    value={newStation.name}
+                    onChange={(e) => setNewStation({ ...newStation, name: e.target.value })}
+                  />
+                  <Input
+                    placeholder="المنطقة التي يخدمها المركز"
+                    value={newStation.area}
+                    onChange={(e) => setNewStation({ ...newStation, area: e.target.value })}
+                  />
+                  <Input
+                    placeholder="العنوان (اختياري)"
+                    value={newStation.address}
+                    onChange={(e) => setNewStation({ ...newStation, address: e.target.value })}
+                  />
+                  <Textarea
+                    placeholder="وصف المركز (اختياري)"
+                    value={newStation.description}
+                    onChange={(e) => setNewStation({ ...newStation, description: e.target.value })}
+                  />
+                  <Button onClick={handleAddStation} className="w-fit">
+                    <Plus className="ml-2 h-4 w-4" />
+                    إضافة مركز
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">مراكز الشرطة الحالية</h3>
+                <div className="space-y-4">
+                  {stations.map((station) => (
+                    <div key={station.id} className="border rounded-lg p-4">
+                      {editingStation?.id === station.id ? (
+                        <div className="space-y-4">
+                          <Input
+                            value={editingStation.name}
+                            onChange={(e) => setEditingStation({ ...editingStation, name: e.target.value })}
+                          />
+                          <Input
+                            value={editingStation.area}
+                            onChange={(e) => setEditingStation({ ...editingStation, area: e.target.value })}
+                          />
+                          <Input
+                            value={editingStation.address || ''}
+                            onChange={(e) => setEditingStation({ ...editingStation, address: e.target.value })}
+                          />
+                          <Textarea
+                            value={editingStation.description || ''}
+                            onChange={(e) => setEditingStation({ ...editingStation, description: e.target.value })}
+                          />
+                          <div className="flex gap-2">
+                            <Button onClick={handleUpdateStation} size="sm">
+                              <Save className="ml-2 h-4 w-4" />
+                              حفظ
+                            </Button>
+                            <Button onClick={() => setEditingStation(null)} variant="outline" size="sm">
+                              <X className="ml-2 h-4 w-4" />
+                              إلغاء
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h4 className="font-semibold text-lg">{station.name}</h4>
+                              <p className="text-primary font-medium">{station.area}</p>
+                              {station.address && (
+                                <p className="text-sm text-muted-foreground">{station.address}</p>
+                              )}
+                              {station.description && (
+                                <p className="text-sm mt-2">{station.description}</p>
+                              )}
+                              <p className="text-xs text-muted-foreground mt-2">
+                                عدد الأرقام المرتبطة: {contacts.filter(c => c.station_id === station.id).length}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2 mt-4">
+                            <Button onClick={() => setEditingStation(station)} variant="outline" size="sm">
+                              <Edit className="ml-2 h-4 w-4" />
+                              تعديل
+                            </Button>
+                            <Button onClick={() => handleDeleteStation(station.id)} variant="destructive" size="sm">
                               <Trash2 className="ml-2 h-4 w-4" />
                               حذف
                             </Button>

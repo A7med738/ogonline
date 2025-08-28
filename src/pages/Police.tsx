@@ -12,29 +12,49 @@ interface EmergencyContact {
   description: string;
   type: string;
   available: boolean;
+  station_id?: string;
+}
+
+interface PoliceStation {
+  id: string;
+  name: string;
+  area: string;
+  address?: string;
+  description?: string;
 }
 
 const Police = () => {
   const navigate = useNavigate()
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
+  const [policeStations, setPoliceStations] = useState<PoliceStation[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchEmergencyContacts();
+    fetchData();
   }, []);
 
-  const fetchEmergencyContacts = async () => {
+  const fetchData = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch police stations
+      const { data: stationsData, error: stationsError } = await supabase
+        .from('police_stations')
+        .select('*')
+        .order('area', { ascending: true });
+
+      if (stationsError) throw stationsError;
+      setPoliceStations(stationsData || []);
+
+      // Fetch emergency contacts
+      const { data: contactsData, error: contactsError } = await supabase
         .from('emergency_contacts')
         .select('*')
         .eq('available', true)
         .order('order_priority', { ascending: true });
 
-      if (error) throw error;
-      setEmergencyContacts(data || []);
+      if (contactsError) throw contactsError;
+      setEmergencyContacts(contactsData || []);
     } catch (error) {
-      console.error('Error fetching emergency contacts:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
@@ -98,43 +118,131 @@ const Police = () => {
           <div className="text-center py-8">
             <p className="text-white/80">لا توجد أرقام طوارئ متاحة حالياً</p>
           </div>
+        ) : policeStations.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-white/80">لا توجد مراكز شرطة متاحة حالياً</p>
+          </div>
         ) : (
-          <div className="grid gap-6 max-w-4xl mx-auto">
-            {emergencyContacts.filter(c => c.type !== 'emergency').map((contact, index) => (
-            <GlassCard 
-              key={contact.id} 
-              className="animate-slide-up hover:scale-[1.02] transition-all duration-300"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-foreground mb-2">
-                    {contact.title}
-                  </h3>
-                  <p className="text-muted-foreground mb-2">
-                    {contact.description}
-                  </p>
-                  <div className="flex items-center space-x-2 space-x-reverse text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    <span>متاح على مدار الساعة</span>
-                  </div>
+          <div className="space-y-8 max-w-4xl mx-auto">
+            {policeStations.map((station, stationIndex) => {
+              const stationContacts = emergencyContacts.filter(c => 
+                c.station_id === station.id && c.type !== 'emergency'
+              );
+              
+              return (
+                <div key={station.id} className="animate-slide-up" style={{ animationDelay: `${stationIndex * 0.1}s` }}>
+                  {/* Station Header */}
+                  <GlassCard className="mb-4">
+                    <div className="text-center">
+                      <h2 className="text-2xl font-bold text-foreground mb-2">{station.name}</h2>
+                      <p className="text-lg text-primary font-semibold mb-2">{station.area}</p>
+                      {station.description && (
+                        <p className="text-muted-foreground mb-2">{station.description}</p>
+                      )}
+                      {station.address && (
+                        <div className="flex items-center justify-center space-x-2 space-x-reverse text-sm text-muted-foreground">
+                          <MapPin className="h-4 w-4" />
+                          <span>{station.address}</span>
+                        </div>
+                      )}
+                    </div>
+                  </GlassCard>
+
+                  {/* Station Contacts */}
+                  {stationContacts.length > 0 ? (
+                    <div className="grid gap-4">
+                      {stationContacts.map((contact, contactIndex) => (
+                        <GlassCard 
+                          key={contact.id} 
+                          className="hover:scale-[1.02] transition-all duration-300"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <h3 className="text-xl font-bold text-foreground mb-2">
+                                {contact.title}
+                              </h3>
+                              <p className="text-muted-foreground mb-2">
+                                {contact.description}
+                              </p>
+                              <div className="flex items-center space-x-2 space-x-reverse text-sm text-muted-foreground">
+                                <Clock className="h-4 w-4" />
+                                <span>متاح على مدار الساعة</span>
+                              </div>
+                            </div>
+                            
+                            <div className="text-left">
+                              <div className="text-2xl font-bold text-primary mb-2">
+                                {contact.number}
+                              </div>
+                              <Button 
+                                onClick={() => handleCall(contact.number)}
+                                className="bg-gradient-primary hover:shadow-elegant transition-all duration-300"
+                              >
+                                <Phone className="ml-2 h-4 w-4" />
+                                اتصال
+                              </Button>
+                            </div>
+                          </div>
+                        </GlassCard>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="text-white/60">لا توجد أرقام متاحة لهذا المركز</p>
+                    </div>
+                  )}
                 </div>
-                
-                <div className="text-left">
-                  <div className="text-2xl font-bold text-primary mb-2">
-                    {contact.number}
+              );
+            })}
+
+            {/* General contacts without station */}
+            {emergencyContacts.filter(c => !c.station_id && c.type !== 'emergency').length > 0 && (
+              <div className="animate-slide-up">
+                <GlassCard className="mb-4">
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold text-foreground mb-2">أرقام عامة</h2>
+                    <p className="text-muted-foreground">أرقام لا تتبع لمركز محدد</p>
                   </div>
-                  <Button 
-                    onClick={() => handleCall(contact.number)}
-                    className="bg-gradient-primary hover:shadow-elegant transition-all duration-300"
-                  >
-                    <Phone className="ml-2 h-4 w-4" />
-                    اتصال
-                  </Button>
+                </GlassCard>
+
+                <div className="grid gap-4">
+                  {emergencyContacts.filter(c => !c.station_id && c.type !== 'emergency').map((contact) => (
+                    <GlassCard 
+                      key={contact.id} 
+                      className="hover:scale-[1.02] transition-all duration-300"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-foreground mb-2">
+                            {contact.title}
+                          </h3>
+                          <p className="text-muted-foreground mb-2">
+                            {contact.description}
+                          </p>
+                          <div className="flex items-center space-x-2 space-x-reverse text-sm text-muted-foreground">
+                            <Clock className="h-4 w-4" />
+                            <span>متاح على مدار الساعة</span>
+                          </div>
+                        </div>
+                        
+                        <div className="text-left">
+                          <div className="text-2xl font-bold text-primary mb-2">
+                            {contact.number}
+                          </div>
+                          <Button 
+                            onClick={() => handleCall(contact.number)}
+                            className="bg-gradient-primary hover:shadow-elegant transition-all duration-300"
+                          >
+                            <Phone className="ml-2 h-4 w-4" />
+                            اتصال
+                          </Button>
+                        </div>
+                      </div>
+                    </GlassCard>
+                  ))}
                 </div>
               </div>
-            </GlassCard>
-            ))}
+            )}
           </div>
         )}
 

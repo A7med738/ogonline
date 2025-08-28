@@ -22,6 +22,7 @@ export type Database = {
           id: string
           number: string
           order_priority: number | null
+          station_id: string | null
           title: string
           type: string
           updated_at: string
@@ -33,6 +34,7 @@ export type Database = {
           id?: string
           number: string
           order_priority?: number | null
+          station_id?: string | null
           title: string
           type: string
           updated_at?: string
@@ -44,11 +46,20 @@ export type Database = {
           id?: string
           number?: string
           order_priority?: number | null
+          station_id?: string | null
           title?: string
           type?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "emergency_contacts_station_id_fkey"
+            columns: ["station_id"]
+            isOneToOne: false
+            referencedRelation: "police_stations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       news: {
         Row: {
@@ -153,6 +164,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      police_stations: {
+        Row: {
+          address: string | null
+          area: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          area: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          area?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
