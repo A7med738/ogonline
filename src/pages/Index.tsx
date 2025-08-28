@@ -1,12 +1,39 @@
-import { Newspaper, Shield, Building, User, LogOut } from "lucide-react";
+import { Newspaper, Shield, Building, User, LogOut, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect } from "react";
 import cityHeroImage from "@/assets/city-hero.jpg";
+
 const Index = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      checkAdminRole();
+    }
+  }, [user]);
+
+  const checkAdminRole = async () => {
+    try {
+      const { data } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user?.id)
+        .eq('role', 'admin')
+        .single();
+
+      setIsAdmin(!!data);
+    } catch (error) {
+      // User is not admin
+      setIsAdmin(false);
+    }
+  };
+  
   const navigationItems = [{
     title: "أخبار المدينة",
     description: "تابع آخر الأخبار والمستجدات في مدينتك",
@@ -23,6 +50,7 @@ const Index = () => {
     icon: Building,
     onClick: () => navigate("/city")
   }];
+  
   return <div className="min-h-screen bg-gradient-hero">
       <div className="container mx-auto px-4 py-8">
         
@@ -30,6 +58,16 @@ const Index = () => {
         <div className="absolute top-4 left-4 z-50">
           {user ? (
             <div className="flex space-x-2 space-x-reverse">
+              {isAdmin && (
+                <Button 
+                  variant="outline"
+                  onClick={() => navigate('/admin')}
+                  className="bg-red-500/20 backdrop-blur-sm border-red-400/30 text-white hover:bg-red-500/30 shadow-lg"
+                >
+                  <Settings className="ml-2 h-4 w-4" />
+                  لوحة الإدارة
+                </Button>
+              )}
               <Button 
                 variant="outline"
                 onClick={() => navigate('/profile')}
