@@ -39,6 +39,18 @@ interface PoliceStation {
   description?: string;
 }
 
+interface CityDepartment {
+  id: string;
+  title: string;
+  description?: string;
+  phone: string;
+  email: string;
+  hours: string;
+  icon: string;
+  color: string;
+  order_priority?: number;
+}
+
 const Admin = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -80,6 +92,20 @@ const Admin = () => {
     description: ''
   });
 
+  // City departments state
+  const [departments, setDepartments] = useState<CityDepartment[]>([]);
+  const [editingDepartment, setEditingDepartment] = useState<CityDepartment | null>(null);
+  const [newDepartment, setNewDepartment] = useState({ 
+    title: '', 
+    description: '', 
+    phone: '', 
+    email: '', 
+    hours: '', 
+    icon: 'Building', 
+    color: 'from-blue-500 to-blue-600', 
+    order_priority: 0 
+  });
+
   useEffect(() => {
     if (user) {
       checkAdminRole();
@@ -93,6 +119,7 @@ const Admin = () => {
       fetchNews();
       fetchContacts();
       fetchStations();
+      fetchDepartments();
     }
   }, [isAdmin]);
 
@@ -164,6 +191,29 @@ const Admin = () => {
       setStations(data || []);
     } catch (error) {
       console.error('Error fetching stations:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحميل مراكز الشرطة",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const fetchDepartments = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('city_departments')
+        .select('*')
+        .order('order_priority', { ascending: true });
+      if (error) throw error;
+      setDepartments(data || []);
+    } catch (error) {
+      console.error('Error fetching city departments:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحميل إدارات المدينة",
+        variant: "destructive"
+      });
     }
   };
 
@@ -439,6 +489,99 @@ const Admin = () => {
     }
   };
 
+  // City Departments functions
+  const handleAddDepartment = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('city_departments')
+        .insert([newDepartment])
+        .select();
+      
+      if (error) throw error;
+      
+      if (data) {
+        setDepartments([...departments, data[0]]);
+        setNewDepartment({ 
+          title: '', 
+          description: '', 
+          phone: '', 
+          email: '', 
+          hours: '', 
+          icon: 'Building', 
+          color: 'from-blue-500 to-blue-600', 
+          order_priority: 0 
+        });
+        toast({
+          title: "تم الإنشاء",
+          description: "تم إنشاء الإدارة بنجاح"
+        });
+      }
+    } catch (error) {
+      console.error('Error adding department:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في إنشاء الإدارة",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleUpdateDepartment = async () => {
+    if (!editingDepartment) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('city_departments')
+        .update(editingDepartment)
+        .eq('id', editingDepartment.id)
+        .select();
+      
+      if (error) throw error;
+      
+      if (data) {
+        setDepartments(departments.map(dept => 
+          dept.id === editingDepartment.id ? data[0] : dept
+        ));
+        setEditingDepartment(null);
+        toast({
+          title: "تم التحديث",
+          description: "تم تحديث الإدارة بنجاح"
+        });
+      }
+    } catch (error) {
+      console.error('Error updating department:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحديث الإدارة",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeleteDepartment = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('city_departments')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      setDepartments(departments.filter(dept => dept.id !== id));
+      toast({
+        title: "تم الحذف",
+        description: "تم حذف الإدارة بنجاح"
+      });
+    } catch (error) {
+      console.error('Error deleting department:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في حذف الإدارة",
+        variant: "destructive"
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-hero flex items-center justify-center">
@@ -461,7 +604,7 @@ const Admin = () => {
           </div>
           <h1 className="text-4xl font-bold text-white mb-4">لوحة الإدارة</h1>
           <p className="text-white/80 text-lg">
-            إدارة الأخبار ومراكز الشرطة وأرقام الطوارئ
+            إدارة الأخبار ومراكز الشرطة وأرقام الطوارئ وإدارات المدينة
           </p>
         </div>
 
@@ -479,14 +622,15 @@ const Admin = () => {
 
         {/* Main Content */}
         <GlassCard className="max-w-6xl mx-auto">
-          <Tabs defaultValue="news" className="w-full" dir="rtl">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="news">إدارة الأخبار</TabsTrigger>
-              <TabsTrigger value="stations">إدارة مراكز الشرطة</TabsTrigger>
-              <TabsTrigger value="contacts">إدارة أرقام الطوارئ</TabsTrigger>
+          <Tabs defaultValue="news" className="space-y-4">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="news">الأخبار</TabsTrigger>
+              <TabsTrigger value="contacts">جهات الاتصال</TabsTrigger>
+              <TabsTrigger value="stations">مراكز الشرطة</TabsTrigger>
+              <TabsTrigger value="departments">إدارات المدينة</TabsTrigger>
             </TabsList>
 
-            {/* News Management */}
+            {/* News Tab */}
             <TabsContent value="news" className="space-y-6">
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">إضافة خبر جديد</h3>
@@ -577,7 +721,7 @@ const Admin = () => {
               </div>
             </TabsContent>
 
-            {/* Emergency Contacts Management */}
+            {/* Contacts Tab */}
             <TabsContent value="contacts" className="space-y-6">
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">إضافة رقم طوارئ جديد</h3>
@@ -727,7 +871,7 @@ const Admin = () => {
               </div>
             </TabsContent>
 
-            {/* Police Stations Management */}
+            {/* Stations Tab */}
             <TabsContent value="stations" className="space-y-6">
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">إضافة مركز شرطة جديد</h3>
@@ -825,6 +969,134 @@ const Admin = () => {
                     </div>
                   ))}
                 </div>
+              </div>
+            </TabsContent>
+
+            {/* City Departments Tab */}
+            <TabsContent value="departments" className="space-y-6">
+              {/* Add Department Form */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">إضافة إدارة جديدة</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input
+                    placeholder="اسم الإدارة"
+                    value={newDepartment.title}
+                    onChange={(e) => setNewDepartment({...newDepartment, title: e.target.value})}
+                  />
+                  <Input
+                    placeholder="الوصف"
+                    value={newDepartment.description}
+                    onChange={(e) => setNewDepartment({...newDepartment, description: e.target.value})}
+                  />
+                  <Input
+                    placeholder="رقم الهاتف"
+                    value={newDepartment.phone}
+                    onChange={(e) => setNewDepartment({...newDepartment, phone: e.target.value})}
+                  />
+                  <Input
+                    placeholder="البريد الإلكتروني"
+                    value={newDepartment.email}
+                    onChange={(e) => setNewDepartment({...newDepartment, email: e.target.value})}
+                  />
+                  <Input
+                    placeholder="ساعات العمل"
+                    value={newDepartment.hours}
+                    onChange={(e) => setNewDepartment({...newDepartment, hours: e.target.value})}
+                  />
+                  <Input
+                    placeholder="الأيقونة (Building, Users, Wrench, etc.)"
+                    value={newDepartment.icon}
+                    onChange={(e) => setNewDepartment({...newDepartment, icon: e.target.value})}
+                  />
+                  <Input
+                    placeholder="اللون (from-blue-500 to-blue-600)"
+                    value={newDepartment.color}
+                    onChange={(e) => setNewDepartment({...newDepartment, color: e.target.value})}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="ترتيب الأولوية"
+                    value={newDepartment.order_priority}
+                    onChange={(e) => setNewDepartment({...newDepartment, order_priority: parseInt(e.target.value) || 0})}
+                  />
+                </div>
+                <Button onClick={handleAddDepartment}>إضافة إدارة</Button>
+              </div>
+
+              {/* Departments List */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">الإدارات الحالية</h3>
+                {departments.map(dept => (
+                  <div key={dept.id} className="border rounded-lg p-4 space-y-2">
+                    {editingDepartment?.id === dept.id ? (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <Input
+                            value={editingDepartment.title}
+                            onChange={(e) => setEditingDepartment({...editingDepartment, title: e.target.value})}
+                          />
+                          <Input
+                            value={editingDepartment.description || ''}
+                            onChange={(e) => setEditingDepartment({...editingDepartment, description: e.target.value})}
+                          />
+                          <Input
+                            value={editingDepartment.phone}
+                            onChange={(e) => setEditingDepartment({...editingDepartment, phone: e.target.value})}
+                          />
+                          <Input
+                            value={editingDepartment.email}
+                            onChange={(e) => setEditingDepartment({...editingDepartment, email: e.target.value})}
+                          />
+                          <Input
+                            value={editingDepartment.hours}
+                            onChange={(e) => setEditingDepartment({...editingDepartment, hours: e.target.value})}
+                          />
+                          <Input
+                            value={editingDepartment.icon}
+                            onChange={(e) => setEditingDepartment({...editingDepartment, icon: e.target.value})}
+                          />
+                          <Input
+                            value={editingDepartment.color}
+                            onChange={(e) => setEditingDepartment({...editingDepartment, color: e.target.value})}
+                          />
+                          <Input
+                            type="number"
+                            value={editingDepartment.order_priority || 0}
+                            onChange={(e) => setEditingDepartment({...editingDepartment, order_priority: parseInt(e.target.value) || 0})}
+                          />
+                        </div>
+                        <div className="flex space-x-2 space-x-reverse">
+                          <Button onClick={handleUpdateDepartment}>حفظ</Button>
+                          <Button variant="outline" onClick={() => setEditingDepartment(null)}>إلغاء</Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <h4 className="font-semibold">{dept.title}</h4>
+                        <p className="text-sm text-gray-600">{dept.description}</p>
+                        <p className="text-sm">الهاتف: {dept.phone}</p>
+                        <p className="text-sm">البريد: {dept.email}</p>
+                        <p className="text-sm">الساعات: {dept.hours}</p>
+                        <div className="flex space-x-2 space-x-reverse mt-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setEditingDepartment(dept)}
+                          >
+                            تعديل
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteDepartment(dept.id)}
+                          >
+                            حذف
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             </TabsContent>
           </Tabs>

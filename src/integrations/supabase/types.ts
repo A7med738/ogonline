@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      city_departments: {
+        Row: {
+          color: string
+          created_at: string
+          description: string | null
+          email: string
+          hours: string
+          icon: string
+          id: string
+          order_priority: number | null
+          phone: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          email: string
+          hours: string
+          icon?: string
+          id?: string
+          order_priority?: number | null
+          phone: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          description?: string | null
+          email?: string
+          hours?: string
+          icon?: string
+          id?: string
+          order_priority?: number | null
+          phone?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       emergency_contacts: {
         Row: {
           available: boolean

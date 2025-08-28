@@ -1,51 +1,53 @@
+import React, { useState, useEffect } from 'react';
 import { Phone, Mail, MapPin, Clock, ArrowRight, Building, Users, Wrench, Banknote } from "lucide-react"
 import { GlassCard } from "@/components/ui/glass-card"
 import { Button } from "@/components/ui/button"
+import { supabase } from '@/integrations/supabase/client';
 
-const cityDepartments = [
-  {
-    id: 1,
-    title: "مكتب العمدة",
-    description: "المكتب الرئيسي لعمدة المدينة والإدارة العليا",
-    phone: "011-123-4567",
-    email: "mayor@city.gov.sa",
-    hours: "السبت - الخميس: 8:00 - 15:00",
-    icon: Building,
-    color: "from-blue-500 to-blue-600"
-  },
-  {
-    id: 2,
-    title: "إدارة الخدمات العامة",
-    description: "صيانة الطرق، الإضاءة، النظافة العامة",
-    phone: "011-123-4568",
-    email: "services@city.gov.sa",
-    hours: "السبت - الخميس: 7:00 - 16:00",
-    icon: Wrench,
-    color: "from-green-500 to-green-600"
-  },
-  {
-    id: 3,
-    title: "إدارة شؤون المواطنين",
-    description: "الشكاوى، التراخيص، والخدمات المدنية",
-    phone: "011-123-4569",
-    email: "citizens@city.gov.sa",
-    hours: "السبت - الخميس: 8:00 - 17:00",
-    icon: Users,
-    color: "from-purple-500 to-purple-600"
-  },
-  {
-    id: 4,
-    title: "الإدارة المالية",
-    description: "المدفوعات، الرسوم، والخدمات المالية",
-    phone: "011-123-4570",
-    email: "finance@city.gov.sa",
-    hours: "السبت - الخميس: 8:00 - 14:00",
-    icon: Banknote,
-    color: "from-amber-500 to-amber-600"
-  }
-]
+interface CityDepartment {
+  id: string;
+  title: string;
+  description?: string;
+  phone: string;
+  email: string;
+  hours: string;
+  icon: string;
+  color: string;
+  order_priority?: number;
+}
+
+// Icon mapping for lucide icons
+const iconMap: { [key: string]: React.ComponentType<any> } = {
+  Building,
+  Users,
+  Wrench,
+  Banknote,
+};
 
 const City = () => {
+  const [departments, setDepartments] = useState<CityDepartment[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDepartments();
+  }, []);
+
+  const fetchDepartments = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('city_departments')
+        .select('*')
+        .order('order_priority', { ascending: true });
+      
+      if (error) throw error;
+      setDepartments(data || []);
+    } catch (error) {
+      console.error('Error fetching city departments:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCall = (number: string) => {
     window.open(`tel:${number}`, '_self')
   }
@@ -98,19 +100,31 @@ const City = () => {
         </GlassCard>
 
         {/* Departments Grid */}
-        <div className="grid gap-6 max-w-4xl mx-auto">
-          {cityDepartments.map((dept, index) => (
-            <GlassCard 
-              key={dept.id} 
-              className="animate-slide-up hover:scale-[1.02] transition-all duration-300"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <div className="space-y-4">
-                {/* Header */}
-                <div className="flex items-center space-x-4 space-x-reverse">
-                  <div className={`bg-gradient-to-r ${dept.color} p-3 rounded-xl shadow-elegant`}>
-                    <dept.icon className="h-6 w-6 text-white" />
-                  </div>
+        {loading ? (
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-2 text-white/80">جاري تحميل الإدارات...</p>
+          </div>
+        ) : departments.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-white/80">لا توجد إدارات متاحة حالياً</p>
+          </div>
+        ) : (
+          <div className="grid gap-6 max-w-4xl mx-auto">
+            {departments.map((dept, index) => {
+              const IconComponent = iconMap[dept.icon] || Building;
+              return (
+              <GlassCard 
+                key={dept.id} 
+                className="animate-slide-up hover:scale-[1.02] transition-all duration-300"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <div className="space-y-4">
+                  {/* Header */}
+                  <div className="flex items-center space-x-4 space-x-reverse">
+                    <div className={`bg-gradient-to-r ${dept.color} p-3 rounded-xl shadow-elegant`}>
+                      <IconComponent className="h-6 w-6 text-white" />
+                    </div>
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-foreground">{dept.title}</h3>
                     <p className="text-muted-foreground">{dept.description}</p>
@@ -152,11 +166,13 @@ const City = () => {
                     <Mail className="ml-2 h-4 w-4" />
                     بريد إلكتروني
                   </Button>
+                  </div>
                 </div>
-              </div>
-            </GlassCard>
-          ))}
-        </div>
+              </GlassCard>
+              );
+            })}
+          </div>
+        )}
 
         {/* Emergency Notice */}
         <GlassCard className="mt-8 max-w-4xl mx-auto animate-fade-in bg-gradient-to-r from-blue-500/20 to-blue-600/20 border-blue-400/30">
