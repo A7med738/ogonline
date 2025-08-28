@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useAuth } from '@/contexts/AuthContext'
 import { useEffect } from 'react'
 import { useDeepLink } from '@/hooks/useDeepLink'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false)
@@ -302,13 +303,22 @@ const Auth = () => {
                 </div>
               )}
 
-              <Button 
-                type="submit" 
-                className="w-full bg-gradient-primary hover:shadow-elegant transition-all duration-300"
-                disabled={loading}
-              >
-                {loading ? 'جاري المعالجة...' : (isSignUp ? 'إنشاء الحساب' : 'تسجيل الدخول')}
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-gradient-primary hover:shadow-elegant transition-all duration-300"
+                      disabled={loading}
+                    >
+                      {loading ? 'جاري المعالجة...' : (isSignUp ? 'إنشاء الحساب' : 'تسجيل الدخول')}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="bg-primary text-primary-foreground border-primary">
+                    <p>الأفضل 🌟</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </form>
 
             {/* Divider */}
