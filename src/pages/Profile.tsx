@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useAuth } from '@/contexts/AuthContext'
+import { EmailSubscription } from '@/components/EmailSubscription'
 
 interface ProfileData {
   full_name: string
@@ -241,6 +242,11 @@ const Profile = () => {
               <strong>تنبيه مهم:</strong> تأكد من إدخال معلوماتك الشخصية بشكل صحيح ودقيق. هذه المعلومات ضرورية للحصول على أفضل خدمة من خدمات المدينة الذكية ولضمان وصول الخدمات إليك بنجاح.
             </AlertDescription>
           </Alert>
+
+          {/* Email Subscription */}
+          <div className="mb-6 animate-fade-in">
+            <EmailSubscription />
+          </div>
 
           {/* Profile Form */}
           <GlassCard className="animate-slide-up">
