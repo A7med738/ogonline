@@ -79,7 +79,7 @@ const Auth = () => {
       const isCapacitor = typeof window !== 'undefined' && 
                          window.Capacitor?.isNativePlatform?.() === true
       const redirectTo = isCapacitor 
-        ? 'co.median.android.odxmwym://auth/callback'
+        ? 'app.lovable.3e2213cabd164ff28f6945d0069c6783://auth/callback'
         : `${window.location.origin}/`
       
       const { error } = await supabase.auth.signInWithOAuth({
