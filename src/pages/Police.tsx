@@ -24,7 +24,10 @@ interface PoliceStation {
 }
 const Police = () => {
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const {
+    user,
+    loading: authLoading
+  } = useAuth();
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
   const [policeStations, setPoliceStations] = useState<PoliceStation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +65,6 @@ const Police = () => {
   const handleCall = (number: string) => {
     window.open(`tel:${number}`, '_self');
   };
-
   const toggleStation = (stationId: string) => {
     console.log('Toggling station:', stationId);
     setOpenStations(prev => {
@@ -75,8 +77,8 @@ const Police = () => {
         setTimeout(() => {
           const element = document.getElementById(`station-contacts-${stationId}`);
           if (element) {
-            element.scrollIntoView({ 
-              behavior: 'smooth', 
+            element.scrollIntoView({
+              behavior: 'smooth',
               block: 'start',
               inline: 'nearest'
             });
@@ -108,8 +110,7 @@ const Police = () => {
         </div>
 
         {/* Emergency Banner */}
-        {emergencyContacts.find(c => c.type === 'emergency') && (
-          <GlassCard className="mb-6 border-red-500/30 bg-red-500/10">
+        {emergencyContacts.find(c => c.type === 'emergency') && <GlassCard className="mb-6 border-red-500/30 bg-red-500/10">
             <div className="text-center">
               <div className="text-red-500 text-2xl font-bold mb-2">
                 {emergencyContacts.find(c => c.type === 'emergency')?.number}
@@ -117,66 +118,44 @@ const Police = () => {
               <p className="text-red-400 font-semibold">
                 {emergencyContacts.find(c => c.type === 'emergency')?.title}
               </p>
-              <Button 
-                onClick={() => handleCall(emergencyContacts.find(c => c.type === 'emergency')?.number || '')}
-                className="mt-4 bg-red-600 hover:bg-red-700"
-              >
+              <Button onClick={() => handleCall(emergencyContacts.find(c => c.type === 'emergency')?.number || '')} className="mt-4 bg-red-600 hover:bg-red-700">
                 <Phone className="ml-2 h-4 w-4" />
                 اتصال طوارئ
               </Button>
             </div>
-          </GlassCard>
-        )}
+          </GlassCard>}
 
         {/* Authentication Check */}
-        {authLoading ? (
-          <div className="text-center py-8">
+        {authLoading ? <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
             <p className="mt-2 text-white/80">جاري التحقق من الهوية...</p>
-          </div>
-        ) : !user ? (
-          <GlassCard className="text-center max-w-2xl mx-auto">
+          </div> : !user ? <GlassCard className="text-center max-w-2xl mx-auto">
             <div className="py-8">
               <LogIn className="h-16 w-16 text-primary mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-foreground mb-4">تسجيل الدخول مطلوب</h2>
               <p className="text-muted-foreground mb-6">
                 لعرض أرقام الطوارئ وتفاصيل الاتصال، يجب تسجيل الدخول أولاً لحماية معلومات الاتصال الحساسة.
               </p>
-              <Button 
-                onClick={() => navigate('/auth')}
-                className="bg-gradient-primary hover:shadow-elegant transition-all duration-300"
-              >
+              <Button onClick={() => navigate('/auth')} className="bg-gradient-primary hover:shadow-elegant transition-all duration-300">
                 <LogIn className="ml-2 h-4 w-4" />
                 تسجيل الدخول
               </Button>
             </div>
-          </GlassCard>
-        ) : loading ? (
-          <div className="text-center py-8">
+          </GlassCard> : loading ? <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
             <p className="mt-2 text-white/80">جاري تحميل أرقام الطوارئ...</p>
-          </div>
-        ) : emergencyContacts.length === 0 ? (
-          <div className="text-center py-8">
+          </div> : emergencyContacts.length === 0 ? <div className="text-center py-8">
             <p className="text-white/80">لا توجد أرقام طوارئ متاحة حالياً</p>
-          </div>
-        ) : policeStations.length === 0 ? (
-          <div className="text-center py-8">
+          </div> : policeStations.length === 0 ? <div className="text-center py-8">
             <p className="text-white/80">لا توجد مراكز شرطة متاحة حالياً</p>
-          </div>
-        ) : (
-          <div className="space-y-8 max-w-4xl mx-auto">
+          </div> : <div className="space-y-8 max-w-4xl mx-auto">
             {policeStations.map((station, stationIndex) => {
           const stationContacts = emergencyContacts.filter(c => c.station_id === station.id && c.type !== 'emergency');
           return <div key={station.id} className="animate-slide-up" style={{
             animationDelay: `${stationIndex * 0.1}s`
           }}>
                   {/* Station Header */}
-                  <GlassCard 
-                    id={`station-header-${station.id}`}
-                    className="mb-4 cursor-pointer hover:scale-[1.02] transition-all duration-300 hover:shadow-elegant hover:bg-white/20"
-                    onClick={() => toggleStation(station.id)}
-                  >
+                  <GlassCard id={`station-header-${station.id}`} className="mb-4 cursor-pointer hover:scale-[1.02] transition-all duration-300 hover:shadow-elegant hover:bg-white/20" onClick={() => toggleStation(station.id)}>
                     <div className="text-center">
                       <h2 className="text-2xl font-bold text-foreground mb-2">{station.name}</h2>
                       <p className="text-lg text-primary font-semibold mb-2">{station.area}</p>
@@ -192,8 +171,7 @@ const Police = () => {
                   </GlassCard>
 
                   {/* Station Contacts */}
-                  {openStations.has(station.id) && stationContacts.length > 0 && (
-                    <div id={`station-contacts-${station.id}`} className="grid gap-4 animate-fade-in">
+                  {openStations.has(station.id) && stationContacts.length > 0 && <div id={`station-contacts-${station.id}`} className="grid gap-4 animate-fade-in">
                       {stationContacts.map((contact, contactIndex) => <GlassCard key={contact.id} className="hover:scale-[1.02] transition-all duration-300">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
@@ -201,9 +179,7 @@ const Police = () => {
                                 <h3 className="text-xl font-bold text-foreground">
                                   {contact.title}
                                 </h3>
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  contact.available ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                                }`}>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${contact.available ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
                                   {contact.available ? 'متاح' : 'غير متاح'}
                                 </span>
                               </div>
@@ -217,44 +193,33 @@ const Police = () => {
                                   <Clock className="h-4 w-4" />
                                   <span>متاح على مدار الساعة</span>
                                 </div>
-                                {contact.type && (
-                                  <div className="flex items-center space-x-2 space-x-reverse">
+                                {contact.type && <div className="flex items-center space-x-2 space-x-reverse">
                                     <Shield className="h-4 w-4" />
                                     <span className="capitalize">{contact.type}</span>
-                                  </div>
-                                )}
+                                  </div>}
                               </div>
                               
-                              {contact.order_priority > 0 && (
-                                <div className="text-xs text-primary/70">
+                              {contact.order_priority > 0 && <div className="text-xs text-primary/70">
                                   أولوية: {contact.order_priority}
-                                </div>
-                              )}
+                                </div>}
                             </div>
                             
                             <div className="text-left">
                               <div className="text-2xl font-bold text-primary mb-2">
                                 {contact.number}
                               </div>
-                              <Button 
-                                onClick={() => handleCall(contact.number)} 
-                                disabled={!contact.available}
-                                className="bg-gradient-primary hover:shadow-elegant transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                              >
+                              <Button onClick={() => handleCall(contact.number)} disabled={!contact.available} className="bg-gradient-primary hover:shadow-elegant transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
                                 <Phone className="ml-2 h-4 w-4" />
                                 {contact.available ? 'اتصال' : 'غير متاح'}
                               </Button>
                             </div>
                           </div>
                         </GlassCard>)}
-                    </div>
-                  )}
+                    </div>}
                   
-                  {openStations.has(station.id) && stationContacts.length === 0 && (
-                    <div className="text-center py-4 animate-fade-in">
+                  {openStations.has(station.id) && stationContacts.length === 0 && <div className="text-center py-4 animate-fade-in">
                       <p className="text-white/60">لا توجد أرقام متاحة لهذا المركز</p>
-                    </div>
-                  )}
+                    </div>}
                 </div>;
         })}
 
@@ -275,9 +240,7 @@ const Police = () => {
                             <h3 className="text-xl font-bold text-foreground">
                               {contact.title}
                             </h3>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              contact.available ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                            }`}>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${contact.available ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
                               {contact.available ? 'متاح' : 'غير متاح'}
                             </span>
                           </div>
@@ -291,30 +254,22 @@ const Police = () => {
                               <Clock className="h-4 w-4" />
                               <span>متاح على مدار الساعة</span>
                             </div>
-                            {contact.type && (
-                              <div className="flex items-center space-x-2 space-x-reverse">
+                            {contact.type && <div className="flex items-center space-x-2 space-x-reverse">
                                 <Shield className="h-4 w-4" />
                                 <span className="capitalize">{contact.type}</span>
-                              </div>
-                            )}
+                              </div>}
                           </div>
                           
-                          {contact.order_priority > 0 && (
-                            <div className="text-xs text-primary/70">
+                          {contact.order_priority > 0 && <div className="text-xs text-primary/70">
                               أولوية: {contact.order_priority}
-                            </div>
-                          )}
+                            </div>}
                         </div>
                         
                         <div className="text-left">
                           <div className="text-2xl font-bold text-primary mb-2">
                             {contact.number}
                           </div>
-                          <Button 
-                            onClick={() => handleCall(contact.number)}
-                            disabled={!contact.available}
-                            className="bg-gradient-primary hover:shadow-elegant transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
+                          <Button onClick={() => handleCall(contact.number)} disabled={!contact.available} className="bg-gradient-primary hover:shadow-elegant transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
                             <Phone className="ml-2 h-4 w-4" />
                             {contact.available ? 'اتصال' : 'غير متاح'}
                           </Button>
@@ -323,19 +278,10 @@ const Police = () => {
                     </GlassCard>)}
                 </div>
               </div>}
-          </div>
-        )}
+          </div>}
 
         {/* Location Info */}
-        <GlassCard className="mt-8 max-w-4xl mx-auto animate-fade-in">
-          <div className="text-center">
-            <MapPin className="h-8 w-8 text-primary mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-foreground mb-2">موقع المركز الرئيسي</h3>
-            <p className="text-muted-foreground">
-              شارع الملك فهد - حي الوزارات - صندوق بريد 1234
-            </p>
-          </div>
-        </GlassCard>
+        
       </div>
     </div>;
 };
