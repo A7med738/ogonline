@@ -1,9 +1,12 @@
-import { Newspaper, Shield, Building } from "lucide-react";
+import { Newspaper, Shield, Building, User, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 import cityHeroImage from "@/assets/city-hero.jpg";
 const Index = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const navigationItems = [{
     title: "أخبار المدينة",
     description: "تابع آخر الأخبار والمستجدات في مدينتك",
@@ -22,6 +25,31 @@ const Index = () => {
   }];
   return <div className="min-h-screen bg-gradient-hero">
       <div className="container mx-auto px-4 py-8">
+        
+        {/* Auth Section */}
+        <div className="absolute top-4 left-4">
+          {user ? (
+            <div className="flex space-x-2 space-x-reverse">
+              <Button 
+                variant="outline"
+                onClick={() => navigate('/profile')}
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
+                <User className="ml-2 h-4 w-4" />
+                الملف الشخصي
+              </Button>
+            </div>
+          ) : (
+            <Button 
+              variant="outline"
+              onClick={() => navigate('/auth')}
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
+              <User className="ml-2 h-4 w-4" />
+              تسجيل الدخول
+            </Button>
+          )}
+        </div>
         {/* Hero Section */}
         <div className="text-center mb-12 animate-fade-in">
           <div className="relative mb-8">
