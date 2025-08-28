@@ -159,7 +159,7 @@ const Police = () => {
                     <div className="text-center">
                       <h2 className="text-2xl font-bold text-foreground mb-2">{station.name}</h2>
                       <p className="text-lg text-primary font-semibold mb-2">{station.area}</p>
-                      {station.description && <p className="text-muted-foreground mb-2">{station.description}</p>}
+                      {station.description && <p className="text-foreground/90 mb-2">{station.description}</p>}
                       {station.address && <div className="flex items-center justify-center space-x-2 space-x-reverse text-sm text-muted-foreground">
                           <MapPin className="h-4 w-4" />
                           <span>{station.address}</span>
