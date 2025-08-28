@@ -14,6 +14,103 @@ export type Database = {
   }
   public: {
     Tables: {
+      news: {
+        Row: {
+          category: string
+          content: string | null
+          created_at: string
+          id: string
+          published_at: string
+          summary: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          published_at?: string
+          summary: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          published_at?: string
+          summary?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      news_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          news_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          news_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          news_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_comments_news_id_fkey"
+            columns: ["news_id"]
+            isOneToOne: false
+            referencedRelation: "news"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      news_likes: {
+        Row: {
+          created_at: string
+          id: string
+          news_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          news_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          news_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_likes_news_id_fkey"
+            columns: ["news_id"]
+            isOneToOne: false
+            referencedRelation: "news"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           age: number | null
