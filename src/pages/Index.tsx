@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import cityHeroImage from "@/assets/city-hero.jpg";
 import { useNewsNotifications } from "@/hooks/useNewsNotifications";
 import { NewsNotificationBadge } from "@/components/NewsNotificationBadge";
+import { BottomNavigation } from "@/components/BottomNavigation";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -55,43 +56,8 @@ const Index = () => {
     onClick: () => navigate("/city")
   }];
   
-  return <div className="min-h-screen bg-gradient-hero">
+  return <div className="min-h-screen bg-gradient-hero pb-20">
       <div className="container mx-auto px-4 py-8">
-        
-        {/* Auth Section */}
-        <div className="absolute top-4 left-4 z-50">
-          {user ? (
-            <div className="flex space-x-2 space-x-reverse">
-              {isAdmin && (
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate('/admin')}
-                  className="bg-red-500/20 backdrop-blur-sm border-red-400/30 text-white hover:bg-red-500/30 shadow-lg"
-                >
-                  <Settings className="ml-2 h-4 w-4" />
-                  لوحة الإدارة
-                </Button>
-              )}
-              <Button 
-                variant="outline"
-                onClick={() => navigate('/profile')}
-                className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 shadow-lg"
-              >
-                <User className="ml-2 h-4 w-4" />
-                الملف الشخصي
-              </Button>
-            </div>
-          ) : (
-            <Button 
-              variant="outline"
-              onClick={() => navigate('/auth')}
-              className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 shadow-lg"
-            >
-              <User className="ml-2 h-4 w-4" />
-              تسجيل الدخول
-            </Button>
-          )}
-        </div>
         {/* Hero Section */}
         <div className="text-center mb-12 animate-fade-in">
           <div className="relative mb-8">
@@ -137,6 +103,9 @@ const Index = () => {
           <p className="text-white/70 text-sm">• متاح على مدار الساعة</p>
         </div>
       </div>
+      
+      {/* Bottom Navigation */}
+      <BottomNavigation isAdmin={isAdmin} />
     </div>;
 };
 export default Index;
