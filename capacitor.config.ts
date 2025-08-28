@@ -12,6 +12,15 @@ const config: CapacitorConfig = {
     CapacitorHttp: {
       enabled: true
     }
+  },
+  android: {
+    allowMixedContent: true,
+    appendUserAgent: 'ogonline-app',
+    webContentsDebuggingEnabled: true
+  },
+  ios: {
+    allowsLinkPreview: false,
+    scrollEnabled: true
   }
 };
 

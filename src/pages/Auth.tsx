@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useAuth } from '@/contexts/AuthContext'
 import { useEffect } from 'react'
+import { useDeepLink } from '@/hooks/useDeepLink'
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false)
@@ -27,6 +28,9 @@ const Auth = () => {
   const location = useLocation()
   const { toast } = useToast()
   const { user } = useAuth()
+
+  // Initialize deep link handling for mobile
+  useDeepLink()
 
   useEffect(() => {
     if (user) {
@@ -74,7 +78,7 @@ const Auth = () => {
       const isCapacitor = typeof window !== 'undefined' && 
                          window.Capacitor?.isNativePlatform?.() === true
       const redirectTo = isCapacitor 
-        ? 'app.lovable.3e2213cabd164ff28f6945d0069c6783://auth/callback'
+        ? 'co.median.android.odxmwym://auth/callback'
         : `${window.location.origin}/`
       
       const { error } = await supabase.auth.signInWithOAuth({
