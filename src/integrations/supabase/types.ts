@@ -80,6 +80,13 @@ export type Database = {
             referencedRelation: "news"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "news_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       news_likes: {

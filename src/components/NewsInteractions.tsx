@@ -72,7 +72,7 @@ export const NewsInteractions = ({ newsId }: NewsInteractionsProps) => {
           content,
           created_at,
           user_id,
-          profiles!news_comments_user_id_fkey (
+          profiles!user_id (
             full_name
           )
         `)
