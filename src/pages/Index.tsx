@@ -27,13 +27,13 @@ const Index = () => {
       <div className="container mx-auto px-4 py-8">
         
         {/* Auth Section */}
-        <div className="absolute top-4 left-4">
+        <div className="absolute top-4 left-4 z-50">
           {user ? (
             <div className="flex space-x-2 space-x-reverse">
               <Button 
                 variant="outline"
                 onClick={() => navigate('/profile')}
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 shadow-lg"
               >
                 <User className="ml-2 h-4 w-4" />
                 الملف الشخصي
@@ -43,7 +43,7 @@ const Index = () => {
             <Button 
               variant="outline"
               onClick={() => navigate('/auth')}
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 shadow-lg"
             >
               <User className="ml-2 h-4 w-4" />
               تسجيل الدخول
