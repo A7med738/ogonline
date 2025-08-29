@@ -4,7 +4,6 @@ import { NavigationCard } from "@/components/NavigationCard";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
-import cityHeroImage from "@/assets/city-hero.jpg";
 import { useNewsNotifications } from "@/hooks/useNewsNotifications";
 import { NewsNotificationBadge } from "@/components/NewsNotificationBadge";
 
@@ -35,7 +34,7 @@ const Index = () => {
         {/* Hero Section */}
         <div className="text-center mb-12 animate-fade-in">
           <div className="relative mb-8">
-            <img src={cityHeroImage} alt="City skyline" className="w-full max-w-md mx-auto rounded-3xl shadow-elegant animate-float" />
+            <img src="/lovable-uploads/687e6d95-f6ac-4274-b5cf-8969324550b0.png" alt="October Gardens city gate" className="w-full max-w-md mx-auto rounded-3xl shadow-elegant animate-float" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent rounded-3xl"></div>
           </div>
           
