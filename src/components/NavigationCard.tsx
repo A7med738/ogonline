@@ -25,7 +25,7 @@ export const NavigationCard = ({
           <div className="bg-gradient-to-br from-primary via-primary-glow to-primary p-3 rounded-xl shadow-lg group-hover:shadow-primary/30 transition-all duration-500 group-hover:scale-110">
             <Icon className="h-6 w-6 text-white drop-shadow-sm" />
           </div>
-          <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary-glow to-primary rounded-xl opacity-0 group-hover:opacity-20 blur-xl transition-all duration-500"></div>
+          <div className="absolute inset-0 -z-10 pointer-events-none bg-gradient-to-br from-primary via-primary-glow to-primary rounded-xl opacity-0 group-hover:opacity-10 blur-xl transition-all duration-500"></div>
           {badge}
         </div>
         <div className="text-center">
