@@ -55,7 +55,7 @@ const Index = () => {
         </div>
 
         {/* Navigation Cards */}
-        <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+        <div className="grid grid-cols-2 gap-6 max-w-sm mx-auto px-4">
           {navigationItems.map((item, index) => <NavigationCard 
             key={item.title} 
             title={item.title} 
