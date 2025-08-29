@@ -27,9 +27,9 @@ export const NavigationCard = ({
         "cursor-pointer group hover:scale-[1.02] transition-all duration-500 active:scale-[0.98] p-6",
         "hover:shadow-xl hover:shadow-primary/20 border-white/10 hover:border-primary/30",
         "before:absolute before:inset-0 before:bg-gradient-to-br before:from-primary/5 before:to-transparent before:opacity-0 before:transition-opacity before:duration-500 hover:before:opacity-100",
-        "relative overflow-hidden",
+        "relative overflow-hidden aspect-square",
         className
-      )} 
+      )}
       onClick={onClick}
       style={style}
     >
