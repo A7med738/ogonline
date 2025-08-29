@@ -1,38 +1,25 @@
-import { LucideIcon } from "lucide-react"
-import { GlassCard } from "@/components/ui/glass-card"
-import { cn } from "@/lib/utils"
-
+import { LucideIcon } from "lucide-react";
+import { GlassCard } from "@/components/ui/glass-card";
+import { cn } from "@/lib/utils";
 interface NavigationCardProps {
-  title: string
-  description: string
-  icon: LucideIcon
-  onClick: () => void
-  className?: string
-  style?: React.CSSProperties
-  badge?: React.ReactNode
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  onClick: () => void;
+  className?: string;
+  style?: React.CSSProperties;
+  badge?: React.ReactNode;
 }
-
-export const NavigationCard = ({ 
-  title, 
-  description, 
-  icon: Icon, 
-  onClick, 
+export const NavigationCard = ({
+  title,
+  description,
+  icon: Icon,
+  onClick,
   className,
   style,
-  badge 
+  badge
 }: NavigationCardProps) => {
-  return (
-    <GlassCard 
-      className={cn(
-        "cursor-pointer group hover:scale-[1.02] transition-all duration-500 active:scale-[0.98] p-4",
-        "hover:shadow-xl hover:shadow-primary/20 border-white/10 hover:border-primary/30",
-        "before:absolute before:inset-0 before:bg-gradient-to-br before:from-primary/5 before:to-transparent before:opacity-0 before:transition-opacity before:duration-500 hover:before:opacity-100",
-        "relative overflow-hidden aspect-square max-w-48",
-        className
-      )}
-      onClick={onClick}
-      style={style}
-    >
+  return <GlassCard className={cn("cursor-pointer group hover:scale-[1.02] transition-all duration-500 active:scale-[0.98] p-4", "hover:shadow-xl hover:shadow-primary/20 border-white/10 hover:border-primary/30", "before:absolute before:inset-0 before:bg-gradient-to-br before:from-primary/5 before:to-transparent before:opacity-0 before:transition-opacity before:duration-500 hover:before:opacity-100", "relative overflow-hidden aspect-square max-w-48", className)} onClick={onClick} style={style}>
       <div className="flex flex-col items-center justify-center h-full relative z-10">
         <div className="relative group/icon mb-3">
           <div className="bg-gradient-to-br from-primary via-primary-glow to-primary p-3 rounded-xl shadow-lg group-hover:shadow-primary/30 transition-all duration-500 group-hover:scale-110">
@@ -45,14 +32,11 @@ export const NavigationCard = ({
           <h3 className="text-sm font-bold text-foreground mb-1 group-hover:text-primary transition-colors duration-300">
             {title}
           </h3>
-          <p className="text-xs text-muted-foreground leading-relaxed group-hover:text-foreground/80 transition-colors duration-300">
-            {description}
-          </p>
+          
         </div>
       </div>
       
       {/* Decorative gradient overlay */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-bl-full"></div>
-    </GlassCard>
-  )
-}
+    </GlassCard>;
+};
