@@ -16,40 +16,53 @@ export const OneSignalHandler = () => {
       console.log('OneSignal push opened:', payload);
       
       try {
-        // Extract URL from notification data
-        let targetUrl = null;
-        
-        if (payload?.data?.url) {
-          targetUrl = payload.data.url;
-        } else if (payload?.additionalData?.url) {
-          targetUrl = payload.additionalData.url;
-        }
-        
-        if (targetUrl) {
-          // Security: Only allow specific deep link patterns to prevent malicious redirects
-          if (targetUrl.startsWith('ogonline://')) {
-            try {
-              const url = new URL(targetUrl);
-              // Only allow navigation to specific paths
-              if (url.pathname === '/news' && url.searchParams.get('id')) {
-                const newsId = url.searchParams.get('id');
-                console.log('Navigating to news:', newsId);
-                navigate(`/news?id=${newsId}`);
-                return;
-              }
-            } catch (urlError) {
-              console.error('Invalid deep link URL:', urlError);
-            }
+        const rawUrl = payload?.data?.url ?? payload?.additionalData?.url ?? null;
+        console.log('Raw notification URL:', rawUrl);
+
+        const navigateToNews = (newsId: string | null) => {
+          if (newsId) {
+            console.log('Navigating to news id:', newsId);
+            navigate(`/news?id=${newsId}`);
+          } else {
+            console.warn('Missing news id, navigating to /news');
+            navigate('/news');
           }
-          console.warn('Unsafe URL blocked:', targetUrl);
+        };
+
+        const extractNewsId = (u: string | null): string | null => {
+          if (!u) return null;
+          try {
+            if (u.startsWith('ogonline://')) {
+              // custom scheme: ogonline://news?id=UUID
+              const afterScheme = u.replace('ogonline://', ''); // e.g. "news?id=..."
+              const [hostAndPath, queryString] = afterScheme.split('?');
+              const params = new URLSearchParams(queryString || '');
+              if (hostAndPath === 'news' || hostAndPath === '/news') {
+                return params.get('id');
+              }
+            } else {
+              const url = new URL(u);
+              if (url.pathname === '/news') {
+                return url.searchParams.get('id');
+              }
+            }
+          } catch (e) {
+            console.warn('URL parse failed, trying regex fallback', e);
+            const match = u.match(/[?&]id=([^&]+)/);
+            return match ? decodeURIComponent(match[1]) : null;
+          }
+          return null;
+        };
+
+        const newsId = extractNewsId(rawUrl);
+        if (newsId) {
+          navigateToNews(newsId);
+        } else {
+          console.warn('No valid news id found in notification payload');
+          navigate('/news');
         }
-        
-        // Fallback to news page for any unhandled cases
-        console.log('Falling back to news page');
-        navigate('/news');
       } catch (error) {
         console.error('Error handling OneSignal push:', error);
-        // Fallback to news page
         navigate('/news');
       }
     };
