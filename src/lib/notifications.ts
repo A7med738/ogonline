@@ -26,8 +26,9 @@ export const sendNewsNotification = async (data: NotificationData) => {
 
 
 export const generateNewsUrl = (newsId: string) => {
-  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://example.com';
-  return `${baseUrl}/news?id=${newsId}`;
+  // Generate deep link for mobile app (Median) instead of web URL
+  // This will open the mobile app directly when notification is clicked
+  return `ogonline://news?id=${newsId}`;
 };
 
 export const sendTestNotification = async (newsItem: { id: string; title: string }) => {
