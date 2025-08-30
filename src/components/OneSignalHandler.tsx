@@ -16,7 +16,7 @@ export const OneSignalHandler = () => {
       console.log('OneSignal push opened:', payload);
       
       try {
-        const rawUrl = payload?.data?.url ?? payload?.additionalData?.url ?? null;
+        const rawUrl = payload?.data?.targetUrl ?? payload?.data?.url ?? payload?.additionalData?.url ?? null;
         console.log('Raw notification URL:', rawUrl);
 
         const navigateToNews = (newsId: string | null) => {
