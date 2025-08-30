@@ -16,6 +16,7 @@ import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import EmailConfirmation from "./pages/EmailConfirmation";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const AppContent = () => {
         <Route path="/auth" element={<Auth />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/email-confirmation" element={<EmailConfirmation />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <BottomNavigation isAdmin={isAdmin} />
