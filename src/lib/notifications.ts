@@ -8,14 +8,8 @@ interface NotificationData {
 
 export const sendNewsNotification = async (data: NotificationData) => {
   try {
-    // Use a temporary admin secret - this should be configured properly
-    const adminSecret = 'temp-admin-secret-123'; // This should be replaced with actual secret management
-    
     const { data: result, error } = await supabase.functions.invoke('notify-new-news', {
       body: data,
-      headers: {
-        'x-admin-secret': adminSecret
-      }
     });
 
     if (error) {
@@ -32,7 +26,7 @@ export const sendNewsNotification = async (data: NotificationData) => {
 
 
 export const generateNewsUrl = (newsId: string) => {
-  const baseUrl = 'https://3e2213ca-bd16-4ff2-8f69-45d0069c6783.lovableproject.com'; 
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://example.com';
   return `${baseUrl}/news?id=${newsId}`;
 };
 

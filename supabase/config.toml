@@ -4,4 +4,4 @@ project_id = "xjjczlhybgeslfiovkun"
 verify_jwt = false
 
 [functions.notify-new-news]
-verify_jwt = false
+verify_jwt = true
