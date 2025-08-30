@@ -26,17 +26,27 @@ export const OneSignalHandler = () => {
         }
         
         if (targetUrl) {
-          // Extract the path from the full URL if it's a full URL
-          const url = new URL(targetUrl);
-          const path = url.pathname + url.search + url.hash;
-          
-          console.log('Navigating to:', path);
-          navigate(path);
-        } else {
-          console.warn('No URL found in notification payload');
-          // Fallback to news page
-          navigate('/news');
+          // Security: Only allow specific deep link patterns to prevent malicious redirects
+          if (targetUrl.startsWith('ogonline://')) {
+            try {
+              const url = new URL(targetUrl);
+              // Only allow navigation to specific paths
+              if (url.pathname === '/news' && url.searchParams.get('id')) {
+                const newsId = url.searchParams.get('id');
+                console.log('Navigating to news:', newsId);
+                navigate(`/news?id=${newsId}`);
+                return;
+              }
+            } catch (urlError) {
+              console.error('Invalid deep link URL:', urlError);
+            }
+          }
+          console.warn('Unsafe URL blocked:', targetUrl);
         }
+        
+        // Fallback to news page for any unhandled cases
+        console.log('Falling back to news page');
+        navigate('/news');
       } catch (error) {
         console.error('Error handling OneSignal push:', error);
         // Fallback to news page

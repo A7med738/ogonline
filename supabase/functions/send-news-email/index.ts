@@ -30,6 +30,29 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Get user from JWT token
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('No authorization header');
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      throw new Error('Unauthorized');
+    }
+
+    // Check if user is admin
+    const { data: isAdmin, error: roleError } = await supabase.rpc('has_role', {
+      _user_id: user.id,
+      _role: 'admin'
+    });
+
+    if (roleError || !isAdmin) {
+      throw new Error('Access denied. Admin role required.');
+    }
+
     const { newsId, title, summary, category, imageUrl }: NewsEmailRequest = await req.json();
 
     console.log('Sending news email for:', { newsId, title });
@@ -55,7 +78,21 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Found ${subscriptions.length} subscribers`);
 
-    // Create email template
+    // Sanitize HTML content to prevent XSS
+    const sanitizeHtml = (text: string) => {
+      return text
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;')
+        .replace(/\//g, '&#x2F;');
+    };
+
+    const sanitizedTitle = sanitizeHtml(title);
+    const sanitizedSummary = sanitizeHtml(summary);
+    const sanitizedCategory = sanitizeHtml(category);
+
+    // Create email template with sanitized content
     const emailHtml = `
       <div style="max-width: 600px; margin: 0 auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl; text-align: right;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px 10px 0 0;">
@@ -66,22 +103,22 @@ const handler = async (req: Request): Promise<Response> => {
         <div style="background: white; padding: 30px; border: 1px solid #e1e5e9; border-top: none;">
           <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
             <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px;">
-              ${category}
+              ${sanitizedCategory}
             </span>
           </div>
           
           ${imageUrl ? `
             <div style="margin: 20px 0; text-align: center;">
-              <img src="${imageUrl}" alt="${title}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
+              <img src="${imageUrl}" alt="${sanitizedTitle}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
             </div>
           ` : ''}
           
           <h2 style="color: #1f2937; font-size: 22px; margin: 20px 0 15px 0; line-height: 1.4;">
-            ${title}
+            ${sanitizedTitle}
           </h2>
           
           <p style="color: #4b5563; line-height: 1.6; font-size: 16px; margin: 0 0 25px 0;">
-            ${summary}
+            ${sanitizedSummary}
           </p>
           
           <div style="text-align: center; margin: 30px 0;">
@@ -109,7 +146,7 @@ const handler = async (req: Request): Promise<Response> => {
         await resend.emails.send({
           from: 'تطبيق حدائق أكتوبر <news@resend.dev>',
           to: [subscription.email],
-          subject: `🗞️ خبر جديد حصري: ${title}`,
+          subject: `🗞️ خبر جديد حصري: ${sanitizedTitle}`,
           html: emailHtml,
         });
         console.log(`Email sent successfully to: ${subscription.email}`);

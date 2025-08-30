@@ -14,9 +14,9 @@ const config: CapacitorConfig = {
     }
   },
   android: {
-    allowMixedContent: true,
+    allowMixedContent: false, // Disable mixed content for security
     appendUserAgent: 'ogonline-app',
-    webContentsDebuggingEnabled: true
+    webContentsDebuggingEnabled: false // Disable debugging in production
   },
   ios: {
     allowsLinkPreview: false,
