@@ -16,18 +16,30 @@ export const OneSignalHandler = () => {
       console.log('OneSignal push opened:', payload);
       
       try {
-        const rawUrl = payload?.data?.targetUrl ?? payload?.data?.url ?? payload?.additionalData?.url ?? null;
-        console.log('Raw notification URL:', rawUrl);
-
-        const navigateToWebsite = () => {
-          console.log('Opening website: https://ogonline.lovable.app/');
-          window.open('https://ogonline.lovable.app/', '_blank');
-        };
-
-        // Always navigate to website when notification is clicked
-        navigateToWebsite();
+        // Extract URL from notification data
+        let targetUrl = null;
+        
+        if (payload?.data?.url) {
+          targetUrl = payload.data.url;
+        } else if (payload?.additionalData?.url) {
+          targetUrl = payload.additionalData.url;
+        }
+        
+        if (targetUrl) {
+          // Extract the path from the full URL if it's a full URL
+          const url = new URL(targetUrl);
+          const path = url.pathname + url.search + url.hash;
+          
+          console.log('Navigating to:', path);
+          navigate(path);
+        } else {
+          console.warn('No URL found in notification payload');
+          // Fallback to news page
+          navigate('/news');
+        }
       } catch (error) {
         console.error('Error handling OneSignal push:', error);
+        // Fallback to news page
         navigate('/news');
       }
     };

@@ -22,7 +22,7 @@ const sendBroadcastNotification = async ({ title, url, subtitle }: NotificationR
 
   // Generate web URL for web_url (OneSignal requires http/https)
   const webUrl = url.startsWith('ogonline://') 
-    ? url.replace('ogonline://', 'https://ogonline.lovable.app/')
+    ? url.replace('ogonline://', 'https://example.com/')
     : url;
 
   const notification = {
