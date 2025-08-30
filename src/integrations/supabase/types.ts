@@ -383,7 +383,42 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      city_departments_public: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          hours: string | null
+          icon: string | null
+          id: string | null
+          order_priority: number | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          hours?: string | null
+          icon?: string | null
+          id?: string | null
+          order_priority?: number | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          hours?: string | null
+          icon?: string | null
+          id?: string | null
+          order_priority?: number | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
