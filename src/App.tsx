@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { BottomNavigation } from "@/components/BottomNavigation";
+import { OneSignalHandler } from "@/components/OneSignalHandler";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import Index from "./pages/Index";
@@ -46,6 +47,7 @@ const AppContent = () => {
 
   return (
     <>
+      <OneSignalHandler />
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/news" element={<News />} />

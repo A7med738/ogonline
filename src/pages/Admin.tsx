@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Edit, Trash2, Save, X, Shield, Newspaper, Phone, Building } from 'lucide-react';
+import { ArrowLeft, Plus, Edit, Trash2, Save, X, Shield, Newspaper, Phone, Building, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { GlassCard } from '@/components/ui/glass-card';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { sendNewsNotification, generateNewsUrl, sendTestNotification } from '@/lib/notifications';
 
 interface NewsItem {
   id: string;
@@ -280,15 +281,31 @@ const Admin = () => {
         }
       }
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('news')
-        .insert([{ ...newNews, image_url: imageUrl }]);
+        .insert([{ ...newNews, image_url: imageUrl }])
+        .select()
+        .single();
 
       if (error) throw error;
 
+      // Send push notification for new news
+      try {
+        const newsUrl = generateNewsUrl(data.id);
+        await sendNewsNotification({
+          title: newNews.title,
+          url: newsUrl,
+          subtitle: "اضغط لقراءة التفاصيل"
+        });
+        console.log('Push notification sent successfully');
+      } catch (notificationError) {
+        console.error('Failed to send push notification:', notificationError);
+        // Don't fail the news creation if notification fails
+      }
+
       toast({
         title: "تم إضافة الخبر",
-        description: "تم إضافة الخبر بنجاح"
+        description: "تم إضافة الخبر وإرسال الإشعار بنجاح"
       });
 
       setNewNews({ title: '', summary: '', content: '', category: '', image_url: '' });
@@ -857,16 +874,38 @@ const Admin = () => {
                                <h4 className="font-semibold">{item.title}</h4>
                                <p className="text-sm text-muted-foreground">{item.category}</p>
                                <p className="text-sm mt-2">{item.summary}</p>
-                               <div className="flex gap-2 mt-4">
-                                 <Button onClick={() => setEditingNews(item)} variant="outline" size="sm">
-                                   <Edit className="ml-2 h-4 w-4" />
-                                   تعديل
-                                 </Button>
-                                 <Button onClick={() => handleDeleteNews(item.id)} variant="destructive" size="sm">
-                                   <Trash2 className="ml-2 h-4 w-4" />
-                                   حذف
-                                 </Button>
-                               </div>
+                                <div className="flex gap-2 mt-4">
+                                  <Button onClick={() => setEditingNews(item)} variant="outline" size="sm">
+                                    <Edit className="ml-2 h-4 w-4" />
+                                    تعديل
+                                  </Button>
+                                  <Button 
+                                    onClick={async () => {
+                                      try {
+                                        await sendTestNotification({ id: item.id, title: item.title });
+                                        toast({
+                                          title: "تم إرسال الإشعار التجريبي",
+                                          description: "تم إرسال إشعار تجريبي للخبر بنجاح"
+                                        });
+                                      } catch (error) {
+                                        toast({
+                                          title: "خطأ في الإشعار",
+                                          description: "فشل في إرسال الإشعار التجريبي",
+                                          variant: "destructive"
+                                        });
+                                      }
+                                    }} 
+                                    variant="secondary" 
+                                    size="sm"
+                                  >
+                                    <Bell className="ml-2 h-4 w-4" />
+                                    اختبار الإشعار
+                                  </Button>
+                                  <Button onClick={() => handleDeleteNews(item.id)} variant="destructive" size="sm">
+                                    <Trash2 className="ml-2 h-4 w-4" />
+                                    حذف
+                                  </Button>
+                                </div>
                              </div>
                              {item.image_url && (
                                <div className="md:w-48 flex-shrink-0">
