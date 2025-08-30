@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, Mail, MapPin, Clock, ArrowRight, Building, Users, Wrench, Banknote } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, ArrowRight, Building, Users, Wrench, Banknote, Lock } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 interface CityDepartment {
   id: string;
   title: string;
   description?: string;
-  phone: string;
-  email: string;
+  phone?: string; // Make optional for unauthenticated users
+  email?: string; // Make optional for unauthenticated users
   hours: string;
   icon: string;
   color: string;
@@ -25,21 +26,33 @@ const iconMap: {
   Banknote
 };
 const City = () => {
+  const { user } = useAuth();
   const [departments, setDepartments] = useState<CityDepartment[]>([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     fetchDepartments();
-  }, []);
+  }, [user]); // Re-fetch when user authentication changes
   const fetchDepartments = async () => {
     try {
-      const {
-        data,
-        error
-      } = await supabase.from('city_departments').select('*').order('order_priority', {
-        ascending: true
-      });
-      if (error) throw error;
-      setDepartments(data || []);
+      if (!user) {
+        // For unauthenticated users, fetch only basic info (no contact details)
+        const { data, error } = await supabase
+          .from('city_departments')
+          .select('id, title, description, hours, icon, color, order_priority')
+          .order('order_priority', { ascending: true });
+        
+        if (error) throw error;
+        setDepartments(data || []);
+      } else {
+        // For authenticated users, fetch all information including contact details
+        const { data, error } = await supabase
+          .from('city_departments')
+          .select('*')
+          .order('order_priority', { ascending: true });
+        
+        if (error) throw error;
+        setDepartments(data || []);
+      }
     } catch (error) {
       console.error('Error fetching city departments:', error);
     } finally {
@@ -100,35 +113,58 @@ const City = () => {
                   </div>
                 </div>
 
-                {/* Contact Details */}
-                <div className="space-y-3 pr-16">
-                  <div className="flex items-center space-x-2 space-x-reverse text-sm">
-                    <Clock className="h-4 w-4 text-primary" />
-                    <span className="text-muted-foreground">{dept.hours}</span>
+                {/* Contact Details - Only show to authenticated users */}
+                {user ? (
+                  <div className="space-y-3 pr-16">
+                    <div className="flex items-center space-x-2 space-x-reverse text-sm">
+                      <Clock className="h-4 w-4 text-primary" />
+                      <span className="text-muted-foreground">{dept.hours}</span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <Phone className="h-4 w-4 text-primary" />
+                      <span className="text-foreground font-medium">{dept.phone}</span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <Mail className="h-4 w-4 text-primary" />
+                      <span className="text-foreground">{dept.email}</span>
+                    </div>
                   </div>
-                  
-                  <div className="flex items-center space-x-2 space-x-reverse">
-                    <Phone className="h-4 w-4 text-primary" />
-                    <span className="text-foreground font-medium">{dept.phone}</span>
+                ) : (
+                  <div className="space-y-3 pr-16">
+                    <div className="flex items-center space-x-2 space-x-reverse text-sm">
+                      <Clock className="h-4 w-4 text-primary" />
+                      <span className="text-muted-foreground">{dept.hours}</span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2 space-x-reverse text-sm bg-muted/50 p-3 rounded-lg">
+                      <Lock className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">يرجى تسجيل الدخول لرؤية معلومات الاتصال</span>
+                    </div>
                   </div>
-                  
-                  <div className="flex items-center space-x-2 space-x-reverse">
-                    <Mail className="h-4 w-4 text-primary" />
-                    <span className="text-foreground">{dept.email}</span>
-                  </div>
-                </div>
+                )}
 
-                {/* Action Buttons */}
-                <div className="flex space-x-3 space-x-reverse pt-2">
-                  <Button onClick={() => handleCall(dept.phone)} className="bg-gradient-primary hover:shadow-elegant transition-all duration-300 flex-1">
-                    <Phone className="ml-2 h-4 w-4" />
-                    اتصال
-                  </Button>
-                  <Button variant="outline" onClick={() => handleEmail(dept.email)} className="flex-1 border-primary/20 hover:bg-primary/10">
-                    <Mail className="ml-2 h-4 w-4" />
-                    بريد إلكتروني
-                  </Button>
+                {/* Action Buttons - Only show to authenticated users */}
+                {user ? (
+                  <div className="flex space-x-3 space-x-reverse pt-2">
+                    <Button onClick={() => handleCall(dept.phone || '')} className="bg-gradient-primary hover:shadow-elegant transition-all duration-300 flex-1">
+                      <Phone className="ml-2 h-4 w-4" />
+                      اتصال
+                    </Button>
+                    <Button variant="outline" onClick={() => handleEmail(dept.email || '')} className="flex-1 border-primary/20 hover:bg-primary/10">
+                      <Mail className="ml-2 h-4 w-4" />
+                      بريد إلكتروني
+                    </Button>
                   </div>
+                ) : (
+                  <div className="pt-2">
+                    <Button variant="outline" onClick={() => window.location.href = '/auth'} className="w-full border-primary/20 hover:bg-primary/10">
+                      <Lock className="ml-2 h-4 w-4" />
+                      تسجيل الدخول للتواصل
+                    </Button>
+                  </div>
+                )}
                 </div>
               </GlassCard>;
         })}
