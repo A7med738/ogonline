@@ -20,17 +20,22 @@ const sendBroadcastNotification = async ({ title, url, subtitle }: NotificationR
     throw new Error('OneSignal credentials not configured');
   }
 
+  // Generate web URL for web_url (OneSignal requires http/https)
+  const webUrl = url.startsWith('ogonline://') 
+    ? url.replace('ogonline://', 'https://example.com/')
+    : url;
+
   const notification = {
     app_id: oneSignalAppId,
     included_segments: ["All"], // Send to all subscribed devices
     headings: { en: title, ar: title },
     contents: { en: subtitle || "اضغط لقراءة التفاصيل", ar: subtitle || "اضغط لقراءة التفاصيل" },
     data: {
-      url: url,
+      url: url, // Keep deep link for app navigation
       type: "news"
     },
-    web_url: url,
-    app_url: url
+    web_url: webUrl, // Use HTTP URL for web
+    app_url: url // Use deep link for app
   };
 
   console.log('Sending notification:', notification);
