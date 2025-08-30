@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useAuth } from '@/contexts/AuthContext'
 import { EmailSubscription } from '@/components/EmailSubscription'
+import { PushNotificationSettings } from '@/components/PushNotificationSettings'
 
 interface ProfileData {
   full_name: string
@@ -243,9 +244,10 @@ const Profile = () => {
             </AlertDescription>
           </Alert>
 
-          {/* Email Subscription */}
-          <div className="mb-6 animate-fade-in">
+          {/* Notification Settings */}
+          <div className="mb-6 space-y-4 animate-fade-in">
             <EmailSubscription />
+            <PushNotificationSettings />
           </div>
 
           {/* Profile Form */}
