@@ -153,16 +153,9 @@ const PoliceStationDetails = () => {
                       {/* Left section - Contact info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="text-lg font-semibold text-white">
+                          <h3 className="text-lg font-semibold text-black">
                             {contact.title}
                           </h3>
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${
-                            contact.available 
-                              ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
-                              : 'bg-red-500/20 text-red-400 border border-red-500/30'
-                          }`}>
-                            {contact.available ? 'متاح' : 'غير متاح'}
-                          </span>
                         </div>
                         
                         <p className="text-muted-foreground text-sm mb-2 line-clamp-2">
