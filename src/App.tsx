@@ -49,7 +49,7 @@ const AppContent = () => {
   return (
     <>
       <OneSignalHandler />
-      <div className="pr-20 md:pr-24">
+      <div className="pr-12">
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/news" element={<News />} />
