@@ -171,8 +171,8 @@ const Police = () => {
                   </GlassCard>
 
                   {/* Station Contacts */}
-                  {openStations.has(station.id) && stationContacts.length > 0 && <div id={`station-contacts-${station.id}`} className="grid gap-4 animate-fade-in">
-                      {stationContacts.map((contact, contactIndex) => <GlassCard key={contact.id} className="hover:scale-[1.02] transition-all duration-300">
+                  {openStations.has(station.id) && stationContacts.length > 0 && <div id={`station-contacts-${station.id}`} className="relative z-10 grid gap-4 animate-fade-in">
+                      {stationContacts.map((contact, contactIndex) => <GlassCard key={contact.id} className="bg-card/95 border border-white/15 backdrop-blur-sm hover:scale-[1.02] transition-all duration-300 shadow-elegant">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
@@ -232,8 +232,8 @@ const Police = () => {
                   </div>
                 </GlassCard>
 
-                <div className="grid gap-4">
-                  {emergencyContacts.filter(c => !c.station_id && c.type !== 'emergency').map(contact => <GlassCard key={contact.id} className="hover:scale-[1.02] transition-all duration-300">
+                <div className="relative z-10 grid gap-4">
+                  {emergencyContacts.filter(c => !c.station_id && c.type !== 'emergency').map(contact => <GlassCard key={contact.id} className="bg-card/95 border border-white/15 backdrop-blur-sm hover:scale-[1.02] transition-all duration-300 shadow-elegant">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
