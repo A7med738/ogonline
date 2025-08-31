@@ -6,11 +6,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { useNewsNotifications } from "@/hooks/useNewsNotifications";
 import { NewsNotificationBadge } from "@/components/NewsNotificationBadge";
-
 const Index = () => {
   const navigate = useNavigate();
-  const { unreadCount } = useNewsNotifications();
-  
+  const {
+    unreadCount
+  } = useNewsNotifications();
   const navigationItems = [{
     title: "أخبار المدينة",
     description: "تابع آخر الأخبار والمستجدات في مدينتك",
@@ -28,7 +28,6 @@ const Index = () => {
     icon: Building,
     onClick: () => navigate("/city")
   }];
-  
   return <div className="min-h-screen bg-gradient-hero pb-20">
       <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
@@ -38,35 +37,16 @@ const Index = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent rounded-3xl"></div>
           </div>
           
-          <h1 className="md:text-6xl font-bold text-white mb-6 animate-slide-up text-3xl">مركز مدينة حدائق أكتوبر</h1>
-          <p className="text-xl md:text-2xl text-white/90 mb-8 animate-slide-up" style={{
-          animationDelay: '0.2s'
-        }}>
-            بوابتك للخدمات والأخبار والتواصل
-          </p>
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 max-w-md mx-auto animate-scale-in" style={{
-          animationDelay: '0.4s'
-        }}>
-            <p className="text-white/80 text-sm">
-              تطبيق شامل لخدمات المدينة والتواصل مع الجهات المختصة
-            </p>
-          </div>
+          <h1 className="md:text-6xl font-bold text-white mb-6 animate-slide-up text-3xl">حدائق أكتوبر أونلاين</h1>
+          
+          
         </div>
 
         {/* Navigation Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-md md:max-w-lg mx-auto px-4">
-          {navigationItems.map((item, index) => <NavigationCard 
-            key={item.title} 
-            title={item.title} 
-            description={item.description} 
-            icon={item.icon} 
-            onClick={item.onClick} 
-            badge={item.badge}
-            className="animate-slide-up" 
-            style={{
-              animationDelay: `${0.6 + index * 0.1}s`
-            }} 
-          />)}
+          {navigationItems.map((item, index) => <NavigationCard key={item.title} title={item.title} description={item.description} icon={item.icon} onClick={item.onClick} badge={item.badge} className="animate-slide-up" style={{
+          animationDelay: `${0.6 + index * 0.1}s`
+        }} />)}
         </div>
 
         {/* Footer */}
