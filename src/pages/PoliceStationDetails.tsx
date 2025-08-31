@@ -145,59 +145,59 @@ const PoliceStationDetails = () => {
               <p className="text-white/60">لا توجد أرقام متاحة لهذا المركز</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {contacts.map((contact, index) => (
-                <div key={contact.id} className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
-                  <GlassCard className="bg-card/95 border border-white/15 backdrop-blur-sm hover:scale-[1.02] transition-all duration-300 shadow-elegant">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h3 className="text-xl font-bold text-foreground">
+                <div key={contact.id} className="animate-fade-in" style={{ animationDelay: `${index * 0.05}s` }}>
+                  <GlassCard className="bg-card/90 border border-white/20 backdrop-blur-md hover:bg-card/95 transition-all duration-200 shadow-lg hover:shadow-elegant p-3">
+                    <div className="flex items-center justify-between gap-4">
+                      {/* Left section - Contact info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-lg font-semibold text-foreground truncate">
                             {contact.title}
                           </h3>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${
                             contact.available 
-                              ? 'bg-green-500/20 text-green-400' 
-                              : 'bg-red-500/20 text-red-400'
+                              ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                              : 'bg-red-500/20 text-red-400 border border-red-500/30'
                           }`}>
                             {contact.available ? 'متاح' : 'غير متاح'}
                           </span>
                         </div>
                         
-                        <p className="text-muted-foreground mb-2">
+                        <p className="text-muted-foreground text-sm mb-2 line-clamp-2">
                           {contact.description}
                         </p>
                         
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
-                          <div className="flex items-center space-x-2 space-x-reverse">
-                            <Clock className="h-4 w-4" />
-                            <span>متاح على مدار الساعة</span>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            <span>24/7</span>
                           </div>
                           {contact.type && (
-                            <div className="flex items-center space-x-2 space-x-reverse">
-                              <Shield className="h-4 w-4" />
+                            <div className="flex items-center gap-1">
+                              <Shield className="h-3 w-3" />
                               <span className="capitalize">{contact.type}</span>
                             </div>
                           )}
+                          {contact.order_priority > 0 && (
+                            <span className="text-primary/70">أولوية {contact.order_priority}</span>
+                          )}
                         </div>
-                        
-                        {contact.order_priority > 0 && (
-                          <div className="text-xs text-primary/70">
-                            أولوية: {contact.order_priority}
-                          </div>
-                        )}
                       </div>
                       
-                      <div className="text-left">
-                        <div className="text-2xl font-bold text-primary mb-2">
+                      {/* Right section - Number and call button */}
+                      <div className="flex flex-col items-end gap-2 shrink-0">
+                        <div className="text-xl font-bold text-primary bg-primary/10 px-3 py-1 rounded-lg border border-primary/20">
                           {contact.number}
                         </div>
                         <Button 
                           onClick={() => handleCall(contact.number)} 
                           disabled={!contact.available}
-                          className="bg-gradient-primary hover:shadow-elegant transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                          size="sm"
+                          className="bg-gradient-primary hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm px-4 py-2"
                         >
-                          <Phone className="ml-2 h-4 w-4" />
+                          <Phone className="ml-1 h-3 w-3" />
                           {contact.available ? 'اتصال' : 'غير متاح'}
                         </Button>
                       </div>
