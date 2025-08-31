@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { BottomNavigation } from "@/components/BottomNavigation";
+import { TopNavigation } from "@/components/TopNavigation";
 import { OneSignalHandler } from "@/components/OneSignalHandler";
 import { SidebarProvider, useSidebar } from "@/contexts/SidebarContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -52,7 +52,8 @@ const AppContent = () => {
   return (
     <>
       <OneSignalHandler />
-      <div className={`transition-all duration-300 ${sidebarVisible ? 'pr-12' : 'pr-0'}`}>
+      <TopNavigation isAdmin={isAdmin} />
+      <div className="pt-28">
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/news" element={<News />} />
@@ -66,7 +67,6 @@ const AppContent = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
-      <BottomNavigation isAdmin={isAdmin} />
     </>
   );
 };
