@@ -153,7 +153,7 @@ const PoliceStationDetails = () => {
                       {/* Left section - Contact info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="text-lg font-semibold text-foreground truncate">
+                          <h3 className="text-lg font-semibold text-white">
                             {contact.title}
                           </h3>
                           <span className={`px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${
