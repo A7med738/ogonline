@@ -49,17 +49,19 @@ const AppContent = () => {
   return (
     <>
       <OneSignalHandler />
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/news" element={<News />} />
-        <Route path="/police" element={<Police />} />
-        <Route path="/city" element={<City />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/email-confirmation" element={<EmailConfirmation />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <div className="pr-20 md:pr-24">
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/news" element={<News />} />
+          <Route path="/police" element={<Police />} />
+          <Route path="/city" element={<City />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/email-confirmation" element={<EmailConfirmation />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
       <BottomNavigation isAdmin={isAdmin} />
     </>
   );
