@@ -172,7 +172,8 @@ const Police = () => {
 
                   {/* Station Contacts */}
                   {openStations.has(station.id) && stationContacts.length > 0 && <div id={`station-contacts-${station.id}`} className="relative z-10 grid gap-4 animate-fade-in">
-                      {stationContacts.map((contact, contactIndex) => <GlassCard key={contact.id} className="bg-card/95 border border-white/15 backdrop-blur-sm hover:scale-[1.02] transition-all duration-300 shadow-elegant">
+                      {stationContacts.map((contact, contactIndex) => <div key={contact.id} className="max-w-4xl mx-auto">
+                        <GlassCard className="bg-card/95 border border-white/15 backdrop-blur-sm hover:scale-[1.02] transition-all duration-300 shadow-elegant">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
@@ -214,7 +215,8 @@ const Police = () => {
                               </Button>
                             </div>
                           </div>
-                        </GlassCard>)}
+                         </GlassCard>
+                       </div>)}
                     </div>}
                   
                   {openStations.has(station.id) && stationContacts.length === 0 && <div className="text-center py-4 animate-fade-in">
@@ -233,7 +235,8 @@ const Police = () => {
                 </GlassCard>
 
                 <div className="relative z-10 grid gap-4">
-                  {emergencyContacts.filter(c => !c.station_id && c.type !== 'emergency').map(contact => <GlassCard key={contact.id} className="bg-card/95 border border-white/15 backdrop-blur-sm hover:scale-[1.02] transition-all duration-300 shadow-elegant">
+                  {emergencyContacts.filter(c => !c.station_id && c.type !== 'emergency').map(contact => <div key={contact.id} className="max-w-4xl mx-auto">
+                    <GlassCard className="bg-card/95 border border-white/15 backdrop-blur-sm hover:scale-[1.02] transition-all duration-300 shadow-elegant">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
@@ -275,7 +278,8 @@ const Police = () => {
                           </Button>
                         </div>
                       </div>
-                    </GlassCard>)}
+                     </GlassCard>
+                   </div>)}
                 </div>
               </div>}
           </div>}
