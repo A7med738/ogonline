@@ -65,28 +65,8 @@ const Police = () => {
   const handleCall = (number: string) => {
     window.open(`tel:${number}`, '_self');
   };
-  const toggleStation = (stationId: string) => {
-    console.log('Toggling station:', stationId);
-    setOpenStations(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(stationId)) {
-        newSet.delete(stationId);
-      } else {
-        newSet.add(stationId);
-        // انتقال سلس إلى المحتوى بعد فتحه
-        setTimeout(() => {
-          const element = document.getElementById(`station-contacts-${stationId}`);
-          if (element) {
-            element.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start',
-              inline: 'nearest'
-            });
-          }
-        }, 100);
-      }
-      return newSet;
-    });
+  const handleStationClick = (stationId: string) => {
+    navigate(`/police/station/${stationId}`);
   };
   return <div className="min-h-screen bg-gradient-hero">
       <div className="container mx-auto px-4 py-8">
@@ -155,7 +135,7 @@ const Police = () => {
             animationDelay: `${stationIndex * 0.1}s`
           }}>
                   {/* Station Header */}
-                  <GlassCard id={`station-header-${station.id}`} className="mb-4 cursor-pointer hover:scale-[1.02] transition-all duration-300 hover:shadow-elegant hover:bg-white/20" onClick={() => toggleStation(station.id)}>
+                  <GlassCard id={`station-header-${station.id}`} className="mb-4 cursor-pointer hover:scale-[1.02] transition-all duration-300 hover:shadow-elegant hover:bg-white/20" onClick={() => handleStationClick(station.id)}>
                     <div className="text-center">
                       <h2 className="text-2xl font-bold text-foreground mb-2">{station.name}</h2>
                       <p className="text-lg text-primary font-semibold mb-2">{station.area}</p>
@@ -165,63 +145,11 @@ const Police = () => {
                           <span>{station.address}</span>
                         </div>}
                       <p className="text-xs text-primary/80 mt-2 animate-pulse">
-                        {openStations.has(station.id) ? "👆 اضغط لإخفاء الأرقام" : "👆 اضغط لإظهار أرقام المركز"}
+                        👆 اضغط لعرض أرقام المركز
                       </p>
                     </div>
                   </GlassCard>
 
-                  {/* Station Contacts */}
-                  {openStations.has(station.id) && stationContacts.length > 0 && <div id={`station-contacts-${station.id}`} className="relative z-10 grid gap-4 animate-fade-in">
-                      {stationContacts.map((contact, contactIndex) => <div key={contact.id} className="max-w-4xl mx-auto">
-                        <GlassCard className="bg-card/95 border border-white/15 backdrop-blur-sm hover:scale-[1.02] transition-all duration-300 shadow-elegant">
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                <h3 className="text-xl font-bold text-foreground">
-                                  {contact.title}
-                                </h3>
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${contact.available ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                                  {contact.available ? 'متاح' : 'غير متاح'}
-                                </span>
-                              </div>
-                              
-                              <p className="text-muted-foreground mb-2">
-                                {contact.description}
-                              </p>
-                              
-                              <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
-                                <div className="flex items-center space-x-2 space-x-reverse">
-                                  <Clock className="h-4 w-4" />
-                                  <span>متاح على مدار الساعة</span>
-                                </div>
-                                {contact.type && <div className="flex items-center space-x-2 space-x-reverse">
-                                    <Shield className="h-4 w-4" />
-                                    <span className="capitalize">{contact.type}</span>
-                                  </div>}
-                              </div>
-                              
-                              {contact.order_priority > 0 && <div className="text-xs text-primary/70">
-                                  أولوية: {contact.order_priority}
-                                </div>}
-                            </div>
-                            
-                            <div className="text-left">
-                              <div className="text-2xl font-bold text-primary mb-2">
-                                {contact.number}
-                              </div>
-                              <Button onClick={() => handleCall(contact.number)} disabled={!contact.available} className="bg-gradient-primary hover:shadow-elegant transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-                                <Phone className="ml-2 h-4 w-4" />
-                                {contact.available ? 'اتصال' : 'غير متاح'}
-                              </Button>
-                            </div>
-                          </div>
-                         </GlassCard>
-                       </div>)}
-                    </div>}
-                  
-                  {openStations.has(station.id) && stationContacts.length === 0 && <div className="text-center py-4 animate-fade-in">
-                      <p className="text-white/60">لا توجد أرقام متاحة لهذا المركز</p>
-                    </div>}
                 </div>;
         })}
 

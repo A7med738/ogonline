@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import Index from "./pages/Index";
 import News from "./pages/News";
 import Police from "./pages/Police";
+import PoliceStationDetails from "./pages/PoliceStationDetails";
 import City from "./pages/City";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
@@ -56,6 +57,7 @@ const AppContent = () => {
           <Route path="/" element={<Index />} />
           <Route path="/news" element={<News />} />
           <Route path="/police" element={<Police />} />
+          <Route path="/police/station/:stationId" element={<PoliceStationDetails />} />
           <Route path="/city" element={<City />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
