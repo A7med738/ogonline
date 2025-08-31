@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { OneSignalHandler } from "@/components/OneSignalHandler";
-import { useSidebarToggle } from "@/hooks/useSidebarToggle";
+import { SidebarProvider, useSidebar } from "@/contexts/SidebarContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import Index from "./pages/Index";
@@ -24,7 +24,7 @@ const queryClient = new QueryClient();
 const AppContent = () => {
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
-  const { isVisible: sidebarVisible } = useSidebarToggle();
+  const { isVisible: sidebarVisible } = useSidebar();
 
   useEffect(() => {
     if (user) {
@@ -75,9 +75,11 @@ const App = () => (
       <AuthProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
+        <SidebarProvider>
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </SidebarProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>

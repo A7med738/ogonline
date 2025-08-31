@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, User, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSidebarToggle } from '@/hooks/useSidebarToggle';
+import { useSidebar } from '@/contexts/SidebarContext';
 
 interface BottomNavigationProps {
   isAdmin?: boolean;
@@ -12,7 +12,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ isAdmin }) =
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const { isVisible, toggle } = useSidebarToggle();
+  const { isVisible, toggle } = useSidebar();
 
   const navigationItems = [
     {
