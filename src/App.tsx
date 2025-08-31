@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { OneSignalHandler } from "@/components/OneSignalHandler";
+import { useSidebarToggle } from "@/hooks/useSidebarToggle";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import Index from "./pages/Index";
@@ -23,6 +24,7 @@ const queryClient = new QueryClient();
 const AppContent = () => {
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
+  const { isVisible: sidebarVisible } = useSidebarToggle();
 
   useEffect(() => {
     if (user) {
@@ -49,7 +51,7 @@ const AppContent = () => {
   return (
     <>
       <OneSignalHandler />
-      <div className="pr-12">
+      <div className={`transition-all duration-300 ${sidebarVisible ? 'pr-12' : 'pr-0'}`}>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/news" element={<News />} />
