@@ -29,7 +29,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
     path: '/news'
   }, {
     icon: Shield,
-    label: 'أرقام الشرطة',
+    label: 'شرطة المدينة',
     path: '/police'
   }, {
     icon: Building,

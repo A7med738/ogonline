@@ -18,7 +18,7 @@ const Index = () => {
     onClick: () => navigate("/news"),
     badge: unreadCount > 0 ? <NewsNotificationBadge count={unreadCount} /> : undefined
   }, {
-    title: "أرقام الشرطة",
+    title: "شرطة المدينة",
     description: "أرقام التواصل مع مركز الشرطة للطوارئ والخدمات",
     icon: Shield,
     onClick: () => navigate("/police")
