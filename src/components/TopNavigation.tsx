@@ -142,24 +142,24 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         </div>
 
         <div className="flex items-center space-x-2">
+          <h1 className="text-white text-lg font-semibold">حدائق أكتوبر</h1>
+          <ChevronDown className="h-4 w-4 text-white" />
+        </div>
+
+        <div className="relative flex items-center space-x-2">
+          <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <Menu className="h-4 w-4" />
+          </Button>
           {location.pathname !== '/' && (
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-white hover:bg-white/20 p-2 ml-2" 
+              className="text-white hover:bg-white/20 p-2" 
               onClick={() => navigate('/')}
             >
               <ArrowRight className="h-4 w-4" />
             </Button>
           )}
-          <h1 className="text-white text-lg font-semibold">حدائق أكتوبر</h1>
-          <ChevronDown className="h-4 w-4 text-white" />
-        </div>
-
-        <div className="relative">
-          <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            <Menu className="h-4 w-4" />
-          </Button>
 
           {/* Dropdown Menu */}
           {isMenuOpen && <div className="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
