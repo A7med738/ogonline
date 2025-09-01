@@ -51,8 +51,8 @@ const News = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
-          <h3 className="text-2xl font-bold text-foreground mb-4">آخر أخبار المدينة</h3>
-          <p className="text-muted-foreground text-lg">آخر الأخبار والمستجدات بالمدينة</p>
+          <h3 className="text-2xl font-bold text-foreground mb-4">آخر الأخبار والمستجدات بالمدينة</h3>
+          
         </div>
 
         {/* Back Button */}
