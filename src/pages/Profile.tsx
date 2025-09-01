@@ -182,7 +182,6 @@ const Profile = () => {
           <Button 
             variant="outline" 
             onClick={() => navigate('/')}
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
           >
             <ArrowRight className="ml-2 h-4 w-4" />
             العودة للرئيسية
@@ -191,7 +190,6 @@ const Profile = () => {
           <Button 
             variant="outline"
             onClick={handleLogout}
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
           >
             <LogOut className="ml-2 h-4 w-4" />
             تسجيل الخروج
