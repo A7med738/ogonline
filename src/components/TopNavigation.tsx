@@ -61,7 +61,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
       <div className="flex justify-between items-center px-4 py-3 bg-green-600 relative">
         <div className="flex items-center space-x-3">
           <Bell className="h-5 w-5 text-white" />
-          <MessageCircle className="h-5 w-5 text-white" />
+          
         </div>
 
         <div className="flex items-center space-x-2">
