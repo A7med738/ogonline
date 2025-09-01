@@ -59,7 +59,7 @@ const City = () => {
           <div className="bg-white/10 backdrop-blur-sm rounded-full p-4 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
             <Building className="h-10 w-10 text-foreground" />
           </div>
-          <h3 className="text-2xl font-bold text-foreground mb-4">هيئة المدينة</h3>
+          <h3 className="text-2xl font-bold text-foreground mb-4">جهاز المدينة</h3>
           
         </div>
 
