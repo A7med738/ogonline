@@ -124,7 +124,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
                       >
                         <h4 className="font-medium text-sm text-right">{news.title}</h4>
                         <p className="text-xs text-gray-500 text-right mt-1">
-                          {new Date(news.published_at).toLocaleDateString('ar-SA')}
+                          {new Date(news.published_at).toLocaleDateString('en-GB')}
                         </p>
                       </div>
                     ))}
