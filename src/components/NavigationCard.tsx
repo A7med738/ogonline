@@ -23,7 +23,7 @@ export const NavigationCard = ({
       <div className="flex flex-col items-center justify-center h-full relative z-10">
         <div className="relative group/icon mb-3">
           <div className="bg-gradient-to-br from-green-500 via-green-400 to-green-600 p-3 rounded-xl shadow-lg group-hover:shadow-green-500/30 transition-all duration-500 group-hover:scale-110">
-            <Icon className="h-4 w-4 text-green-500 drop-shadow-sm" />
+            <Icon className="h-4 w-4 text-white drop-shadow-sm" />
           </div>
           <div className="absolute inset-0 -z-10 pointer-events-none bg-gradient-to-br from-primary via-primary-glow to-primary rounded-xl opacity-0 group-hover:opacity-10 blur-xl transition-all duration-500"></div>
           {badge}
