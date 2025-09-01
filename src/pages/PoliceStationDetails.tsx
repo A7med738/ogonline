@@ -76,7 +76,7 @@ const PoliceStationDetails = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-2 text-white/80">جاري تحميل تفاصيل المركز...</p>
+            <p className="mt-2 text-muted-foreground">جاري تحميل تفاصيل المركز...</p>
           </div>
         </div>
       </div>
@@ -88,7 +88,7 @@ const PoliceStationDetails = () => {
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center py-8">
-            <p className="text-white/80">لم يتم العثور على المركز</p>
+            <p className="text-muted-foreground">لم يتم العثور على المركز</p>
             <Button 
               onClick={() => navigate('/police')} 
               className="mt-4 bg-gradient-primary hover:shadow-elegant transition-all duration-300"
@@ -106,13 +106,13 @@ const PoliceStationDetails = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
-          <div className="bg-white/10 backdrop-blur-sm rounded-full p-4 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-            <Shield className="h-10 w-10 text-white" />
+          <div className="bg-primary/20 backdrop-blur-sm rounded-full p-4 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+            <Shield className="h-10 w-10 text-primary" />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-4">{station.name}</h1>
-          <p className="text-white/80 text-lg">{station.area}</p>
+          <h1 className="text-4xl font-bold text-foreground mb-4">{station.name}</h1>
+          <p className="text-muted-foreground text-lg">{station.area}</p>
           {station.description && (
-            <p className="text-white/70 mt-2">{station.description}</p>
+            <p className="text-muted-foreground mt-2">{station.description}</p>
           )}
         </div>
 
@@ -121,7 +121,6 @@ const PoliceStationDetails = () => {
           <Button 
             variant="outline" 
             onClick={() => navigate('/police')} 
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
           >
             <ArrowRight className="ml-2 h-4 w-4" />
             العودة لصفحة الشرطة
@@ -142,7 +141,7 @@ const PoliceStationDetails = () => {
         <div className="max-w-4xl mx-auto">
           {contacts.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-white/60">لا توجد أرقام متاحة لهذا المركز</p>
+              <p className="text-muted-foreground">لا توجد أرقام متاحة لهذا المركز</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -153,7 +152,7 @@ const PoliceStationDetails = () => {
                       {/* Left section - Contact info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="text-lg font-semibold text-black">
+                          <h3 className="text-lg font-semibold text-foreground">
                             {contact.title}
                           </h3>
                         </div>
