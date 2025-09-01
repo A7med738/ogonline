@@ -22,7 +22,7 @@ export const NavigationCard = ({
   return <GlassCard className={cn("cursor-pointer group hover:scale-[1.02] transition-all duration-500 active:scale-[0.98] p-3", "hover:shadow-xl hover:shadow-primary/20 border-white/10 hover:border-primary/30", "before:absolute before:inset-0 before:bg-gradient-to-br before:from-primary/5 before:to-transparent before:opacity-0 before:transition-opacity before:duration-500 hover:before:opacity-100", "relative overflow-hidden aspect-square max-w-36 md:max-w-32", className)} onClick={onClick} style={style}>
       <div className="flex flex-col items-center justify-center h-full relative z-10">
         <div className="relative group/icon mb-3">
-          <div className="bg-gradient-to-br from-primary via-primary-glow to-primary p-3 rounded-xl shadow-lg group-hover:shadow-primary/30 transition-all duration-500 group-hover:scale-110">
+          <div className="bg-gradient-to-br from-green-500 via-green-400 to-green-600 p-3 rounded-xl shadow-lg group-hover:shadow-green-500/30 transition-all duration-500 group-hover:scale-110">
             <Icon className="h-4 w-4 text-green-500 drop-shadow-sm" />
           </div>
           <div className="absolute inset-0 -z-10 pointer-events-none bg-gradient-to-br from-primary via-primary-glow to-primary rounded-xl opacity-0 group-hover:opacity-10 blur-xl transition-all duration-500"></div>
