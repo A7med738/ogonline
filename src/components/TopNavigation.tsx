@@ -177,7 +177,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
       <div className="px-4 pb-3 bg-green-600">
         <div className="relative">
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input type="text" placeholder="دور على إعلان أو مكان أو مطعم" className="w-full bg-white rounded-full py-2 pr-10 pl-4 text-right text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50" />
+          <input type="text" placeholder="" className="w-full bg-white rounded-full py-2 pr-10 pl-4 text-right text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50" />
         </div>
       </div>
 
