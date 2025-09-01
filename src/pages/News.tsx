@@ -54,7 +54,7 @@ const News = () => {
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
           <h1 className="text-4xl font-bold text-foreground mb-4">آخر أخبار المدينة</h1>
-          <p className="text-white/80 text-lg">
+          <p className="text-muted-foreground text-lg">
             تابع أحدث الأخبار والمستجدات في مدينتك
           </p>
         </div>
@@ -64,7 +64,6 @@ const News = () => {
           <Button 
             variant="outline" 
             onClick={() => navigate('/')}
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
           >
             <ArrowRight className="ml-2 h-4 w-4" />
             العودة للرئيسية
@@ -76,11 +75,11 @@ const News = () => {
           {loading ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
-              <p className="text-white/80 mt-2">جاري تحميل الأخبار...</p>
+              <p className="text-muted-foreground mt-2">جاري تحميل الأخبار...</p>
             </div>
           ) : newsData.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-white/80">لا توجد أخبار متاحة حالياً</p>
+              <p className="text-muted-foreground">لا توجد أخبار متاحة حالياً</p>
             </div>
           ) : (
             newsData.map((news, index) => (
