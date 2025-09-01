@@ -57,17 +57,17 @@ const City = () => {
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
           <div className="bg-white/10 backdrop-blur-sm rounded-full p-4 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-            <Building className="h-10 w-10 text-white" />
+            <Building className="h-10 w-10 text-foreground" />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-4">هيئة المدينة</h1>
-          <p className="text-white/80 text-lg">
+          <h1 className="text-4xl font-bold text-foreground mb-4">هيئة المدينة</h1>
+          <p className="text-muted-foreground text-lg">
             تواصل مع إدارات المدينة المختلفة للحصول على الخدمات
           </p>
         </div>
 
         {/* Back Button */}
         <div className="mb-6">
-          <Button variant="outline" onClick={() => window.history.back()} className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+          <Button variant="outline" onClick={() => window.history.back()} className="bg-muted border-border text-foreground hover:bg-muted/80">
             <ArrowRight className="ml-2 h-4 w-4" />
             العودة للرئيسية
           </Button>
@@ -79,9 +79,9 @@ const City = () => {
         {/* Departments Grid */}
         {loading ? <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-2 text-white/80">جاري تحميل الإدارات...</p>
+            <p className="mt-2 text-muted-foreground">جاري تحميل الإدارات...</p>
           </div> : departments.length === 0 ? <div className="text-center py-8">
-            <p className="text-white/80">لا توجد إدارات متاحة حالياً</p>
+            <p className="text-muted-foreground">لا توجد إدارات متاحة حالياً</p>
           </div> : <div className="grid gap-6 max-w-4xl mx-auto">
             {departments.map((dept, index) => {
           const IconComponent = iconMap[dept.icon] || Building;
@@ -92,7 +92,7 @@ const City = () => {
                   {/* Header */}
                   <div className="flex items-center space-x-4 space-x-reverse">
                     <div className={`bg-gradient-to-r ${dept.color} p-3 rounded-xl shadow-elegant`}>
-                      <IconComponent className="h-6 w-6 text-white" />
+                      <IconComponent className="h-6 w-6 text-foreground" />
                     </div>
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-foreground">{dept.title}</h3>

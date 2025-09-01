@@ -695,10 +695,10 @@ const Admin = () => {
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
           <div className="bg-white/10 backdrop-blur-sm rounded-full p-4 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-            <Shield className="h-10 w-10 text-white" />
+            <Shield className="h-10 w-10 text-foreground" />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-4">لوحة الإدارة</h1>
-          <p className="text-white/80 text-lg">
+          <h1 className="text-4xl font-bold text-foreground mb-4">لوحة الإدارة</h1>
+          <p className="text-muted-foreground text-lg">
             إدارة الأخبار ومراكز الشرطة وأرقام الطوارئ وإدارات المدينة
           </p>
         </div>
@@ -708,7 +708,7 @@ const Admin = () => {
           <Button 
             variant="outline" 
             onClick={() => navigate('/')}
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            className="bg-muted border-border text-foreground hover:bg-muted/80"
           >
             <ArrowLeft className="ml-2 h-4 w-4" />
             العودة للرئيسية

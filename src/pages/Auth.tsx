@@ -174,7 +174,7 @@ const Auth = () => {
           <Button 
             variant="outline" 
             onClick={() => navigate('/')}
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            className="bg-muted border-border text-foreground hover:bg-muted/80"
           >
             <ArrowRight className="ml-2 h-4 w-4" />
             العودة للرئيسية
@@ -186,7 +186,7 @@ const Auth = () => {
           <GlassCard className="animate-scale-in">
             <div className="text-center mb-6">
               <div className="bg-gradient-primary p-3 rounded-xl w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <User className="h-8 w-8 text-white" />
+                <User className="h-8 w-8 text-foreground" />
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-2">
                 {isSignUp ? 'إنشاء حساب جديد' : 'تسجيل الدخول'}

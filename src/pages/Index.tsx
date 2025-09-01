@@ -37,7 +37,7 @@ const Index = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent rounded-3xl"></div>
           </div>
           
-          <h1 className="md:text-6xl font-bold text-white mb-6 animate-slide-up text-3xl">حدائق أكتوبر أونلاين</h1>
+          <h1 className="md:text-6xl font-bold text-foreground mb-6 animate-slide-up text-3xl">حدائق أكتوبر أونلاين</h1>
           
           
         </div>
@@ -53,7 +53,7 @@ const Index = () => {
         <div className="text-center mt-12 animate-fade-in" style={{
         animationDelay: '1s'
       }}>
-          <p className="text-white/70 text-sm">• متاح على مدار الساعة</p>
+          <p className="text-muted-foreground text-sm">• متاح على مدار الساعة</p>
         </div>
       </div>
       
