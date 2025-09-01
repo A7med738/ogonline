@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Bell, MessageCircle, Menu, Search, ChevronDown, Home, Newspaper, Shield, Building, User, Settings, LogOut } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Bell, MessageCircle, Menu, Search, ChevronDown, Home, Newspaper, Shield, Building, User, Settings, LogOut, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -14,6 +14,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
   isAdmin
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const { unreadCount, markNewsAsRead } = useNewsNotifications();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -141,6 +142,16 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         </div>
 
         <div className="flex items-center space-x-2">
+          {location.pathname !== '/' && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-white hover:bg-white/20 p-2 ml-2" 
+              onClick={() => navigate('/')}
+            >
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          )}
           <h1 className="text-white text-lg font-semibold">حدائق أكتوبر</h1>
           <ChevronDown className="h-4 w-4 text-white" />
         </div>

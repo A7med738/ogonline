@@ -178,15 +178,7 @@ const Profile = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/')}
-          >
-            <ArrowRight className="ml-2 h-4 w-4" />
-            العودة للرئيسية
-          </Button>
-          
+        <div className="flex justify-end items-center mb-6">
           <Button 
             variant="outline"
             onClick={handleLogout}

@@ -79,13 +79,6 @@ const Police = () => {
           
         </div>
 
-        {/* Back Button */}
-        <div className="mb-6">
-          <Button variant="outline" onClick={() => navigate('/')}> 
-            <ArrowRight className="ml-2 h-4 w-4" />
-            العودة للرئيسية
-          </Button>
-        </div>
 
         {/* Emergency Banner */}
         {emergencyContacts.find(c => c.type === 'emergency') && <GlassCard className="mb-6 border-red-500/30 bg-red-500/10">

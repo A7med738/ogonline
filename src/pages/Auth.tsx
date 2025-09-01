@@ -169,17 +169,6 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        {/* Back Button */}
-        <div className="mb-6">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/')}
-            className="bg-muted border-border text-foreground hover:bg-muted/80"
-          >
-            <ArrowRight className="ml-2 h-4 w-4" />
-            العودة للرئيسية
-          </Button>
-        </div>
 
         {/* Auth Form */}
         <div className="max-w-md mx-auto">

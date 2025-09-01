@@ -63,13 +63,6 @@ const City = () => {
           
         </div>
 
-        {/* Back Button */}
-        <div className="mb-6">
-          <Button variant="outline" onClick={() => window.history.back()} className="bg-muted border-border text-foreground hover:bg-muted/80">
-            <ArrowRight className="ml-2 h-4 w-4" />
-            العودة للرئيسية
-          </Button>
-        </div>
 
         {/* Main Contact Info */}
         

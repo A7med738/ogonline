@@ -55,13 +55,6 @@ const News = () => {
           
         </div>
 
-        {/* Back Button */}
-        <div className="mb-6">
-          <Button variant="outline" onClick={() => navigate('/')}>
-            <ArrowRight className="ml-2 h-4 w-4" />
-            العودة للرئيسية
-          </Button>
-        </div>
 
         {/* News Grid */}
         <div className="grid gap-6 max-w-4xl mx-auto">

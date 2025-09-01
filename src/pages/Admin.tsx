@@ -703,17 +703,6 @@ const Admin = () => {
           </p>
         </div>
 
-        {/* Back Button */}
-        <div className="mb-6">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/')}
-            className="bg-muted border-border text-foreground hover:bg-muted/80"
-          >
-            <ArrowLeft className="ml-2 h-4 w-4" />
-            العودة للرئيسية
-          </Button>
-        </div>
 
         {/* Main Content */}
         <GlassCard className="max-w-6xl mx-auto">
