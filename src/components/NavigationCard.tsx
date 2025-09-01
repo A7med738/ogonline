@@ -29,9 +29,9 @@ export const NavigationCard = ({
           {badge}
         </div>
         <div className="text-center">
-          <h4 className="text-sm font-bold text-foreground mb-1 group-hover:text-primary transition-colors duration-300">
+          <h6 className="text-sm font-bold text-foreground mb-1 group-hover:text-primary transition-colors duration-300">
             {title}
-          </h4>
+          </h6>
           
         </div>
       </div>
