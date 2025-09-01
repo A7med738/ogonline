@@ -30,7 +30,7 @@ export const NavigationCard = ({
         </div>
         <div className="text-center px-1">
           <h6 className="text-[10px] font-semibold text-foreground/90 mb-1 group-hover:text-primary transition-colors duration-300 leading-tight">
-            شرطة المدينة
+            {title}
           </h6>
           
         </div>
