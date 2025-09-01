@@ -50,11 +50,7 @@ const Index = () => {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-12 animate-fade-in" style={{
-        animationDelay: '1s'
-      }}>
-          <p className="text-muted-foreground text-sm">• متاح على مدار الساعة</p>
-        </div>
+        
       </div>
       
     </div>;
