@@ -92,6 +92,16 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
       {/* Main Navigation */}
       <div className="flex justify-between items-center px-4 py-3 bg-green-600 relative">
         <div className="flex items-center space-x-3">
+          {location.pathname !== '/' && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-white hover:bg-white/20 p-2" 
+              onClick={() => navigate('/')}
+            >
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          )}
           <Popover open={isNewsOpen} onOpenChange={setIsNewsOpen}>
             <PopoverTrigger asChild>
               <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 p-2 relative">
@@ -146,20 +156,10 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
           <ChevronDown className="h-4 w-4 text-white" />
         </div>
 
-        <div className="relative flex items-center space-x-2">
+        <div className="relative">
           <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             <Menu className="h-4 w-4" />
           </Button>
-          {location.pathname !== '/' && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-white hover:bg-white/20 p-2" 
-              onClick={() => navigate('/')}
-            >
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          )}
 
           {/* Dropdown Menu */}
           {isMenuOpen && <div className="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
