@@ -53,7 +53,7 @@ const News = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
-          <h1 className="text-4xl font-bold text-white mb-4">آخر أخبار المدينة</h1>
+          <h1 className="text-4xl font-bold text-foreground mb-4">آخر أخبار المدينة</h1>
           <p className="text-white/80 text-lg">
             تابع أحدث الأخبار والمستجدات في مدينتك
           </p>
