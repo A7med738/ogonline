@@ -37,7 +37,7 @@ const Index = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent rounded-3xl"></div>
           </div>
           
-          <h1 className="md:text-6xl font-bold text-foreground mb-6 animate-slide-up text-3xl">حدائق أكتوبر أونلاين</h1>
+          <h3 className="md:text-3xl font-bold text-foreground mb-6 animate-slide-up text-xl">حدائق أكتوبر أونلاين</h3>
           
           
         </div>
