@@ -28,8 +28,8 @@ export const NavigationCard = ({
           <div className="absolute inset-0 -z-10 pointer-events-none bg-gradient-to-br from-primary via-primary-glow to-primary rounded-xl opacity-0 group-hover:opacity-10 blur-xl transition-all duration-500"></div>
           {badge}
         </div>
-        <div className="text-center">
-          <h6 className="text-sm font-bold text-foreground mb-1 group-hover:text-primary transition-colors duration-300">
+        <div className="text-center px-1">
+          <h6 className="text-sm font-semibold text-foreground/90 mb-1 group-hover:text-primary transition-colors duration-300 leading-tight">
             {title}
           </h6>
           
