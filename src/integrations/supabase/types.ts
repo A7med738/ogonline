@@ -237,6 +237,50 @@ export type Database = {
           },
         ]
       }
+      news_media: {
+        Row: {
+          created_at: string
+          file_name: string | null
+          file_size: number | null
+          id: string
+          media_type: string
+          media_url: string
+          news_id: string
+          order_priority: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          file_name?: string | null
+          file_size?: number | null
+          id?: string
+          media_type: string
+          media_url: string
+          news_id: string
+          order_priority?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string | null
+          file_size?: number | null
+          id?: string
+          media_type?: string
+          media_url?: string
+          news_id?: string
+          order_priority?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_media_news_id_fkey"
+            columns: ["news_id"]
+            isOneToOne: false
+            referencedRelation: "news"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       police_stations: {
         Row: {
           address: string | null

@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { sendNewsNotification, generateNewsUrl, sendTestNotification } from '@/lib/notifications';
+import { NewsMediaUpload } from '@/components/NewsMediaUpload';
 
 interface NewsItem {
   id: string;
@@ -20,6 +21,16 @@ interface NewsItem {
   category: string;
   published_at: string;
   image_url?: string;
+}
+
+interface NewsMediaItem {
+  id: string;
+  file?: File;
+  url?: string;
+  type: 'image' | 'video';
+  name: string;
+  size?: number;
+  isExisting?: boolean;
 }
 
 interface EmergencyContact {
@@ -68,11 +79,10 @@ const Admin = () => {
     title: '',
     summary: '',
     content: '',
-    category: '',
-    image_url: ''
+    category: ''
   });
-  const [newNewsImage, setNewNewsImage] = useState<File | null>(null);
-  const [editingNewsImage, setEditingNewsImage] = useState<File | null>(null);
+  const [newNewsMedia, setNewNewsMedia] = useState<NewsMediaItem[]>([]);
+  const [editingNewsMedia, setEditingNewsMedia] = useState<NewsMediaItem[]>([]);
   const [uploading, setUploading] = useState(false);
 
   // Emergency contacts state
@@ -223,32 +233,31 @@ const Admin = () => {
     }
   };
 
-  // Image upload functions
-  const uploadImage = async (file: File): Promise<string | null> => {
+  const uploadMedia = async (mediaItem: NewsMediaItem): Promise<string | null> => {
+    if (!mediaItem.file) return mediaItem.url || null;
+
     try {
       setUploading(true);
-      const fileExt = file.name.split('.').pop();
+      const fileExt = mediaItem.file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = fileName;
+      const bucket = mediaItem.type === 'image' ? 'news-images' : 'news-videos';
 
       const { error: uploadError } = await supabase.storage
-        .from('news-images')
-        .upload(filePath, file);
+        .from(bucket)
+        .upload(fileName, mediaItem.file);
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
       const { data } = supabase.storage
-        .from('news-images')
-        .getPublicUrl(filePath);
+        .from(bucket)
+        .getPublicUrl(fileName);
 
       return data.publicUrl;
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error('Error uploading media:', error);
       toast({
         title: "خطأ",
-        description: "فشل في رفع الصورة",
+        description: `فشل في رفع ${mediaItem.name}`,
         variant: "destructive"
       });
       return null;
@@ -257,41 +266,61 @@ const Admin = () => {
     }
   };
 
-  const deleteImage = async (imageUrl: string) => {
+  const deleteMedia = async (mediaUrl: string, type: 'image' | 'video') => {
     try {
-      const fileName = imageUrl.split('/').pop();
+      const fileName = mediaUrl.split('/').pop();
       if (fileName) {
+        const bucket = type === 'image' ? 'news-images' : 'news-videos';
         await supabase.storage
-          .from('news-images')
+          .from(bucket)
           .remove([fileName]);
       }
     } catch (error) {
-      console.error('Error deleting image:', error);
+      console.error('Error deleting media:', error);
     }
   };
 
   const handleAddNews = async () => {
     try {
-      let imageUrl = '';
-      
-      if (newNewsImage) {
-        const uploadedUrl = await uploadImage(newNewsImage);
-        if (uploadedUrl) {
-          imageUrl = uploadedUrl;
-        }
-      }
-
-      const { data, error } = await supabase
+      // First create the news item
+      const { data: newsData, error: newsError } = await supabase
         .from('news')
-        .insert([{ ...newNews, image_url: imageUrl }])
+        .insert([newNews])
         .select()
         .single();
 
-      if (error) throw error;
+      if (newsError) throw newsError;
+
+      // Upload and save media files
+      if (newNewsMedia.length > 0) {
+        const uploadedMedia = [];
+        for (let i = 0; i < newNewsMedia.length; i++) {
+          const mediaItem = newNewsMedia[i];
+          const url = await uploadMedia(mediaItem);
+          if (url) {
+            uploadedMedia.push({
+              news_id: newsData.id,
+              media_url: url,
+              media_type: mediaItem.type,
+              file_name: mediaItem.name,
+              file_size: mediaItem.size,
+              order_priority: i
+            });
+          }
+        }
+
+        if (uploadedMedia.length > 0) {
+          const { error: mediaError } = await supabase
+            .from('news_media')
+            .insert(uploadedMedia);
+
+          if (mediaError) throw mediaError;
+        }
+      }
 
       // Send push notification for new news
       try {
-        const newsUrl = generateNewsUrl(data.id);
+        const newsUrl = generateNewsUrl(newsData.id);
         await sendNewsNotification({
           title: newNews.title,
           url: newsUrl,
@@ -305,11 +334,11 @@ const Admin = () => {
 
       toast({
         title: "تم إضافة الخبر",
-        description: "تم إضافة الخبر وإرسال الإشعار بنجاح"
+        description: "تم إضافة الخبر والملفات بنجاح"
       });
 
-      setNewNews({ title: '', summary: '', content: '', category: '', image_url: '' });
-      setNewNewsImage(null);
+      setNewNews({ title: '', summary: '', content: '', category: '' });
+      setNewNewsMedia([]);
       fetchNews();
     } catch (error) {
       console.error('Error adding news:', error);
@@ -325,32 +354,63 @@ const Admin = () => {
     if (!editingNews) return;
 
     try {
-      let imageUrl = editingNews.image_url || '';
-      
-      if (editingNewsImage) {
-        // Delete old image if exists
-        if (editingNews.image_url) {
-          await deleteImage(editingNews.image_url);
-        }
-        
-        const uploadedUrl = await uploadImage(editingNewsImage);
-        if (uploadedUrl) {
-          imageUrl = uploadedUrl;
-        }
-      }
-
-      const { error } = await supabase
+      // Update news text content
+      const { error: newsError } = await supabase
         .from('news')
         .update({
           title: editingNews.title,
           summary: editingNews.summary,
           content: editingNews.content,
-          category: editingNews.category,
-          image_url: imageUrl
+          category: editingNews.category
         })
         .eq('id', editingNews.id);
 
-      if (error) throw error;
+      if (newsError) throw newsError;
+
+      // Handle media updates if there are new media files
+      if (editingNewsMedia.length > 0) {
+        // Delete old media files first
+        const { data: oldMedia } = await supabase
+          .from('news_media')
+          .select('*')
+          .eq('news_id', editingNews.id);
+
+        if (oldMedia && oldMedia.length > 0) {
+          for (const media of oldMedia) {
+            await deleteMedia(media.media_url, media.media_type as 'image' | 'video');
+          }
+          
+          await supabase
+            .from('news_media')
+            .delete()
+            .eq('news_id', editingNews.id);
+        }
+
+        // Upload new media files
+        const uploadedMedia = [];
+        for (let i = 0; i < editingNewsMedia.length; i++) {
+          const mediaItem = editingNewsMedia[i];
+          const url = await uploadMedia(mediaItem);
+          if (url) {
+            uploadedMedia.push({
+              news_id: editingNews.id,
+              media_url: url,
+              media_type: mediaItem.type,
+              file_name: mediaItem.name,
+              file_size: mediaItem.size,
+              order_priority: i
+            });
+          }
+        }
+
+        if (uploadedMedia.length > 0) {
+          const { error: mediaError } = await supabase
+            .from('news_media')
+            .insert(uploadedMedia);
+
+          if (mediaError) throw mediaError;
+        }
+      }
 
       toast({
         title: "تم تحديث الخبر",
@@ -358,7 +418,7 @@ const Admin = () => {
       });
 
       setEditingNews(null);
-      setEditingNewsImage(null);
+      setEditingNewsMedia([]);
       fetchNews();
     } catch (error) {
       console.error('Error updating news:', error);
@@ -748,34 +808,11 @@ const Admin = () => {
                     onChange={(e) => setNewNews({ ...newNews, content: e.target.value })}
                     rows={4}
                   />
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">صورة الخبر (اختياري)</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setNewNewsImage(file);
-                        }
-                      }}
-                      className="w-full p-2 border rounded-md"
-                      disabled={uploading}
-                    />
-                    {newNewsImage && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span>الملف المحدد: {newNewsImage.name}</span>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => setNewNewsImage(null)}
-                          disabled={uploading}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    )}
-                  </div>
+                  <NewsMediaUpload
+                    onMediaChange={setNewNewsMedia}
+                    initialMedia={newNewsMedia}
+                    disabled={uploading}
+                  />
                   <Button onClick={handleAddNews} className="w-fit" disabled={uploading}>
                     <Plus className="ml-2 h-4 w-4" />
                     {uploading ? 'جاري الرفع...' : 'إضافة خبر'}
@@ -807,44 +844,11 @@ const Admin = () => {
                              onChange={(e) => setEditingNews({ ...editingNews, content: e.target.value })}
                              rows={4}
                            />
-                           <div className="space-y-2">
-                             <label className="text-sm font-medium">تحديث صورة الخبر (اختياري)</label>
-                             <input
-                               type="file"
-                               accept="image/*"
-                               onChange={(e) => {
-                                 const file = e.target.files?.[0];
-                                 if (file) {
-                                   setEditingNewsImage(file);
-                                 }
-                               }}
-                               className="w-full p-2 border rounded-md"
-                               disabled={uploading}
-                             />
-                             {editingNewsImage && (
-                               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                 <span>الملف الجديد: {editingNewsImage.name}</span>
-                                 <Button 
-                                   variant="ghost" 
-                                   size="sm"
-                                   onClick={() => setEditingNewsImage(null)}
-                                   disabled={uploading}
-                                 >
-                                   <X className="h-3 w-3" />
-                                 </Button>
-                               </div>
-                             )}
-                             {editingNews.image_url && !editingNewsImage && (
-                               <div className="mt-2">
-                                 <img 
-                                   src={editingNews.image_url} 
-                                   alt="الصورة الحالية للخبر" 
-                                   className="max-w-xs rounded-md border"
-                                 />
-                                 <p className="text-xs text-muted-foreground mt-1">الصورة الحالية</p>
-                               </div>
-                             )}
-                           </div>
+                           <NewsMediaUpload
+                             onMediaChange={setEditingNewsMedia}
+                             initialMedia={editingNewsMedia}
+                             disabled={uploading}
+                           />
                            <div className="flex gap-2">
                              <Button onClick={handleUpdateNews} size="sm" disabled={uploading}>
                                <Save className="ml-2 h-4 w-4" />
