@@ -60,7 +60,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
       {/* Main Navigation */}
       <div className="flex justify-between items-center px-4 py-3 bg-green-600 relative">
         <div className="flex items-center space-x-3">
-          <Bell className="h-5 w-5 text-white" />
+          <Bell className="h-4 w-4 text-white" />
           
         </div>
 
@@ -71,7 +71,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
 
         <div className="relative">
           <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            <Menu className="h-5 w-5" />
+            <Menu className="h-4 w-4" />
           </Button>
 
           {/* Dropdown Menu */}
@@ -80,7 +80,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
                 {menuItems.map(item => {
               const Icon = item.icon;
               return <button key={item.path} onClick={() => handleMenuItemClick(item.path)} className="w-full flex items-center px-4 py-3 text-right hover:bg-gray-50 transition-colors">
-                      <Icon className="h-5 w-5 text-gray-600 ml-3" />
+                      <Icon className="h-4 w-4 text-gray-600 ml-3" />
                       <span className="text-gray-800 font-medium">{item.label}</span>
                     </button>;
             })}
@@ -88,7 +88,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
                 {user && <>
                     <div className="border-t border-gray-200 my-2"></div>
                     <button onClick={handleSignOut} className="w-full flex items-center px-4 py-3 text-right hover:bg-gray-50 transition-colors text-red-600">
-                      <LogOut className="h-5 w-5 ml-3" />
+                      <LogOut className="h-4 w-4 ml-3" />
                       <span className="font-medium">تسجيل الخروج</span>
                     </button>
                   </>}

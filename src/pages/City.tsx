@@ -92,7 +92,7 @@ const City = () => {
                   {/* Header */}
                   <div className="flex items-center space-x-4 space-x-reverse">
                     <div className={`bg-gradient-to-r ${dept.color} p-3 rounded-xl shadow-elegant`}>
-                      <IconComponent className="h-6 w-6 text-foreground" />
+                      <IconComponent className="h-5 w-5 text-foreground" />
                     </div>
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-foreground">{dept.title}</h3>
