@@ -76,9 +76,7 @@ const Police = () => {
             <Shield className="h-10 w-10 text-primary" />
           </div>
           <h1 className="text-4xl font-bold text-foreground mb-4">أرقام الشرطة</h1>
-          <p className="text-muted-foreground text-lg">
-            أرقام التواصل مع مركز الشرطة للطوارئ والخدمات
-          </p>
+          
         </div>
 
         {/* Back Button */}
