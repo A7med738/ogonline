@@ -75,7 +75,7 @@ const Police = () => {
           <div className="bg-primary/10 border border-primary/20 backdrop-blur-sm rounded-full p-4 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
             <Shield className="h-10 w-10 text-primary" />
           </div>
-          <h3 className="text-2xl font-bold text-foreground mb-4">أرقام الشرطة</h3>
+          <h3 className="text-2xl font-bold text-foreground mb-4">شرطة الشرطة</h3>
           
         </div>
 
