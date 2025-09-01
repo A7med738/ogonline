@@ -60,9 +60,7 @@ const City = () => {
             <Building className="h-10 w-10 text-foreground" />
           </div>
           <h1 className="text-4xl font-bold text-foreground mb-4">هيئة المدينة</h1>
-          <p className="text-muted-foreground text-lg">
-            تواصل مع إدارات المدينة المختلفة للحصول على الخدمات
-          </p>
+          
         </div>
 
         {/* Back Button */}
