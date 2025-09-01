@@ -72,18 +72,18 @@ const Police = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
-          <div className="bg-white/10 backdrop-blur-sm rounded-full p-4 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-            <Shield className="h-10 w-10 text-white" />
+          <div className="bg-primary/10 border border-primary/20 backdrop-blur-sm rounded-full p-4 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+            <Shield className="h-10 w-10 text-primary" />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-4">أرقام الشرطة</h1>
-          <p className="text-white/80 text-lg">
+          <h1 className="text-4xl font-bold text-foreground mb-4">أرقام الشرطة</h1>
+          <p className="text-muted-foreground text-lg">
             أرقام التواصل مع مركز الشرطة للطوارئ والخدمات
           </p>
         </div>
 
         {/* Back Button */}
         <div className="mb-6">
-          <Button variant="outline" onClick={() => navigate('/')} className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+          <Button variant="outline" onClick={() => navigate('/')}> 
             <ArrowRight className="ml-2 h-4 w-4" />
             العودة للرئيسية
           </Button>
@@ -108,7 +108,7 @@ const Police = () => {
         {/* Authentication Check */}
         {authLoading ? <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-2 text-white/80">جاري التحقق من الهوية...</p>
+            <p className="mt-2 text-muted-foreground">جاري التحقق من الهوية...</p>
           </div> : !user ? <GlassCard className="text-center max-w-2xl mx-auto">
             <div className="py-8">
               <LogIn className="h-16 w-16 text-primary mx-auto mb-4" />
@@ -123,11 +123,11 @@ const Police = () => {
             </div>
           </GlassCard> : loading ? <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-2 text-white/80">جاري تحميل أرقام الطوارئ...</p>
+            <p className="mt-2 text-muted-foreground">جاري تحميل أرقام الطوارئ...</p>
           </div> : emergencyContacts.length === 0 ? <div className="text-center py-8">
-            <p className="text-white/80">لا توجد أرقام طوارئ متاحة حالياً</p>
+            <p className="text-muted-foreground">لا توجد أرقام طوارئ متاحة حالياً</p>
           </div> : policeStations.length === 0 ? <div className="text-center py-8">
-            <p className="text-white/80">لا توجد مراكز شرطة متاحة حالياً</p>
+            <p className="text-muted-foreground">لا توجد مراكز شرطة متاحة حالياً</p>
           </div> : <div className="space-y-8 max-w-4xl mx-auto">
             {policeStations.map((station, stationIndex) => {
           const stationContacts = emergencyContacts.filter(c => c.station_id === station.id && c.type !== 'emergency');
