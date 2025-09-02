@@ -4,7 +4,6 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from '@/integrations/supabase/client';
-
 interface EmergencyContact {
   id: string;
   title: string;
@@ -15,7 +14,6 @@ interface EmergencyContact {
   station_id?: string;
   order_priority: number;
 }
-
 interface PoliceStation {
   id: string;
   name: string;
@@ -23,40 +21,38 @@ interface PoliceStation {
   address?: string;
   description?: string;
 }
-
 const PoliceStationDetails = () => {
   const navigate = useNavigate();
-  const { stationId } = useParams<{ stationId: string }>();
+  const {
+    stationId
+  } = useParams<{
+    stationId: string;
+  }>();
   const [station, setStation] = useState<PoliceStation | null>(null);
   const [contacts, setContacts] = useState<EmergencyContact[]>([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     if (stationId) {
       fetchStationData();
     }
   }, [stationId]);
-
   const fetchStationData = async () => {
     try {
       // Fetch police station details
-      const { data: stationData, error: stationError } = await supabase
-        .from('police_stations')
-        .select('*')
-        .eq('id', stationId)
-        .single();
-
+      const {
+        data: stationData,
+        error: stationError
+      } = await supabase.from('police_stations').select('*').eq('id', stationId).single();
       if (stationError) throw stationError;
       setStation(stationData);
 
       // Fetch emergency contacts for this station
-      const { data: contactsData, error: contactsError } = await supabase
-        .from('emergency_contacts')
-        .select('*')
-        .eq('station_id', stationId)
-        .eq('available', true)
-        .order('order_priority', { ascending: true });
-
+      const {
+        data: contactsData,
+        error: contactsError
+      } = await supabase.from('emergency_contacts').select('*').eq('station_id', stationId).eq('available', true).order('order_priority', {
+        ascending: true
+      });
       if (contactsError) throw contactsError;
       setContacts(contactsData || []);
     } catch (error) {
@@ -65,44 +61,32 @@ const PoliceStationDetails = () => {
       setLoading(false);
     }
   };
-
   const handleCall = (number: string) => {
     window.open(`tel:${number}`, '_self');
   };
-
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background">
+    return <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
             <p className="mt-2 text-muted-foreground">جاري تحميل تفاصيل المركز...</p>
           </div>
         </div>
-      </div>
-    );
+      </div>;
   }
-
   if (!station) {
-    return (
-      <div className="min-h-screen bg-background">
+    return <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center py-8">
             <p className="text-muted-foreground">لم يتم العثور على المركز</p>
-            <Button 
-              onClick={() => navigate('/police')} 
-              className="mt-4 bg-gradient-primary hover:shadow-elegant transition-all duration-300"
-            >
+            <Button onClick={() => navigate('/police')} className="mt-4 bg-gradient-primary hover:shadow-elegant transition-all duration-300">
               العودة لصفحة الشرطة
             </Button>
           </div>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
@@ -111,42 +95,30 @@ const PoliceStationDetails = () => {
           </div>
           <h1 className="text-4xl font-bold text-foreground mb-4">{station.name}</h1>
           <p className="text-muted-foreground text-lg">{station.area}</p>
-          {station.description && (
-            <p className="text-muted-foreground mt-2">{station.description}</p>
-          )}
+          {station.description && <p className="text-muted-foreground mt-2">{station.description}</p>}
         </div>
 
         {/* Back Button */}
         <div className="mb-6">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/police')} 
-          >
-            <ArrowRight className="ml-2 h-4 w-4" />
-            العودة لصفحة الشرطة
-          </Button>
+          
         </div>
 
         {/* Station Address */}
-        {station.address && (
-          <GlassCard className="mb-6 text-center">
+        {station.address && <GlassCard className="mb-6 text-center">
             <div className="flex items-center justify-center space-x-2 space-x-reverse">
               <MapPin className="h-5 w-5 text-primary" />
               <span className="text-foreground">{station.address}</span>
             </div>
-          </GlassCard>
-        )}
+          </GlassCard>}
 
         {/* Emergency Contacts */}
         <div className="max-w-4xl mx-auto">
-          {contacts.length === 0 ? (
-            <div className="text-center py-8">
+          {contacts.length === 0 ? <div className="text-center py-8">
               <p className="text-muted-foreground">لا توجد أرقام متاحة لهذا المركز</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {contacts.map((contact, index) => (
-                <div key={contact.id} className="animate-fade-in" style={{ animationDelay: `${index * 0.05}s` }}>
+            </div> : <div className="space-y-3">
+              {contacts.map((contact, index) => <div key={contact.id} className="animate-fade-in" style={{
+            animationDelay: `${index * 0.05}s`
+          }}>
                   <GlassCard className="bg-card/90 border border-white/20 backdrop-blur-md hover:bg-card/95 transition-all duration-200 shadow-lg hover:shadow-elegant p-3">
                     <div className="flex items-center justify-between gap-4">
                       {/* Left section - Contact info */}
@@ -166,15 +138,11 @@ const PoliceStationDetails = () => {
                             <Clock className="h-3 w-3" />
                             <span>24/7</span>
                           </div>
-                          {contact.type && (
-                            <div className="flex items-center gap-1">
+                          {contact.type && <div className="flex items-center gap-1">
                               <Shield className="h-3 w-3" />
                               <span className="capitalize">{contact.type}</span>
-                            </div>
-                          )}
-                          {contact.order_priority > 0 && (
-                            <span className="text-primary/70">أولوية {contact.order_priority}</span>
-                          )}
+                            </div>}
+                          {contact.order_priority > 0 && <span className="text-primary/70">أولوية {contact.order_priority}</span>}
                         </div>
                       </div>
                       
@@ -183,26 +151,17 @@ const PoliceStationDetails = () => {
                         <div className="text-xl font-bold text-primary bg-primary/10 px-3 py-1 rounded-lg border border-primary/20">
                           {contact.number}
                         </div>
-                        <Button 
-                          onClick={() => handleCall(contact.number)} 
-                          disabled={!contact.available}
-                          size="sm"
-                          className="bg-gradient-primary hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm px-4 py-2"
-                        >
+                        <Button onClick={() => handleCall(contact.number)} disabled={!contact.available} size="sm" className="bg-gradient-primary hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm px-4 py-2">
                           <Phone className="ml-1 h-3 w-3" />
                           {contact.available ? 'اتصال' : 'غير متاح'}
                         </Button>
                       </div>
                     </div>
                   </GlassCard>
-                </div>
-              ))}
-            </div>
-          )}
+                </div>)}
+            </div>}
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default PoliceStationDetails;
