@@ -245,7 +245,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
             type="text"
-            placeholder="ابحث في الأخبار، أقسام الشرطة، وإدارات المدينة..."
+            placeholder=" ابحث هن أي شيء "
             className="w-full bg-white rounded-full py-1 pr-10 pl-4 text-right text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
