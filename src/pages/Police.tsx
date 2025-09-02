@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, MapPin, Clock, ArrowRight, Shield, LogIn, Navigation } from "lucide-react";
+import { Phone, MapPin, Clock, ArrowRight, Shield, LogIn, Navigation, Trash2 } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { LocationMap } from "@/components/LocationMap";
 import { openGoogleMapsDirections, hasValidLocation } from '@/utils/mapUtils';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 interface EmergencyContact {
   id: string;
   title: string;
@@ -25,6 +26,7 @@ interface PoliceStation {
   description?: string;
   latitude?: number;
   longitude?: number;
+  show_location?: boolean;
 }
 const Police = () => {
   const navigate = useNavigate();
@@ -36,9 +38,26 @@ const Police = () => {
   const [policeStations, setPoliceStations] = useState<PoliceStation[]>([]);
   const [loading, setLoading] = useState(true);
   const [openStations, setOpenStations] = useState<Set<string>>(new Set());
+  const [isAdmin, setIsAdmin] = useState(false);
   useEffect(() => {
     fetchData();
   }, []);
+  useEffect(() => {
+    const checkAdmin = async () => {
+      try {
+        const { data } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user?.id)
+          .eq('role', 'admin')
+          .single();
+        setIsAdmin(!!data);
+      } catch {
+        setIsAdmin(false);
+      }
+    };
+    checkAdmin();
+  }, [user]);
   const fetchData = async () => {
     try {
       // Fetch police stations
@@ -71,6 +90,25 @@ const Police = () => {
   };
   const handleStationClick = (stationId: string) => {
     navigate(`/police/station/${stationId}`);
+  };
+  const handleDeleteStation = async (id: string) => {
+    try {
+      const { error } = await supabase.from('police_stations').delete().eq('id', id);
+      if (error) throw error;
+      setPoliceStations(prev => prev.filter(s => s.id !== id));
+    } catch (e) {
+      console.error('Failed to delete station', e);
+    }
+  };
+  const handleToggleStationLocation = async (station: PoliceStation) => {
+    const next = station.show_location === false ? true : false;
+    try {
+      const { error } = await supabase.from('police_stations').update({ show_location: next }).eq('id', station.id);
+      if (error) throw error;
+      setPoliceStations(prev => prev.map(s => s.id === station.id ? { ...s, show_location: next } : s));
+    } catch (e) {
+      console.error('Failed to toggle location visibility', e);
+    }
   };
 
   const handleGetDirections = (station: PoliceStation, event: React.MouseEvent) => {
@@ -141,8 +179,33 @@ const Police = () => {
             animationDelay: `${stationIndex * 0.1}s`
           }}>
                   {/* Station Header */}
-                  <GlassCard id={`station-header-${station.id}`} className="mb-4 cursor-pointer hover:scale-[1.02] transition-all duration-300 hover:shadow-elegant hover:bg-white/20" onClick={() => handleStationClick(station.id)}>
+                  <GlassCard id={`station-header-${station.id}`} className="mb-4 hover:scale-[1.02] transition-all duration-300 hover:shadow-elegant hover:bg-white/20">
                     <div className="text-center">
+                      <div className="flex justify-end gap-1">
+                        {isAdmin && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>حذف مركز الشرطة</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  هل أنت متأكد من حذف "{station.name} - {station.area}"؟ هذا الإجراء لا يمكن التراجع عنه.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteStation(station.id)} className="bg-red-600 hover:bg-red-700">حذف</AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+                        {/* Location visibility toggle moved to Admin panel */}
+                      </div>
+                      <div className="cursor-pointer" onClick={() => handleStationClick(station.id)}>
                       <h2 className="text-2xl font-bold text-foreground mb-2">{station.name}</h2>
                       <p className="text-lg text-primary font-semibold mb-2">{station.area}</p>
                       {station.description && <p className="text-foreground/90 mb-2">{station.description}</p>}
@@ -150,9 +213,10 @@ const Police = () => {
                           <MapPin className="h-4 w-4" />
                           <span>{station.address}</span>
                         </div>}
+                      </div>
                       
                       {/* Directions Button */}
-                      {hasValidLocation(station.latitude, station.longitude) && (
+                      {hasValidLocation(station.latitude, station.longitude) && (station.show_location !== false) && (
                         <div className="mt-4">
                           <Button
                             onClick={(e) => handleGetDirections(station, e)}

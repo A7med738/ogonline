@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Edit, Trash2, Save, X, Shield, Newspaper, Phone, Building, Bell } from 'lucide-react';
+import { ArrowLeft, Plus, Edit, Trash2, Save, X, Shield, Newspaper, Phone, Building, Bell, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { GlassCard } from '@/components/ui/glass-card';
 import { Input } from '@/components/ui/input';
@@ -53,6 +53,7 @@ interface PoliceStation {
   description?: string;
   latitude?: number;
   longitude?: number;
+  show_location?: boolean;
 }
 
 interface CityDepartment {
@@ -67,6 +68,7 @@ interface CityDepartment {
   order_priority?: number;
   latitude?: number;
   longitude?: number;
+  show_location?: boolean;
 }
 
 const Admin = () => {
@@ -606,7 +608,8 @@ const Admin = () => {
           address: editingStation.address,
           description: editingStation.description,
           latitude: editingStation.latitude,
-          longitude: editingStation.longitude
+          longitude: editingStation.longitude,
+          show_location: editingStation.show_location
         })
         .eq('id', editingStation.id);
 
@@ -702,7 +705,7 @@ const Admin = () => {
     try {
       const { data, error } = await supabase
         .from('city_departments')
-        .update(editingDepartment)
+        .update(editingDepartment as any)
         .eq('id', editingDepartment.id)
         .select();
       
@@ -1183,6 +1186,19 @@ const Admin = () => {
                                 عدد الأرقام المرتبطة: {contacts.filter(c => c.station_id === station.id).length}
                               </p>
                             </div>
+                            <div className="flex items-start gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={async () => {
+                                  const next = station.show_location === false ? true : false;
+                                  const { error } = await supabase.from('police_stations').update({ show_location: next } as any).eq('id', station.id);
+                                  if (!error) setStations(prev => prev.map(s => s.id === station.id ? { ...s, show_location: next } : s));
+                                }}
+                              >
+                                {station.show_location === false ? <><Eye className="ml-2 h-4 w-4" /> إظهار الموقع</> : <><EyeOff className="ml-2 h-4 w-4" /> إخفاء الموقع</>}
+                              </Button>
+                            </div>
                           </div>
                           <div className="flex gap-2 mt-4">
                             <Button onClick={() => setEditingStation(station)} variant="outline" size="sm">
@@ -1325,7 +1341,18 @@ const Admin = () => {
                         <p className="text-sm">الهاتف: {dept.phone}</p>
                         <p className="text-sm">البريد: {dept.email}</p>
                         <p className="text-sm">الساعات: {dept.hours}</p>
-                        <div className="flex space-x-2 space-x-reverse mt-2">
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={async () => {
+                              const next = dept.show_location === false ? true : false;
+                              const { error } = await supabase.from('city_departments').update({ show_location: next } as any).eq('id', dept.id);
+                              if (!error) setDepartments(prev => prev.map(d => d.id === dept.id ? { ...d, show_location: next } : d));
+                            }}
+                          >
+                            {dept.show_location === false ? <><Eye className="ml-2 h-4 w-4" /> إظهار الموقع</> : <><EyeOff className="ml-2 h-4 w-4" /> إخفاء الموقع</>}
+                          </Button>
                           <Button
                             variant="outline"
                             size="sm"

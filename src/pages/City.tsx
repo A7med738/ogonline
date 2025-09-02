@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, Mail, MapPin, Clock, ArrowRight, Building, Users, Wrench, Banknote, Navigation } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, ArrowRight, Building, Users, Wrench, Banknote, Navigation, Trash2 } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { supabase } from '@/integrations/supabase/client';
 import { openGoogleMapsDirections, hasValidLocation } from '@/utils/mapUtils';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { useAuth } from '@/contexts/AuthContext';
 interface CityDepartment {
   id: string;
   title: string;
@@ -16,6 +18,7 @@ interface CityDepartment {
   order_priority?: number;
   latitude?: number;
   longitude?: number;
+  show_location?: boolean;
 }
 
 // Icon mapping for lucide icons
@@ -30,8 +33,11 @@ const iconMap: {
 const City = () => {
   const [departments, setDepartments] = useState<CityDepartment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const { user } = useAuth();
   useEffect(() => {
     fetchDepartments();
+    checkAdminRole();
   }, []);
   const fetchDepartments = async () => {
     try {
@@ -47,6 +53,38 @@ const City = () => {
       console.error('Error fetching city departments:', error);
     } finally {
       setLoading(false);
+    }
+  };
+  const checkAdminRole = async () => {
+    try {
+      const { data } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user?.id)
+        .eq('role', 'admin')
+        .single();
+      setIsAdmin(!!data);
+    } catch {
+      setIsAdmin(false);
+    }
+  };
+  const handleDeleteDepartment = async (id: string) => {
+    try {
+      const { error } = await supabase.from('city_departments').delete().eq('id', id);
+      if (error) throw error;
+      setDepartments(prev => prev.filter(d => d.id !== id));
+    } catch (e) {
+      console.error('Failed to delete department', e);
+    }
+  };
+  const handleToggleDepartmentLocation = async (dept: CityDepartment) => {
+    const next = dept.show_location === false ? true : false;
+    try {
+      const { error } = await supabase.from('city_departments').update({ show_location: next } as any).eq('id', dept.id);
+      if (error) throw error;
+      setDepartments(prev => prev.map(d => d.id === dept.id ? { ...d, show_location: next } : d));
+    } catch (e) {
+      console.error('Failed to toggle location visibility', e);
     }
   };
   const handleCall = (number: string) => {
@@ -102,6 +140,28 @@ const City = () => {
                     <h3 className="text-base md:text-xl font-bold text-foreground">{dept.title}</h3>
                     <p className="text-xs md:text-base text-foreground/90 line-clamp-2">{dept.description}</p>
                   </div>
+                  {isAdmin && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>حذف الإدارة</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            هل أنت متأكد من حذف "{dept.title}"؟ هذا الإجراء لا يمكن التراجع عنه.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDeleteDepartment(dept.id)} className="bg-red-600 hover:bg-red-700">حذف</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
+                  {/* Location visibility toggle moved to Admin panel */}
                 </div>
 
                 {/* Contact Details */}
@@ -132,7 +192,7 @@ const City = () => {
                     <Mail className="ml-2 h-4 w-4" />
                     بريد إلكتروني
                   </Button>
-                  {hasValidLocation(dept.latitude, dept.longitude) && (
+                  {hasValidLocation(dept.latitude, dept.longitude) && (dept.show_location !== false) && (
                     <Button size="sm" variant="outline" onClick={() => handleGetDirections(dept)} className="flex-1 border-primary/20 hover:bg-primary/10">
                       <Navigation className="ml-2 h-4 w-4" />
                       موقع
