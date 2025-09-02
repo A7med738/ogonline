@@ -53,19 +53,49 @@ export const FloatingChat = () => {
 
   const mockAssistantReply = useCallback(async (prompt: string) => {
     try {
+      // Ensure we have a valid access token and attach it explicitly to avoid 401s
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+      if (!accessToken) {
+        toast({
+          title: "تسجيل الدخول مطلوب",
+          description: "انتهت الجلسة. يرجى تسجيل الدخول مجددًا.",
+          action: (
+            <Button onClick={() => (window.location.href = "/auth")} size="sm">
+              تسجيل الدخول
+            </Button>
+          ),
+        });
+        throw Object.assign(new Error("No session"), { status: 401 });
+      }
+
       const { data, error } = await supabase.functions.invoke("ai-chat", {
         body: {
           prompt,
           history: messages.map(m => ({ role: m.role, content: m.content })),
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
         },
       });
       if (error) throw error as any;
       const reply: string = (data as any)?.answer || "";
       appendMessage({ role: "assistant", content: reply || "" });
     } catch (e: any) {
+      if (e?.status === 401) {
+        toast({
+          title: "تسجيل الدخول مطلوب",
+          description: "يرجى تسجيل الدخول لاستخدام المساعد الذكي.",
+          action: (
+            <Button onClick={() => (window.location.href = "/auth")} size="sm">
+              تسجيل الدخول
+            </Button>
+          ),
+        });
+      }
       appendMessage({ role: "assistant", content: "حدث خطأ أثناء معالجة سؤالك. حاول لاحقًا." });
     }
-  }, [appendMessage, messages]);
+  }, [appendMessage, messages, toast]);
 
   const handleSend = useCallback(async () => {
     if (!canSend) return;

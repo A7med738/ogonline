@@ -44,6 +44,26 @@ const Police = () => {
   }, []);
   useEffect(() => {
     const checkAdmin = async () => {
+      if (!user?.id) {
+        setIsAdmin(false);
+        return;
+      }
+      try {
+        const { data } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .eq('role', 'admin')
+          .single();
+        setIsAdmin(!!data);
+      } catch {
+        setIsAdmin(false);
+      }
+    };
+    checkAdmin();
+  }, [user?.id]);
+  useEffect(() => {
+    const checkAdmin = async () => {
       try {
         const { data } = await supabase
           .from('user_roles')

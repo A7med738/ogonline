@@ -37,8 +37,14 @@ const City = () => {
   const { user } = useAuth();
   useEffect(() => {
     fetchDepartments();
-    checkAdminRole();
   }, []);
+  useEffect(() => {
+    if (user?.id) {
+      checkAdminRole();
+    } else {
+      setIsAdmin(false);
+    }
+  }, [user?.id]);
   const fetchDepartments = async () => {
     try {
       const {
@@ -56,6 +62,7 @@ const City = () => {
     }
   };
   const checkAdminRole = async () => {
+    if (!user?.id) return;
     try {
       const { data } = await supabase
         .from('user_roles')
@@ -104,7 +111,7 @@ const City = () => {
     }
   };
   return <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-3 py-5 md:px-4 md:py-8">
+      <div className="container mx-auto px-2 py-4 md:px-4 md:py-8">
         {/* Header */}
         <div className="text-center mb-6 md:mb-8 animate-fade-in">
           <div className="bg-white/10 backdrop-blur-sm rounded-full p-3 w-16 h-16 mx-auto mb-3 md:mb-4 flex items-center justify-center">
@@ -124,61 +131,64 @@ const City = () => {
             <p className="mt-2 text-sm md:text-base text-muted-foreground">جاري تحميل الإدارات...</p>
           </div> : departments.length === 0 ? <div className="text-center py-6 md:py-8">
             <p className="text-muted-foreground">لا توجد إدارات متاحة حالياً</p>
-          </div> : <div className="grid gap-2.5 md:gap-5 max-w-4xl mx-auto">
+          </div> : <div className="grid gap-2 md:gap-4 max-w-full md:max-w-4xl mx-auto">
             {departments.map((dept, index) => {
           const IconComponent = iconMap[dept.icon] || Building;
-          return <GlassCard key={dept.id} className="animate-slide-up hover:scale-[1.01] transition-all duration-300" style={{
+          return <GlassCard key={dept.id} className="relative overflow-hidden animate-slide-up hover:scale-[1.01] transition-all duration-300 border border-white/10 bg-white/70 dark:bg-card/80 backdrop-blur shadow-sm hover:shadow-md" style={{
             animationDelay: `${index * 0.1}s`
           }}>
-                <div className="space-y-2.5 md:space-y-3.5">
+                <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-primary/60 to-primary/10" />
+                <div className="space-y-2 md:space-y-3 p-2 md:p-3">
                   {/* Header */}
                   <div className="flex items-center space-x-2.5 space-x-reverse md:space-x-4">
                     <div className={`bg-gradient-to-r ${dept.color} p-1.5 md:p-3 rounded-lg md:rounded-xl shadow-elegant`}>
                       <IconComponent className="h-3.5 w-3.5 md:h-5 md:w-5 text-foreground" />
                     </div>
                   <div className="flex-1">
-                    <h3 className="text-base md:text-xl font-bold text-foreground">{dept.title}</h3>
-                    <p className="text-xs md:text-base text-foreground/90 line-clamp-2">{dept.description}</p>
+                    <div className="flex items-center justify-between gap-2">
+                      <h3 className="text-base md:text-xl font-bold text-foreground line-clamp-1">{dept.title}</h3>
+                      <span className="hidden md:inline-block text-xs text-muted-foreground whitespace-nowrap">{dept.hours}</span>
+                    </div>
+                    <p className="mt-0.5 text-xs md:text-sm text-muted-foreground line-clamp-2">{dept.description}</p>
                   </div>
                   {/* Delete icon removed from public page; available in Admin panel only */}
                   {/* Location visibility toggle moved to Admin panel */}
                 </div>
 
                 {/* Contact Details */}
-                <div className="space-y-1.5 md:space-y-3 pr-10 md:pr-16">
-                  <div className="flex items-center space-x-1.5 space-x-reverse text-xs md:text-sm">
-                    <Clock className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
-                    <span className="text-muted-foreground">{dept.hours}</span>
+                <div className="h-px bg-border/60 my-1 md:my-2" />
+                <div className="grid grid-cols-1 gap-1.5 md:grid-cols-3 md:gap-3 pr-4 md:pr-12">
+                  <div className="flex items-center space-x-2 space-x-reverse text-xs md:text-sm">
+                    <div className="inline-flex items-center justify-center rounded-md bg-primary/10 text-primary h-6 w-6">
+                      <Clock className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    </div>
+                    <span className="text-muted-foreground line-clamp-1">{dept.hours}</span>
                   </div>
-                  
-                  <div className="flex items-center space-x-1.5 space-x-reverse text-xs md:text-sm">
-                    <Phone className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
-                    <span className="text-foreground font-medium text-xs md:text-sm">{dept.phone}</span>
+                  <div className="flex items-center space-x-2 space-x-reverse text-xs md:text-sm">
+                    <div className="inline-flex items-center justify-center rounded-md bg-green-500/10 text-green-600 h-6 w-6">
+                      <Phone className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    </div>
+                    <span className="text-foreground font-medium line-clamp-1">{dept.phone}</span>
                   </div>
-                  
-                  <div className="flex items-center space-x-1.5 space-x-reverse text-xs md:text-sm">
-                    <Mail className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
-                    <span className="text-foreground text-xs md:text-sm">{dept.email}</span>
+                  <div className="flex items-center space-x-2 space-x-reverse text-xs md:text-sm">
+                    <div className="inline-flex items-center justify-center rounded-md bg-blue-500/10 text-blue-600 h-6 w-6">
+                      <Mail className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    </div>
+                    <span className="text-foreground line-clamp-1">{dept.email}</span>
                   </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex space-x-1.5 space-x-reverse pt-1 md:space-x-3 md:pt-2">
+                <div className="flex gap-1.5 pt-2">
                   <Button size="sm" onClick={() => handleCall(dept.phone)} className="bg-gradient-primary hover:shadow-elegant transition-all duration-300 flex-1">
-                    <Phone className="ml-2 h-4 w-4" />
-                    اتصال
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => handleEmail(dept.email)} className="flex-1 border-primary/20 hover:bg-primary/10">
-                    <Mail className="ml-2 h-4 w-4" />
-                    بريد إلكتروني
+                    <Phone className="ml-2 h-4 w-4" /> اتصال
                   </Button>
                   {hasValidLocation(dept.latitude, dept.longitude) && (dept.show_location !== false) && (
                     <Button size="sm" variant="outline" onClick={() => handleGetDirections(dept)} className="flex-1 border-primary/20 hover:bg-primary/10">
-                      <Navigation className="ml-2 h-4 w-4" />
-                      موقع
+                      <Navigation className="ml-2 h-4 w-4" /> موقع
                     </Button>
                   )}
-                  </div>
+                </div>
                 </div>
               </GlassCard>;
         })}
