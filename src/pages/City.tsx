@@ -66,13 +66,13 @@ const City = () => {
     }
   };
   return <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 py-5 md:px-4 md:py-8">
         {/* Header */}
-        <div className="text-center mb-8 animate-fade-in">
-          <div className="bg-white/10 backdrop-blur-sm rounded-full p-4 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-            <Building className="h-10 w-10 text-foreground" />
+        <div className="text-center mb-6 md:mb-8 animate-fade-in">
+          <div className="bg-white/10 backdrop-blur-sm rounded-full p-3 w-16 h-16 mx-auto mb-3 md:mb-4 flex items-center justify-center">
+            <Building className="h-8 w-8 text-foreground" />
           </div>
-          <h3 className="text-2xl font-bold text-foreground mb-4">جهاز المدينة</h3>
+          <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3 md:mb-4">جهاز المدينة</h3>
           
         </div>
 
@@ -81,59 +81,59 @@ const City = () => {
         
 
         {/* Departments Grid */}
-        {loading ? <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-2 text-muted-foreground">جاري تحميل الإدارات...</p>
-          </div> : departments.length === 0 ? <div className="text-center py-8">
+        {loading ? <div className="text-center py-6 md:py-8">
+            <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-2 text-sm md:text-base text-muted-foreground">جاري تحميل الإدارات...</p>
+          </div> : departments.length === 0 ? <div className="text-center py-6 md:py-8">
             <p className="text-muted-foreground">لا توجد إدارات متاحة حالياً</p>
-          </div> : <div className="grid gap-6 max-w-4xl mx-auto">
+          </div> : <div className="grid gap-3 md:gap-6 max-w-4xl mx-auto">
             {departments.map((dept, index) => {
           const IconComponent = iconMap[dept.icon] || Building;
-          return <GlassCard key={dept.id} className="animate-slide-up hover:scale-[1.02] transition-all duration-300" style={{
+          return <GlassCard key={dept.id} className="animate-slide-up hover:scale-[1.01] transition-all duration-300" style={{
             animationDelay: `${index * 0.1}s`
           }}>
-                <div className="space-y-4">
+                <div className="space-y-3 md:space-y-4">
                   {/* Header */}
-                  <div className="flex items-center space-x-4 space-x-reverse">
-                    <div className={`bg-gradient-to-r ${dept.color} p-3 rounded-xl shadow-elegant`}>
-                      <IconComponent className="h-5 w-5 text-foreground" />
+                  <div className="flex items-center space-x-3 space-x-reverse md:space-x-4">
+                    <div className={`bg-gradient-to-r ${dept.color} p-2 md:p-3 rounded-xl shadow-elegant`}>
+                      <IconComponent className="h-4 w-4 md:h-5 md:w-5 text-foreground" />
                     </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-foreground">{dept.title}</h3>
-                    <p className="text-foreground/90">{dept.description}</p>
+                    <h3 className="text-lg md:text-xl font-bold text-foreground">{dept.title}</h3>
+                    <p className="text-sm md:text-base text-foreground/90">{dept.description}</p>
                   </div>
                 </div>
 
                 {/* Contact Details */}
-                <div className="space-y-3 pr-16">
-                  <div className="flex items-center space-x-2 space-x-reverse text-sm">
-                    <Clock className="h-4 w-4 text-primary" />
+                <div className="space-y-2 md:space-y-3 pr-12 md:pr-16">
+                  <div className="flex items-center space-x-2 space-x-reverse text-xs md:text-sm">
+                    <Clock className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
                     <span className="text-muted-foreground">{dept.hours}</span>
                   </div>
                   
-                  <div className="flex items-center space-x-2 space-x-reverse">
+                  <div className="flex items-center space-x-2 space-x-reverse text-sm">
                     <Phone className="h-4 w-4 text-primary" />
-                    <span className="text-foreground font-medium">{dept.phone}</span>
+                    <span className="text-foreground font-medium text-sm">{dept.phone}</span>
                   </div>
                   
-                  <div className="flex items-center space-x-2 space-x-reverse">
+                  <div className="flex items-center space-x-2 space-x-reverse text-sm">
                     <Mail className="h-4 w-4 text-primary" />
-                    <span className="text-foreground">{dept.email}</span>
+                    <span className="text-foreground text-sm">{dept.email}</span>
                   </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex space-x-3 space-x-reverse pt-2">
-                  <Button onClick={() => handleCall(dept.phone)} className="bg-gradient-primary hover:shadow-elegant transition-all duration-300 flex-1">
+                <div className="flex space-x-2 space-x-reverse pt-1 md:space-x-3 md:pt-2">
+                  <Button size="sm" onClick={() => handleCall(dept.phone)} className="bg-gradient-primary hover:shadow-elegant transition-all duration-300 flex-1">
                     <Phone className="ml-2 h-4 w-4" />
                     اتصال
                   </Button>
-                  <Button variant="outline" onClick={() => handleEmail(dept.email)} className="flex-1 border-primary/20 hover:bg-primary/10">
+                  <Button size="sm" variant="outline" onClick={() => handleEmail(dept.email)} className="flex-1 border-primary/20 hover:bg-primary/10">
                     <Mail className="ml-2 h-4 w-4" />
                     بريد إلكتروني
                   </Button>
                   {hasValidLocation(dept.latitude, dept.longitude) && (
-                    <Button variant="outline" onClick={() => handleGetDirections(dept)} className="flex-1 border-primary/20 hover:bg-primary/10">
+                    <Button size="sm" variant="outline" onClick={() => handleGetDirections(dept)} className="flex-1 border-primary/20 hover:bg-primary/10">
                       <Navigation className="ml-2 h-4 w-4" />
                       اتجاهات
                     </Button>
