@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { LocationMap } from "@/components/LocationMap";
 interface EmergencyContact {
   id: string;
   title: string;
@@ -203,7 +204,8 @@ const Police = () => {
               </div>}
           </div>}
 
-        {/* Location Info */}
+        {/* Location and Map */}
+        {user && <LocationMap showNearbyStations={true} />}
         
       </div>
     </div>;
