@@ -23,6 +23,8 @@ export type Database = {
           hours: string
           icon: string
           id: string
+          latitude: number | null
+          longitude: number | null
           order_priority: number | null
           phone: string
           title: string
@@ -36,6 +38,8 @@ export type Database = {
           hours: string
           icon?: string
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           order_priority?: number | null
           phone: string
           title: string
@@ -49,6 +53,8 @@ export type Database = {
           hours?: string
           icon?: string
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           order_priority?: number | null
           phone?: string
           title?: string
@@ -288,6 +294,8 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          latitude: number | null
+          longitude: number | null
           name: string
           updated_at: string
         }
@@ -297,6 +305,8 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           name: string
           updated_at?: string
         }
@@ -306,6 +316,8 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           name?: string
           updated_at?: string
         }

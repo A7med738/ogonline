@@ -40,7 +40,7 @@ class SerpApiService {
   async searchNearbyPoliceStations(
     latitude: number, 
     longitude: number, 
-    radius: number = 10000
+    radius: number = 14
   ): Promise<SerpMapResult[]> {
     try {
       const apiKey = await this.getApiKey();
@@ -48,12 +48,11 @@ class SerpApiService {
       const params = new URLSearchParams({
         engine: 'google_maps',
         q: 'police station',
-        ll: `@${latitude},${longitude},${radius}m`,
-        type: 'search',
+        ll: `@${latitude},${longitude},${radius}z`,
         api_key: apiKey
       });
 
-      const response = await fetch(`https://serpapi.com/search?${params}`);
+      const response = await fetch(`https://serpapi.com/search.json?${params}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -79,11 +78,10 @@ class SerpApiService {
       const params = new URLSearchParams({
         engine: 'google_maps',
         q: query,
-        type: 'search',
         api_key: apiKey
       });
 
-      const response = await fetch(`https://serpapi.com/search?${params}`);
+      const response = await fetch(`https://serpapi.com/search.json?${params}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -113,7 +111,7 @@ class SerpApiService {
         api_key: apiKey
       });
 
-      const response = await fetch(`https://serpapi.com/search?${params}`);
+      const response = await fetch(`https://serpapi.com/search.json?${params}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

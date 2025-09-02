@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { sendNewsNotification, generateNewsUrl, sendTestNotification } from '@/lib/notifications';
 import { NewsMediaUpload } from '@/components/NewsMediaUpload';
+import { LocationPicker } from '@/components/LocationPicker';
 
 interface NewsItem {
   id: string;
@@ -50,6 +51,8 @@ interface PoliceStation {
   area: string;
   address?: string;
   description?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 interface CityDepartment {
@@ -62,6 +65,8 @@ interface CityDepartment {
   icon: string;
   color: string;
   order_priority?: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 const Admin = () => {
@@ -105,7 +110,9 @@ const Admin = () => {
     name: '',
     area: '',
     address: '',
-    description: ''
+    description: '',
+    latitude: undefined as number | undefined,
+    longitude: undefined as number | undefined
   });
 
   // City departments state
@@ -119,7 +126,9 @@ const Admin = () => {
     hours: '', 
     icon: 'Building', 
     color: 'from-blue-500 to-blue-600', 
-    order_priority: 0 
+    order_priority: 0,
+    latitude: undefined as number | undefined,
+    longitude: undefined as number | undefined
   });
 
   useEffect(() => {
@@ -570,7 +579,9 @@ const Admin = () => {
         name: '',
         area: '',
         address: '',
-        description: ''
+        description: '',
+        latitude: undefined,
+        longitude: undefined
       });
       fetchStations();
     } catch (error) {
@@ -593,7 +604,9 @@ const Admin = () => {
           name: editingStation.name,
           area: editingStation.area,
           address: editingStation.address,
-          description: editingStation.description
+          description: editingStation.description,
+          latitude: editingStation.latitude,
+          longitude: editingStation.longitude
         })
         .eq('id', editingStation.id);
 
@@ -664,7 +677,9 @@ const Admin = () => {
           hours: '', 
           icon: 'Building', 
           color: 'from-blue-500 to-blue-600', 
-          order_priority: 0 
+          order_priority: 0,
+          latitude: undefined,
+          longitude: undefined
         });
         toast({
           title: "تم الإنشاء",
@@ -1093,6 +1108,15 @@ const Admin = () => {
                     value={newStation.description}
                     onChange={(e) => setNewStation({ ...newStation, description: e.target.value })}
                   />
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">موقع المركز (اختياري)</label>
+                    <LocationPicker
+                      latitude={newStation.latitude}
+                      longitude={newStation.longitude}
+                      onLocationSelect={(lat, lng) => setNewStation({ ...newStation, latitude: lat, longitude: lng })}
+                      placeholder="ابحث عن موقع مركز الشرطة..."
+                    />
+                  </div>
                   <Button onClick={handleAddStation} className="w-fit">
                     <Plus className="ml-2 h-4 w-4" />
                     إضافة مركز
@@ -1123,6 +1147,15 @@ const Admin = () => {
                             value={editingStation.description || ''}
                             onChange={(e) => setEditingStation({ ...editingStation, description: e.target.value })}
                           />
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">موقع المركز (اختياري)</label>
+                            <LocationPicker
+                              latitude={editingStation.latitude}
+                              longitude={editingStation.longitude}
+                              onLocationSelect={(lat, lng) => setEditingStation({ ...editingStation, latitude: lat, longitude: lng })}
+                              placeholder="ابحث عن موقع مركز الشرطة..."
+                            />
+                          </div>
                           <div className="flex gap-2">
                             <Button onClick={handleUpdateStation} size="sm">
                               <Save className="ml-2 h-4 w-4" />
@@ -1217,6 +1250,15 @@ const Admin = () => {
                     onChange={(e) => setNewDepartment({...newDepartment, order_priority: parseInt(e.target.value) || 0})}
                   />
                 </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">موقع الإدارة (اختياري)</label>
+                  <LocationPicker
+                    latitude={newDepartment.latitude}
+                    longitude={newDepartment.longitude}
+                    onLocationSelect={(lat, lng) => setNewDepartment({ ...newDepartment, latitude: lat, longitude: lng })}
+                    placeholder="ابحث عن موقع الإدارة..."
+                  />
+                </div>
                 <Button onClick={handleAddDepartment}>إضافة إدارة</Button>
               </div>
 
@@ -1260,6 +1302,15 @@ const Admin = () => {
                             type="number"
                             value={editingDepartment.order_priority || 0}
                             onChange={(e) => setEditingDepartment({...editingDepartment, order_priority: parseInt(e.target.value) || 0})}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">موقع الإدارة (اختياري)</label>
+                          <LocationPicker
+                            latitude={editingDepartment.latitude}
+                            longitude={editingDepartment.longitude}
+                            onLocationSelect={(lat, lng) => setEditingDepartment({ ...editingDepartment, latitude: lat, longitude: lng })}
+                            placeholder="ابحث عن موقع الإدارة..."
                           />
                         </div>
                         <div className="flex space-x-2 space-x-reverse">
