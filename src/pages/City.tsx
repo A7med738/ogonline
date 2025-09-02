@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, Mail, MapPin, Clock, ArrowRight, Building, Users, Wrench, Banknote } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, ArrowRight, Building, Users, Wrench, Banknote, Navigation } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { supabase } from '@/integrations/supabase/client';
+import { openGoogleMapsDirections, hasValidLocation } from '@/utils/mapUtils';
 interface CityDepartment {
   id: string;
   title: string;
@@ -13,6 +14,8 @@ interface CityDepartment {
   icon: string;
   color: string;
   order_priority?: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 // Icon mapping for lucide icons
@@ -51,6 +54,16 @@ const City = () => {
   };
   const handleEmail = (email: string) => {
     window.open(`mailto:${email}`, '_self');
+  };
+
+  const handleGetDirections = (department: CityDepartment) => {
+    if (hasValidLocation(department.latitude, department.longitude)) {
+      openGoogleMapsDirections(
+        department.latitude!,
+        department.longitude!,
+        department.title
+      );
+    }
   };
   return <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
@@ -119,6 +132,12 @@ const City = () => {
                     <Mail className="ml-2 h-4 w-4" />
                     بريد إلكتروني
                   </Button>
+                  {hasValidLocation(dept.latitude, dept.longitude) && (
+                    <Button variant="outline" onClick={() => handleGetDirections(dept)} className="flex-1 border-primary/20 hover:bg-primary/10">
+                      <Navigation className="ml-2 h-4 w-4" />
+                      اتجاهات
+                    </Button>
+                  )}
                   </div>
                 </div>
               </GlassCard>;

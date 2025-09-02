@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, MapPin, Clock, ArrowRight, Shield, LogIn } from "lucide-react";
+import { Phone, MapPin, Clock, ArrowRight, Shield, LogIn, Navigation } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { LocationMap } from "@/components/LocationMap";
+import { openGoogleMapsDirections, hasValidLocation } from '@/utils/mapUtils';
 interface EmergencyContact {
   id: string;
   title: string;
@@ -22,6 +23,8 @@ interface PoliceStation {
   area: string;
   address?: string;
   description?: string;
+  latitude?: number;
+  longitude?: number;
 }
 const Police = () => {
   const navigate = useNavigate();
@@ -68,6 +71,17 @@ const Police = () => {
   };
   const handleStationClick = (stationId: string) => {
     navigate(`/police/station/${stationId}`);
+  };
+
+  const handleGetDirections = (station: PoliceStation, event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (hasValidLocation(station.latitude, station.longitude)) {
+      openGoogleMapsDirections(
+        station.latitude!,
+        station.longitude!,
+        `${station.name} - ${station.area}`
+      );
+    }
   };
   return <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
@@ -136,6 +150,22 @@ const Police = () => {
                           <MapPin className="h-4 w-4" />
                           <span>{station.address}</span>
                         </div>}
+                      
+                      {/* Directions Button */}
+                      {hasValidLocation(station.latitude, station.longitude) && (
+                        <div className="mt-4">
+                          <Button
+                            onClick={(e) => handleGetDirections(station, e)}
+                            variant="outline"
+                            size="sm"
+                            className="border-primary/20 hover:bg-primary/10"
+                          >
+                            <Navigation className="ml-2 h-4 w-4" />
+                            اتجاهات الوصول
+                          </Button>
+                        </div>
+                      )}
+                      
                       <p className="text-xs text-primary/80 mt-2 animate-pulse">
                         👆 اضغط لعرض أرقام المركز
                       </p>
