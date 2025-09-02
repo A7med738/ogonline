@@ -86,44 +86,44 @@ const City = () => {
             <p className="mt-2 text-sm md:text-base text-muted-foreground">جاري تحميل الإدارات...</p>
           </div> : departments.length === 0 ? <div className="text-center py-6 md:py-8">
             <p className="text-muted-foreground">لا توجد إدارات متاحة حالياً</p>
-          </div> : <div className="grid gap-3 md:gap-6 max-w-4xl mx-auto">
+          </div> : <div className="grid gap-2.5 md:gap-5 max-w-4xl mx-auto">
             {departments.map((dept, index) => {
           const IconComponent = iconMap[dept.icon] || Building;
           return <GlassCard key={dept.id} className="animate-slide-up hover:scale-[1.01] transition-all duration-300" style={{
             animationDelay: `${index * 0.1}s`
           }}>
-                <div className="space-y-3 md:space-y-4">
+                <div className="space-y-2.5 md:space-y-3.5">
                   {/* Header */}
-                  <div className="flex items-center space-x-3 space-x-reverse md:space-x-4">
-                    <div className={`bg-gradient-to-r ${dept.color} p-2 md:p-3 rounded-xl shadow-elegant`}>
-                      <IconComponent className="h-4 w-4 md:h-5 md:w-5 text-foreground" />
+                  <div className="flex items-center space-x-2.5 space-x-reverse md:space-x-4">
+                    <div className={`bg-gradient-to-r ${dept.color} p-1.5 md:p-3 rounded-lg md:rounded-xl shadow-elegant`}>
+                      <IconComponent className="h-3.5 w-3.5 md:h-5 md:w-5 text-foreground" />
                     </div>
                   <div className="flex-1">
-                    <h3 className="text-lg md:text-xl font-bold text-foreground">{dept.title}</h3>
-                    <p className="text-sm md:text-base text-foreground/90">{dept.description}</p>
+                    <h3 className="text-base md:text-xl font-bold text-foreground">{dept.title}</h3>
+                    <p className="text-xs md:text-base text-foreground/90 line-clamp-2">{dept.description}</p>
                   </div>
                 </div>
 
                 {/* Contact Details */}
-                <div className="space-y-2 md:space-y-3 pr-12 md:pr-16">
-                  <div className="flex items-center space-x-2 space-x-reverse text-xs md:text-sm">
+                <div className="space-y-1.5 md:space-y-3 pr-10 md:pr-16">
+                  <div className="flex items-center space-x-1.5 space-x-reverse text-xs md:text-sm">
                     <Clock className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
                     <span className="text-muted-foreground">{dept.hours}</span>
                   </div>
                   
-                  <div className="flex items-center space-x-2 space-x-reverse text-sm">
-                    <Phone className="h-4 w-4 text-primary" />
-                    <span className="text-foreground font-medium text-sm">{dept.phone}</span>
+                  <div className="flex items-center space-x-1.5 space-x-reverse text-xs md:text-sm">
+                    <Phone className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
+                    <span className="text-foreground font-medium text-xs md:text-sm">{dept.phone}</span>
                   </div>
                   
-                  <div className="flex items-center space-x-2 space-x-reverse text-sm">
-                    <Mail className="h-4 w-4 text-primary" />
-                    <span className="text-foreground text-sm">{dept.email}</span>
+                  <div className="flex items-center space-x-1.5 space-x-reverse text-xs md:text-sm">
+                    <Mail className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
+                    <span className="text-foreground text-xs md:text-sm">{dept.email}</span>
                   </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex space-x-2 space-x-reverse pt-1 md:space-x-3 md:pt-2">
+                <div className="flex space-x-1.5 space-x-reverse pt-1 md:space-x-3 md:pt-2">
                   <Button size="sm" onClick={() => handleCall(dept.phone)} className="bg-gradient-primary hover:shadow-elegant transition-all duration-300 flex-1">
                     <Phone className="ml-2 h-4 w-4" />
                     اتصال
@@ -135,7 +135,7 @@ const City = () => {
                   {hasValidLocation(dept.latitude, dept.longitude) && (
                     <Button size="sm" variant="outline" onClick={() => handleGetDirections(dept)} className="flex-1 border-primary/20 hover:bg-primary/10">
                       <Navigation className="ml-2 h-4 w-4" />
-                      اتجاهات
+                      موقع
                     </Button>
                   )}
                   </div>

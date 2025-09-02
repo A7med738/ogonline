@@ -161,7 +161,7 @@ const Police = () => {
                             className="border-primary/20 hover:bg-primary/10"
                           >
                             <Navigation className="ml-2 h-4 w-4" />
-                            اتجاهات الوصول
+                            موقع
                           </Button>
                         </div>
                       )}
