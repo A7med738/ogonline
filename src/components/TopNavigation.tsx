@@ -20,6 +20,14 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNewsOpen, setIsNewsOpen] = useState(false);
   const [recentNews, setRecentNews] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState<{
+    news: any[];
+    stations: any[];
+    departments: any[];
+  }>({ news: [], stations: [], departments: [] });
   const menuItems = [{
     icon: Home,
     label: 'الرئيسية',
@@ -85,6 +93,53 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
       navigate('/auth');
     }
   };
+
+  // Debounced global search across multiple tables
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (!q) {
+      setSearchResults({ news: [], stations: [], departments: [] });
+      setIsSearching(false);
+      return;
+    }
+    setIsSearching(true);
+    const handle = setTimeout(async () => {
+      try {
+        const [newsResp, stationsResp, depsResp] = await Promise.all([
+          supabase
+            .from('news')
+            .select('id, title, summary, category, published_at')
+            .or(`title.ilike.%${q}%,summary.ilike.%${q}%,content.ilike.%${q}%`)
+            .order('published_at', { ascending: false })
+            .limit(5),
+          supabase
+            .from('police_stations')
+            .select('id, name, area, address, description')
+            .or(`name.ilike.%${q}%,area.ilike.%${q}%,address.ilike.%${q}%,description.ilike.%${q}%`)
+            .limit(5),
+          supabase
+            .from('city_departments')
+            .select('id, title, description, phone, email, hours')
+            .or(`title.ilike.%${q}%,description.ilike.%${q}%,phone.ilike.%${q}%,email.ilike.%${q}%`)
+            .limit(5),
+        ]);
+
+        setSearchResults({
+          news: newsResp.data || [],
+          stations: stationsResp.data || [],
+          departments: depsResp.data || [],
+        });
+        setSearchOpen(true);
+      } catch (e) {
+        setSearchResults({ news: [], stations: [], departments: [] });
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+    return () => clearTimeout(handle);
+  }, [searchQuery]);
+
+  const closeSearch = () => setSearchOpen(false);
   return <div className="fixed top-0 left-0 right-0 z-50 bg-green-600 shadow-lg">
       {/* Status Bar Simulation */}
       
@@ -188,7 +243,91 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
       <div className="px-4 pb-3 bg-green-600">
         <div className="relative">
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input type="text" placeholder="" className="w-full bg-white rounded-full py-1 pr-10 pl-4 text-right text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50" />
+          <input
+            type="text"
+            placeholder="ابحث في الأخبار، أقسام الشرطة، وإدارات المدينة..."
+            className="w-full bg-white rounded-full py-1 pr-10 pl-4 text-right text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => searchQuery && setSearchOpen(true)}
+          />
+
+          {searchOpen && (
+            <div className="absolute left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border z-50">
+              <div className="p-2 max-h-96 overflow-auto">
+                {isSearching && <div className="text-center text-sm text-gray-500 py-4">جارٍ البحث...</div>}
+
+                {!isSearching && (
+                  <>
+                    {searchResults.news.length > 0 && (
+                      <div className="mb-3">
+                        <div className="px-2 py-1 text-xs text-gray-500">الأخبار</div>
+                        <ul>
+                          {searchResults.news.map((n: any) => (
+                            <li key={n.id}>
+                              <button
+                                className="w-full text-right px-3 py-2 hover:bg-gray-50 rounded-lg"
+                                onClick={() => { navigate('/news'); closeSearch(); setIsMenuOpen(false); }}
+                              >
+                                <div className="text-sm font-medium line-clamp-1">{n.title}</div>
+                                {n.summary && <div className="text-xs text-gray-500 line-clamp-1">{n.summary}</div>}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {searchResults.stations.length > 0 && (
+                      <div className="mb-3">
+                        <div className="px-2 py-1 text-xs text-gray-500">أقسام الشرطة</div>
+                        <ul>
+                          {searchResults.stations.map((s: any) => (
+                            <li key={s.id}>
+                              <button
+                                className="w-full text-right px-3 py-2 hover:bg-gray-50 rounded-lg"
+                                onClick={() => { navigate('/police'); closeSearch(); setIsMenuOpen(false); }}
+                              >
+                                <div className="text-sm font-medium line-clamp-1">{s.name} - {s.area}</div>
+                                {s.address && <div className="text-xs text-gray-500 line-clamp-1">{s.address}</div>}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {searchResults.departments.length > 0 && (
+                      <div className="mb-1">
+                        <div className="px-2 py-1 text-xs text-gray-500">إدارات المدينة</div>
+                        <ul>
+                          {searchResults.departments.map((d: any) => (
+                            <li key={d.id}>
+                              <button
+                                className="w-full text-right px-3 py-2 hover:bg-gray-50 rounded-lg"
+                                onClick={() => { navigate('/city'); closeSearch(); setIsMenuOpen(false); }}
+                              >
+                                <div className="text-sm font-medium line-clamp-1">{d.title}</div>
+                                {d.description && <div className="text-xs text-gray-500 line-clamp-1">{d.description}</div>}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {searchResults.news.length === 0 && searchResults.stations.length === 0 && searchResults.departments.length === 0 && (
+                      <div className="text-center text-sm text-gray-500 py-6">لا توجد نتائج</div>
+                    )}
+                  </>
+                )}
+              </div>
+
+              <div className="border-t p-2 flex justify-end">
+                <Button variant="ghost" size="sm" onClick={closeSearch}>إغلاق</Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
