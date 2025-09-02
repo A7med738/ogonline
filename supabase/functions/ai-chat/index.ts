@@ -74,10 +74,11 @@ serve(async (req) => {
       }
     );
 
-    // Try to get user; continue even if unauthenticated to allow public access
-    try {
-      await supabaseClient.auth.getUser();
-    } catch (_) {}
+    // Require authenticated user
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
 
     const body = (await req.json()) as ChatBody;
     if (!body?.prompt || typeof body.prompt !== "string") {
@@ -87,7 +88,7 @@ serve(async (req) => {
     const context = await fetchContext(supabaseClient, body.prompt);
 
     const system = `You are an assistant for October Gardens (حدائق أكتوبر). Answer in Arabic when the question is Arabic, otherwise answer in the user's language.
-Use ONLY the following up-to-date context to answer questions. If the information is missing, say you don't know and suggest contacting the relevant department.
+Use ONLY the following up-to-date context to answer questions. If the information is missing, say you don't know and suggest waiting for updates.
 Keep answers concise and actionable. Include phone and email if relevant.
 
 Context:\n${context}`;

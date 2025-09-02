@@ -5,6 +5,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bot, Send, X, RotateCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 type ChatMessage = {
   id: string;
@@ -14,6 +16,8 @@ type ChatMessage = {
 };
 
 export const FloatingChat = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -84,7 +88,21 @@ export const FloatingChat = () => {
     <>
       <div className="fixed bottom-6 right-6 z-40">
         <Button
-          onClick={handleOpen}
+          onClick={() => {
+            if (!user) {
+              toast({
+                title: "تسجيل الدخول مطلوب",
+                description: "يرجى تسجيل الدخول لاستخدام المساعد الذكي.",
+                action: (
+                  <Button onClick={() => (window.location.href = "/auth")} size="sm">
+                    تسجيل الدخول
+                  </Button>
+                ),
+              });
+              return;
+            }
+            handleOpen();
+          }}
           size="lg"
           className="h-14 w-14 aspect-square p-0 rounded-full shadow-lg bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 focus-visible:ring-2 focus-visible:ring-green-400"
           aria-label="Open AI assistant"
