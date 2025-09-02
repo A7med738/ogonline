@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, MapPin, Clock, ArrowRight, Shield, LogIn, Navigation, Trash2 } from "lucide-react";
+import { Phone, MapPin, Clock, ArrowRight, Shield, LogIn, Navigation } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -182,27 +182,7 @@ const Police = () => {
                   <GlassCard id={`station-header-${station.id}`} className="mb-4 hover:scale-[1.02] transition-all duration-300 hover:shadow-elegant hover:bg-white/20">
                     <div className="text-center">
                       <div className="flex justify-end gap-1">
-                        {isAdmin && (
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-700 hover:bg-red-50">
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>حذف مركز الشرطة</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  هل أنت متأكد من حذف "{station.name} - {station.area}"؟ هذا الإجراء لا يمكن التراجع عنه.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDeleteStation(station.id)} className="bg-red-600 hover:bg-red-700">حذف</AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        )}
+                        {/* Delete icon removed from public page; available in Admin panel only */}
                         {/* Location visibility toggle moved to Admin panel */}
                       </div>
                       <div className="cursor-pointer" onClick={() => handleStationClick(station.id)}>
