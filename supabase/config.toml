@@ -5,3 +5,12 @@ verify_jwt = false
 
 [functions.notify-new-news]
 verify_jwt = true
+
+[functions.ai-chat]
+verify_jwt = true
+
+[functions.create-embeddings]
+verify_jwt = false
+
+[functions.get-serp-api-key]
+verify_jwt = true
