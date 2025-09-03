@@ -123,7 +123,7 @@ const Police = () => {
   const handleToggleStationLocation = async (station: PoliceStation) => {
     const next = station.show_location === false ? true : false;
     try {
-      const { error } = await supabase.from('police_stations').update({ show_location: next }).eq('id', station.id);
+      const { error } = await supabase.from('police_stations').update({ show_location: next } as any).eq('id', station.id);
       if (error) throw error;
       setPoliceStations(prev => prev.map(s => s.id === station.id ? { ...s, show_location: next } : s));
     } catch (e) {
