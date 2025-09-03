@@ -27,6 +27,7 @@ export type Database = {
           longitude: number | null
           order_priority: number | null
           phone: string
+          show_location: boolean | null
           title: string
           updated_at: string
         }
@@ -42,6 +43,7 @@ export type Database = {
           longitude?: number | null
           order_priority?: number | null
           phone: string
+          show_location?: boolean | null
           title: string
           updated_at?: string
         }
@@ -57,6 +59,7 @@ export type Database = {
           longitude?: number | null
           order_priority?: number | null
           phone?: string
+          show_location?: boolean | null
           title?: string
           updated_at?: string
         }
@@ -297,6 +300,7 @@ export type Database = {
           latitude: number | null
           longitude: number | null
           name: string
+          show_location: boolean | null
           updated_at: string
         }
         Insert: {
@@ -308,6 +312,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           name: string
+          show_location?: boolean | null
           updated_at?: string
         }
         Update: {
@@ -319,6 +324,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           name?: string
+          show_location?: boolean | null
           updated_at?: string
         }
         Relationships: []
