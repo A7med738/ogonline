@@ -185,8 +185,13 @@ serve(async (req) => {
     );
 
     // Require authenticated user
-    const { data: { user } } = await supabaseClient.auth.getUser();
+    const authHeader = req.headers.get("Authorization") || req.headers.get("authorization");
+    const token = authHeader?.split(' ')[1] || null;
+    const { data: { user }, error: userErr } = token
+      ? await supabaseClient.auth.getUser(token)
+      : { data: { user: null }, error: new Error('missing token') } as any;
     if (!user) {
+      console.warn('Unauthorized request to ai-chat', { reason: userErr?.message });
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
