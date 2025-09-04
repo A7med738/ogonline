@@ -27,6 +27,7 @@ export type Database = {
           longitude: number | null
           order_priority: number | null
           phone: string
+          show_location: boolean | null
           title: string
           updated_at: string
         }
@@ -42,6 +43,7 @@ export type Database = {
           longitude?: number | null
           order_priority?: number | null
           phone: string
+          show_location?: boolean | null
           title: string
           updated_at?: string
         }
@@ -57,6 +59,7 @@ export type Database = {
           longitude?: number | null
           order_priority?: number | null
           phone?: string
+          show_location?: boolean | null
           title?: string
           updated_at?: string
         }
@@ -86,6 +89,39 @@ export type Database = {
           subscribed?: boolean
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      embeddings: {
+        Row: {
+          content: string
+          content_id: string
+          content_type: string
+          created_at: string
+          embedding: string | null
+          id: string
+          metadata: Json | null
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          content_id: string
+          content_type: string
+          created_at?: string
+          embedding?: string | null
+          id?: string
+          metadata?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          embedding?: string | null
+          id?: string
+          metadata?: Json | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -297,6 +333,7 @@ export type Database = {
           latitude: number | null
           longitude: number | null
           name: string
+          show_location: boolean | null
           updated_at: string
         }
         Insert: {
@@ -308,6 +345,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           name: string
+          show_location?: boolean | null
           updated_at?: string
         }
         Update: {
@@ -319,6 +357,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           name?: string
+          show_location?: boolean | null
           updated_at?: string
         }
         Relationships: []
@@ -442,12 +481,119 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      binary_quantize: {
+        Args: { "": string } | { "": unknown }
+        Returns: unknown
+      }
+      halfvec_avg: {
+        Args: { "": number[] }
+        Returns: unknown
+      }
+      halfvec_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      halfvec_send: {
+        Args: { "": unknown }
+        Returns: string
+      }
+      halfvec_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      hnsw_bit_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnsw_halfvec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnsw_sparsevec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnswhandler: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflat_bit_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflat_halfvec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflathandler: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      l2_norm: {
+        Args: { "": unknown } | { "": unknown }
+        Returns: number
+      }
+      l2_normalize: {
+        Args: { "": string } | { "": unknown } | { "": unknown }
+        Returns: string
+      }
+      match_embeddings: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+        }
+        Returns: {
+          content: string
+          content_id: string
+          content_type: string
+          id: string
+          metadata: Json
+          similarity: number
+        }[]
+      }
+      sparsevec_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      sparsevec_send: {
+        Args: { "": unknown }
+        Returns: string
+      }
+      sparsevec_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
+      }
+      vector_avg: {
+        Args: { "": number[] }
+        Returns: string
+      }
+      vector_dims: {
+        Args: { "": string } | { "": unknown }
+        Returns: number
+      }
+      vector_norm: {
+        Args: { "": string }
+        Returns: number
+      }
+      vector_out: {
+        Args: { "": string }
+        Returns: unknown
+      }
+      vector_send: {
+        Args: { "": string }
+        Returns: string
+      }
+      vector_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
       }
     }
     Enums: {

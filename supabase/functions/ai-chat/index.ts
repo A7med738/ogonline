@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,27 +12,117 @@ type ChatBody = {
   history?: { role: "user" | "assistant"; content: string }[];
 };
 
+async function createQueryEmbedding(text: string): Promise<number[]> {
+  const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+  if (!openAIApiKey) {
+    throw new Error('OpenAI API key not found');
+  }
+
+  const response = await fetch('https://api.openai.com/v1/embeddings', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${openAIApiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'text-embedding-3-small',
+      input: text,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`OpenAI API error: ${error}`);
+  }
+
+  const data = await response.json();
+  return data.data[0].embedding;
+}
+
 async function fetchContext(supabaseClient: any, query: string) {
-  const terms = query.trim().split(/\s+/).slice(0, 6).join(" | ");
+  console.log('Fetching context for query:', query);
+  
+  try {
+    // Generate embedding for the query
+    const queryEmbedding = await createQueryEmbedding(query);
+    console.log('Query embedding generated successfully');
 
-  const [{ data: news }, { data: stations }, { data: departments }] = await Promise.all([
-    supabaseClient.from("news").select("title, summary, content, category, published_at").limit(5).order("published_at", { ascending: false }),
-    supabaseClient.from("police_stations").select("name, area, address, description, latitude, longitude").limit(20),
-    supabaseClient.from("city_departments").select("title, description, phone, email, hours, latitude, longitude").limit(20),
-  ]);
+    // Search for similar content using vector similarity
+    const { data: similarContent } = await supabaseClient.rpc('match_embeddings', {
+      query_embedding: `[${queryEmbedding.join(',')}]`,
+      match_threshold: 0.7,
+      match_count: 10
+    });
 
-  const contextPieces: string[] = [];
-  if (departments?.length) {
-    contextPieces.push("[CITY_DEPARTMENTS]\n" + departments.map((d: any) => `- ${d.title}: ${d.description ?? ""} | Phone: ${d.phone} | Email: ${d.email} | Hours: ${d.hours}${d.latitude && d.longitude ? ` | Location: (${d.latitude}, ${d.longitude})` : ""}`).join("\n"));
-  }
-  if (stations?.length) {
-    contextPieces.push("[POLICE_STATIONS]\n" + stations.map((s: any) => `- ${s.name} (${s.area})${s.address ? `, ${s.address}` : ""}${s.description ? ` - ${s.description}` : ""}${s.latitude && s.longitude ? ` | Location: (${s.latitude}, ${s.longitude})` : ""}`).join("\n"));
-  }
-  if (news?.length) {
-    contextPieces.push("[NEWS]\n" + news.map((n: any) => `- ${n.title} [${n.category}] (${n.published_at}): ${n.summary || n.content || ""}`).join("\n"));
-  }
+    console.log('Similar content found:', similarContent?.length || 0, 'items');
 
-  return contextPieces.join("\n\n");
+    // Fallback to traditional queries if no similar content found
+    const [{ data: news }, { data: stations }, { data: departments }, { data: emergencyContacts }] = await Promise.all([
+      supabaseClient.from("news").select("title, summary, content, category, published_at").limit(8).order("published_at", { ascending: false }),
+      supabaseClient.from("police_stations").select("name, area, address, description, latitude, longitude").limit(15),
+      supabaseClient.from("city_departments").select("title, description, phone, email, hours, latitude, longitude").limit(15),
+      supabaseClient.from("emergency_contacts").select("title, description, number, type").limit(10),
+    ]);
+
+    const contextPieces: string[] = [];
+
+    // Add similar content first if available
+    if (similarContent?.length) {
+      const relevantContent = similarContent.map((item: any) => `[${item.content_type.toUpperCase()}] ${item.content}`).join('\n');
+      contextPieces.push("[RELEVANT_CONTENT]\n" + relevantContent);
+    }
+
+    // Add structured data
+    if (departments?.length) {
+      contextPieces.push("[CITY_DEPARTMENTS]\n" + departments.map((d: any) => 
+        `- ${d.title}: ${d.description ?? ""} | Phone: ${d.phone} | Email: ${d.email} | Hours: ${d.hours}${d.latitude && d.longitude ? ` | Location: (${d.latitude}, ${d.longitude})` : ""}`
+      ).join("\n"));
+    }
+    
+    if (stations?.length) {
+      contextPieces.push("[POLICE_STATIONS]\n" + stations.map((s: any) => 
+        `- ${s.name} (${s.area})${s.address ? `, ${s.address}` : ""}${s.description ? ` - ${s.description}` : ""}${s.latitude && s.longitude ? ` | Location: (${s.latitude}, ${s.longitude})` : ""}`
+      ).join("\n"));
+    }
+    
+    if (emergencyContacts?.length) {
+      contextPieces.push("[EMERGENCY_CONTACTS]\n" + emergencyContacts.map((e: any) => 
+        `- ${e.title} (${e.type}): ${e.number}${e.description ? ` - ${e.description}` : ""}`
+      ).join("\n"));
+    }
+    
+    if (news?.length) {
+      contextPieces.push("[NEWS]\n" + news.map((n: any) => 
+        `- ${n.title} [${n.category}] (${n.published_at}): ${n.summary || n.content || ""}`
+      ).join("\n"));
+    }
+
+    const context = contextPieces.join("\n\n");
+    console.log('Context generated, length:', context.length);
+    return context;
+
+  } catch (error) {
+    console.error('Error in fetchContext:', error);
+    // Fallback to basic context if embedding fails
+    const [{ data: news }, { data: stations }, { data: departments }] = await Promise.all([
+      supabaseClient.from("news").select("title, summary, content, category, published_at").limit(5).order("published_at", { ascending: false }),
+      supabaseClient.from("police_stations").select("name, area, address, description, latitude, longitude").limit(10),
+      supabaseClient.from("city_departments").select("title, description, phone, email, hours, latitude, longitude").limit(10),
+    ]);
+
+    const contextPieces: string[] = [];
+    if (departments?.length) {
+      contextPieces.push("[CITY_DEPARTMENTS]\n" + departments.map((d: any) => `- ${d.title}: ${d.description ?? ""} | Phone: ${d.phone} | Email: ${d.email} | Hours: ${d.hours}${d.latitude && d.longitude ? ` | Location: (${d.latitude}, ${d.longitude})` : ""}`).join("\n"));
+    }
+    if (stations?.length) {
+      contextPieces.push("[POLICE_STATIONS]\n" + stations.map((s: any) => `- ${s.name} (${s.area})${s.address ? `, ${s.address}` : ""}${s.description ? ` - ${s.description}` : ""}${s.latitude && s.longitude ? ` | Location: (${s.latitude}, ${s.longitude})` : ""}`).join("\n"));
+    }
+    if (news?.length) {
+      contextPieces.push("[NEWS]\n" + news.map((n: any) => `- ${n.title} [${n.category}] (${n.published_at}): ${n.summary || n.content || ""}`).join("\n"));
+    }
+
+    return contextPieces.join("\n\n");
+  }
 }
 
 async function callGemini(systemPrompt: string, userPrompt: string, history: ChatBody["history"]) {
@@ -46,13 +137,32 @@ async function callGemini(systemPrompt: string, userPrompt: string, history: Cha
   }
   contents.push({ role: "user", parts: [{ text: `${systemPrompt}\n\nUser question: ${userPrompt}` }] });
 
-  const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+  const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ contents }),
+    body: JSON.stringify({ 
+      contents,
+      generationConfig: {
+        temperature: 0.7,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 2048,
+      },
+      safetySettings: [
+        {
+          category: "HARM_CATEGORY_HARASSMENT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_HATE_SPEECH",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        }
+      ]
+    }),
   });
   if (!resp.ok) {
     const text = await resp.text();
+    console.error('Gemini API error:', text);
     throw new Error(`Gemini error: ${resp.status} ${text}`);
   }
   const json = await resp.json();
@@ -75,8 +185,13 @@ serve(async (req) => {
     );
 
     // Require authenticated user
-    const { data: { user } } = await supabaseClient.auth.getUser();
+    const authHeader = req.headers.get("Authorization") || req.headers.get("authorization");
+    const token = authHeader?.split(' ')[1] || null;
+    const { data: { user }, error: userErr } = token
+      ? await supabaseClient.auth.getUser(token)
+      : { data: { user: null }, error: new Error('missing token') } as any;
     if (!user) {
+      console.warn('Unauthorized request to ai-chat', { reason: userErr?.message });
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
@@ -87,11 +202,34 @@ serve(async (req) => {
 
     const context = await fetchContext(supabaseClient, body.prompt);
 
-    const system = `You are an assistant for October Gardens (حدائق أكتوبر). Answer in Arabic when the question is Arabic, otherwise answer in the user's language.
-Use ONLY the following up-to-date context to answer questions. If the information is missing, say you don't know and suggest waiting for updates.
-Keep answers concise and actionable. Include phone and email if relevant.
+    const system = `أنت مساعد ذكي متخصص لمنطقة حدائق أكتوبر (October Gardens). أجب بالعربية عندما يكون السؤال بالعربية، وإلا أجب بلغة المستخدم.
 
-Context:\n${context}`;
+🎯 **مهمتك الأساسية:**
+- استخدم المعلومات المحدثة والسياق المتوفر لتقديم إجابات دقيقة ومفصلة
+- قدم معلومات شاملة عن الخدمات الحكومية وأقسام الشرطة والأخبار
+- كن مبدعاً بدرجة متوسطة في تقديم المعلومات بطريقة جذابة ومفيدة
+- اذكر أرقام الهواتف والعناوين والمواقع عند توفرها
+- إذا كانت المعلومة غير متوفرة، اقترح انتظار التحديثات أو التواصل المباشر
+
+📋 **إرشادات الإجابة:**
+✅ استخدم الرموز التعبيرية بشكل معتدل لجعل الإجابة أكثر وضوحاً
+✅ نظم المعلومات في نقاط أو قوائم عند الحاجة
+✅ قدم سياق إضافي مفيد عندما يكون ذلك مناسباً
+✅ اربط المعلومات ببعضها البعض عند الإمكان
+✅ كن ودوداً ومساعداً في نبرة الإجابة
+
+❌ تجنب:
+❌ المعلومات المفبركة أو غير المؤكدة
+❌ الإفراط في الإبداع على حساب الدقة
+❌ إعطاء معلومات طبية أو قانونية متخصصة
+❌ تجاهل السياق المحدد المتوفر
+
+💡 **نصائح للإجابة المثلى:**
+- ابدأ بالمعلومة المطلوبة مباشرة
+- أضف تفاصيل مفيدة من السياق
+- اختتم بنصيحة عملية أو خطوة تالية إذا كان مناسباً
+
+السياق المحدث:\n${context}`;
 
     const answer = await callGemini(system, body.prompt, body.history ?? []);
 
