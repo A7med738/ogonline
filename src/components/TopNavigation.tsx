@@ -15,8 +15,13 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
-  const { unreadCount, markNewsAsRead } = useNewsNotifications();
+  const {
+    user
+  } = useAuth();
+  const {
+    unreadCount,
+    markNewsAsRead
+  } = useNewsNotifications();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNewsOpen, setIsNewsOpen] = useState(false);
   const [recentNews, setRecentNews] = useState<any[]>([]);
@@ -27,7 +32,11 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
     news: any[];
     stations: any[];
     departments: any[];
-  }>({ news: [], stations: [], departments: [] });
+  }>({
+    news: [],
+    stations: [],
+    departments: []
+  });
   const menuItems = [{
     icon: Home,
     label: 'الرئيسية',
@@ -71,19 +80,15 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
   useEffect(() => {
     const fetchRecentNews = async () => {
       if (!user) return;
-      
-      const { data: news } = await supabase
-        .from('news')
-        .select('id, title, published_at')
-        .order('published_at', { ascending: false })
-        .limit(5);
-      
+      const {
+        data: news
+      } = await supabase.from('news').select('id, title, published_at').order('published_at', {
+        ascending: false
+      }).limit(5);
       setRecentNews(news || []);
     };
-
     fetchRecentNews();
   }, [user]);
-
   const handleNewsClick = () => {
     if (user) {
       markNewsAsRead();
@@ -98,47 +103,38 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
   useEffect(() => {
     const q = searchQuery.trim();
     if (!q) {
-      setSearchResults({ news: [], stations: [], departments: [] });
+      setSearchResults({
+        news: [],
+        stations: [],
+        departments: []
+      });
       setIsSearching(false);
       return;
     }
     setIsSearching(true);
     const handle = setTimeout(async () => {
       try {
-        const [newsResp, stationsResp, depsResp] = await Promise.all([
-          supabase
-            .from('news')
-            .select('id, title, summary, category, published_at')
-            .or(`title.ilike.%${q}%,summary.ilike.%${q}%,content.ilike.%${q}%`)
-            .order('published_at', { ascending: false })
-            .limit(5),
-          supabase
-            .from('police_stations')
-            .select('id, name, area, address, description')
-            .or(`name.ilike.%${q}%,area.ilike.%${q}%,address.ilike.%${q}%,description.ilike.%${q}%`)
-            .limit(5),
-          supabase
-            .from('city_departments')
-            .select('id, title, description, phone, email, hours')
-            .or(`title.ilike.%${q}%,description.ilike.%${q}%,phone.ilike.%${q}%,email.ilike.%${q}%`)
-            .limit(5),
-        ]);
-
+        const [newsResp, stationsResp, depsResp] = await Promise.all([supabase.from('news').select('id, title, summary, category, published_at').or(`title.ilike.%${q}%,summary.ilike.%${q}%,content.ilike.%${q}%`).order('published_at', {
+          ascending: false
+        }).limit(5), supabase.from('police_stations').select('id, name, area, address, description').or(`name.ilike.%${q}%,area.ilike.%${q}%,address.ilike.%${q}%,description.ilike.%${q}%`).limit(5), supabase.from('city_departments').select('id, title, description, phone, email, hours').or(`title.ilike.%${q}%,description.ilike.%${q}%,phone.ilike.%${q}%,email.ilike.%${q}%`).limit(5)]);
         setSearchResults({
           news: newsResp.data || [],
           stations: stationsResp.data || [],
-          departments: depsResp.data || [],
+          departments: depsResp.data || []
         });
         setSearchOpen(true);
       } catch (e) {
-        setSearchResults({ news: [], stations: [], departments: [] });
+        setSearchResults({
+          news: [],
+          stations: [],
+          departments: []
+        });
       } finally {
         setIsSearching(false);
       }
     }, 300);
     return () => clearTimeout(handle);
   }, [searchQuery]);
-
   const closeSearch = () => setSearchOpen(false);
   return <div className="fixed top-0 left-0 right-0 z-50 bg-green-600 shadow-lg">
       {/* Status Bar Simulation */}
@@ -147,63 +143,40 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
       {/* Main Navigation */}
       <div className="flex justify-between items-center px-4 py-3 bg-green-600 relative">
         <div className="flex items-center gap-3">
-          <h1 className="arabic-logo text-white text-2xl" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            مكتبة
-          </h1>
-          {location.pathname !== '/' && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-white hover:bg-white/20 p-2" 
-              onClick={() => navigate('/')}
-            >
+          
+          {location.pathname !== '/' && <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 p-2" onClick={() => navigate('/')}>
               <ArrowRight className="h-4 w-4" />
-            </Button>
-          )}
+            </Button>}
           <Popover open={isNewsOpen} onOpenChange={setIsNewsOpen}>
             <PopoverTrigger asChild>
               <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 p-2 relative">
                 <Bell className="h-4 w-4 text-white" />
-                {user && unreadCount > 0 && (
-                  <NewsNotificationBadge count={unreadCount} />
-                )}
+                {user && unreadCount > 0 && <NewsNotificationBadge count={unreadCount} />}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80 p-0" align="start">
               <div className="p-4">
                 <h3 className="font-semibold text-lg mb-3">الأخبار الجديدة</h3>
-                {!user ? (
-                  <div className="text-center py-6">
+                {!user ? <div className="text-center py-6">
                     <p className="text-gray-600 mb-4">يرجى تسجيل الدخول لرؤية الأخبار</p>
                     <Button onClick={() => navigate('/auth')} className="w-full">
                       تسجيل الدخول
                     </Button>
-                  </div>
-                ) : recentNews.length === 0 ? (
-                  <div className="text-center py-6">
+                  </div> : recentNews.length === 0 ? <div className="text-center py-6">
                     <p className="text-gray-600">لا توجد أخبار جديدة</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3 max-h-80 overflow-y-auto">
-                    {recentNews.map((news) => (
-                      <div
-                        key={news.id}
-                        className="p-3 rounded-lg hover:bg-gray-50 cursor-pointer border"
-                        onClick={handleNewsClick}
-                      >
+                  </div> : <div className="space-y-3 max-h-80 overflow-y-auto">
+                    {recentNews.map(news => <div key={news.id} className="p-3 rounded-lg hover:bg-gray-50 cursor-pointer border" onClick={handleNewsClick}>
                         <h4 className="font-medium text-sm text-right">{news.title}</h4>
                         <p className="text-xs text-gray-500 text-right mt-1">
                           {new Date(news.published_at).toLocaleDateString('en-GB')}
                         </p>
-                      </div>
-                    ))}
+                      </div>)}
                     <div className="pt-3 border-t">
                       <Button onClick={handleNewsClick} className="w-full" variant="outline">
                         عرض جميع الأخبار
                       </Button>
                     </div>
-                  </div>
-                )}
+                  </div>}
               </div>
             </PopoverContent>
           </Popover>
@@ -246,91 +219,69 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
       <div className="px-4 pb-3 bg-green-600">
         <div className="relative">
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder=" ابحث هنا أي شيء "
-            className="w-full bg-white rounded-full py-1 pr-10 pl-4 text-right text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => searchQuery && setSearchOpen(true)}
-          />
+          <input type="text" placeholder=" ابحث هنا أي شيء " className="w-full bg-white rounded-full py-1 pr-10 pl-4 text-right text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onFocus={() => searchQuery && setSearchOpen(true)} />
 
-          {searchOpen && (
-            <div className="absolute left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border z-50">
+          {searchOpen && <div className="absolute left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border z-50">
               <div className="p-2 max-h-96 overflow-auto">
                 {isSearching && <div className="text-center text-sm text-gray-500 py-4">جارٍ البحث...</div>}
 
-                {!isSearching && (
-                  <>
-                    {searchResults.news.length > 0 && (
-                      <div className="mb-3">
+                {!isSearching && <>
+                    {searchResults.news.length > 0 && <div className="mb-3">
                         <div className="px-2 py-1 text-xs text-gray-500">الأخبار</div>
                         <ul>
-                          {searchResults.news.map((n: any) => (
-                            <li key={n.id}>
-                              <button
-                                className="w-full text-right px-3 py-2 hover:bg-gray-50 rounded-lg"
-                                onClick={() => { navigate('/news'); closeSearch(); setIsMenuOpen(false); }}
-                              >
+                          {searchResults.news.map((n: any) => <li key={n.id}>
+                              <button className="w-full text-right px-3 py-2 hover:bg-gray-50 rounded-lg" onClick={() => {
+                      navigate('/news');
+                      closeSearch();
+                      setIsMenuOpen(false);
+                    }}>
                                 <div className="text-sm font-medium line-clamp-1">{n.title}</div>
                                 {n.summary && <div className="text-xs text-gray-500 line-clamp-1">{n.summary}</div>}
                               </button>
-                            </li>
-                          ))}
+                            </li>)}
                         </ul>
-                      </div>
-                    )}
+                      </div>}
 
-                    {searchResults.stations.length > 0 && (
-                      <div className="mb-3">
+                    {searchResults.stations.length > 0 && <div className="mb-3">
                         <div className="px-2 py-1 text-xs text-gray-500">أقسام الشرطة</div>
                         <ul>
-                          {searchResults.stations.map((s: any) => (
-                            <li key={s.id}>
-                              <button
-                                className="w-full text-right px-3 py-2 hover:bg-gray-50 rounded-lg"
-                                onClick={() => { navigate('/police'); closeSearch(); setIsMenuOpen(false); }}
-                              >
+                          {searchResults.stations.map((s: any) => <li key={s.id}>
+                              <button className="w-full text-right px-3 py-2 hover:bg-gray-50 rounded-lg" onClick={() => {
+                      navigate('/police');
+                      closeSearch();
+                      setIsMenuOpen(false);
+                    }}>
                                 <div className="text-sm font-medium line-clamp-1">{s.name} - {s.area}</div>
                                 {s.address && <div className="text-xs text-gray-500 line-clamp-1">{s.address}</div>}
                               </button>
-                            </li>
-                          ))}
+                            </li>)}
                         </ul>
-                      </div>
-                    )}
+                      </div>}
 
-                    {searchResults.departments.length > 0 && (
-                      <div className="mb-1">
+                    {searchResults.departments.length > 0 && <div className="mb-1">
                         <div className="px-2 py-1 text-xs text-gray-500">إدارات المدينة</div>
                         <ul>
-                          {searchResults.departments.map((d: any) => (
-                            <li key={d.id}>
-                              <button
-                                className="w-full text-right px-3 py-2 hover:bg-gray-50 rounded-lg"
-                                onClick={() => { navigate('/city'); closeSearch(); setIsMenuOpen(false); }}
-                              >
+                          {searchResults.departments.map((d: any) => <li key={d.id}>
+                              <button className="w-full text-right px-3 py-2 hover:bg-gray-50 rounded-lg" onClick={() => {
+                      navigate('/city');
+                      closeSearch();
+                      setIsMenuOpen(false);
+                    }}>
                                 <div className="text-sm font-medium line-clamp-1">{d.title}</div>
                                 {d.description && <div className="text-xs text-gray-500 line-clamp-1">{d.description}</div>}
                               </button>
-                            </li>
-                          ))}
+                            </li>)}
                         </ul>
-                      </div>
-                    )}
+                      </div>}
 
-                    {searchResults.news.length === 0 && searchResults.stations.length === 0 && searchResults.departments.length === 0 && (
-                      <div className="text-center text-sm text-gray-500 py-6">لا توجد نتائج</div>
-                    )}
-                  </>
-                )}
+                    {searchResults.news.length === 0 && searchResults.stations.length === 0 && searchResults.departments.length === 0 && <div className="text-center text-sm text-gray-500 py-6">لا توجد نتائج</div>}
+                  </>}
               </div>
 
               <div className="border-t p-2 flex justify-end">
                 <Button variant="ghost" size="sm" onClick={closeSearch}>إغلاق</Button>
               </div>
-            </div>
-          )}
+            </div>}
         </div>
       </div>
 
