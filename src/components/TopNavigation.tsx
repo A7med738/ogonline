@@ -146,7 +146,10 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
 
       {/* Main Navigation */}
       <div className="flex justify-between items-center px-4 py-3 bg-green-600 relative">
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-3">
+          <h1 className="arabic-logo text-white text-2xl" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+            مكتبة
+          </h1>
           {location.pathname !== '/' && (
             <Button 
               variant="ghost" 
@@ -245,7 +248,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
             type="text"
-            placeholder=" ابحث هن أي شيء "
+            placeholder=" ابحث هنا أي شيء "
             className="w-full bg-white rounded-full py-1 pr-10 pl-4 text-right text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

@@ -1,10 +1,41 @@
+@font-face {
+  font-family: 'HS Headline';
+  src: url('/fonts/HS-Headline.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Custom styles for Arabic logo-like text */
+.arabic-logo {
+  font-family: 'HS Headline', system-ui, -apple-system, sans-serif;
+  font-weight: bold;
+  letter-spacing: -1px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */
+
+/* Apply Lateef font to Arabic text */
+*:lang(ar),
+[dir="rtl"] {
+  font-family: 'Lateef', system-ui, -apple-system, sans-serif;
+}
+
+/* Apply Lateef font to elements with Arabic text */
+:is(*) {
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+:is(*):has(:lang(ar)) {
+  font-family: 'Lateef', system-ui, -apple-system, sans-serif;
+}
 
 @layer base {
   :root {
