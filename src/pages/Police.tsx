@@ -146,7 +146,7 @@ const Police = () => {
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
           <div className="bg-primary/10 border border-primary/20 backdrop-blur-sm rounded-full p-4 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-            <Shield className="h-10 w-10 text-primary" />
+            <img src="/lovable-uploads/5f18772c-04fa-48a3-8d4d-67afd03b0db7.png" alt="شعار الشرطة المصرية" className="h-12 w-12 object-contain" />
           </div>
           <h3 className="text-2xl font-bold text-foreground mb-4">شرطة المدينة</h3>
           
