@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Phone, MapPin, Clock, ArrowRight, Shield, LogIn, Navigation } from "lucide-react";
+import React, { useState, useEffect, useMemo } from 'react';
+import { Phone, MapPin, Clock, ArrowRight, Shield, LogIn, Navigation, Search, MoreHorizontal } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -37,7 +38,7 @@ const Police = () => {
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
   const [policeStations, setPoliceStations] = useState<PoliceStation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [openStations, setOpenStations] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   useEffect(() => {
     fetchData();
@@ -105,6 +106,59 @@ const Police = () => {
       setLoading(false);
     }
   };
+
+  // Combine all departments into unified cards
+  const allDepartments = useMemo(() => {
+    const stationCards = policeStations.map(station => {
+      const stationContacts = emergencyContacts.filter(c => c.station_id === station.id && c.type !== 'emergency');
+      const primaryContact = stationContacts.find(c => c.order_priority === 0) || stationContacts[0];
+      
+      return {
+        id: station.id,
+        type: 'station' as const,
+        title: station.name,
+        subtitle: station.area,
+        description: station.description || 'مركز شرطة',
+        address: station.address,
+        primaryContact: primaryContact?.number || '',
+        latitude: station.latitude,
+        longitude: station.longitude,
+        show_location: station.show_location,
+        contacts: stationContacts
+      };
+    });
+
+    const generalCards = emergencyContacts
+      .filter(c => !c.station_id && c.type !== 'emergency')
+      .map(contact => ({
+        id: contact.id,
+        type: 'contact' as const,
+        title: contact.title,
+        subtitle: contact.type,
+        description: contact.description,
+        address: '',
+        primaryContact: contact.number,
+        latitude: undefined,
+        longitude: undefined,
+        show_location: false,
+        contacts: [contact]
+      }));
+
+    return [...stationCards, ...generalCards];
+  }, [policeStations, emergencyContacts]);
+
+  // Filter departments based on search query
+  const filteredDepartments = useMemo(() => {
+    if (!searchQuery.trim()) return allDepartments;
+    
+    return allDepartments.filter(dept => 
+      dept.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      dept.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      dept.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      dept.address.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [allDepartments, searchQuery]);
+
   const handleCall = (number: string) => {
     window.open(`tel:${number}`, '_self');
   };
@@ -169,11 +223,30 @@ const Police = () => {
             </div>
           </GlassCard>}
 
+        {/* Search Bar */}
+        {user && !loading && (
+          <div className="max-w-2xl mx-auto mb-8">
+            <div className="relative">
+              <Search className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="البحث في الإدارات والأقسام..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pr-10 text-right bg-card/50 border-primary/20 focus:border-primary/40"
+              />
+            </div>
+          </div>
+        )}
+
         {/* Authentication Check */}
-        {authLoading ? <div className="text-center py-8">
+        {authLoading ? (
+          <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
             <p className="mt-2 text-muted-foreground">جاري التحقق من الهوية...</p>
-          </div> : !user ? <GlassCard className="text-center max-w-2xl mx-auto">
+          </div>
+        ) : !user ? (
+          <GlassCard className="text-center max-w-2xl mx-auto">
             <div className="py-8">
               <LogIn className="h-16 w-16 text-primary mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-foreground mb-4">تسجيل الدخول مطلوب</h2>
@@ -185,118 +258,111 @@ const Police = () => {
                 تسجيل الدخول
               </Button>
             </div>
-          </GlassCard> : loading ? <div className="text-center py-8">
+          </GlassCard>
+        ) : loading ? (
+          <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
             <p className="mt-2 text-muted-foreground">جاري تحميل أرقام الطوارئ...</p>
-          </div> : emergencyContacts.length === 0 ? <div className="text-center py-8">
-            <p className="text-muted-foreground">لا توجد أرقام طوارئ متاحة حالياً</p>
-          </div> : policeStations.length === 0 ? <div className="text-center py-8">
-            <p className="text-muted-foreground">لا توجد مراكز شرطة متاحة حالياً</p>
-          </div> : <div className="space-y-8 max-w-4xl mx-auto">
-            {policeStations.map((station, stationIndex) => {
-          const stationContacts = emergencyContacts.filter(c => c.station_id === station.id && c.type !== 'emergency');
-          return <div key={station.id} className="animate-slide-up" style={{
-            animationDelay: `${stationIndex * 0.1}s`
-          }}>
-                  {/* Station Header */}
-                  <GlassCard id={`station-header-${station.id}`} className="mb-4 hover:scale-[1.02] transition-all duration-300 hover:shadow-elegant hover:bg-white/20">
-                    <div className="text-center">
-                      <div className="flex justify-end gap-1">
-                        {/* Delete icon removed from public page; available in Admin panel only */}
-                        {/* Location visibility toggle moved to Admin panel */}
-                      </div>
-                      <div className="cursor-pointer" onClick={() => handleStationClick(station.id)}>
-                      <h2 className="text-2xl font-bold text-foreground mb-2">{station.name}</h2>
-                      <p className="text-lg text-primary font-semibold mb-2">{station.area}</p>
-                      {station.description && <p className="text-foreground/90 mb-2">{station.description}</p>}
-                      {station.address && <div className="flex items-center justify-center space-x-2 space-x-reverse text-sm text-muted-foreground">
-                          <MapPin className="h-4 w-4" />
-                          <span>{station.address}</span>
-                        </div>}
-                      </div>
-                      
-                      {/* Directions Button */}
-                      {hasValidLocation(station.latitude, station.longitude) && (station.show_location !== false) && (
-                        <div className="mt-4">
-                          <Button
-                            onClick={(e) => handleGetDirections(station, e)}
-                            variant="outline"
-                            size="sm"
-                            className="border-primary/20 hover:bg-primary/10"
-                          >
-                            <Navigation className="ml-2 h-4 w-4" />
-                            موقع
-                          </Button>
-                        </div>
-                      )}
-                      
-                      <p className="text-xs text-primary/80 mt-2 animate-pulse">
-                        👆 اضغط لعرض أرقام المركز
-                      </p>
+          </div>
+        ) : filteredDepartments.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">
+              {searchQuery ? 'لا توجد نتائج للبحث المطلوب' : 'لا توجد أقسام متاحة حالياً'}
+            </p>
+          </div>
+        ) : (
+          <div className="max-w-6xl mx-auto">
+            {/* Unified Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredDepartments.map((dept, index) => (
+                <GlassCard 
+                  key={dept.id} 
+                  className="p-6 hover:scale-[1.02] transition-all duration-300 hover:shadow-elegant h-full"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  {/* Title & Subtitle */}
+                  <div className="text-center mb-4">
+                    <h3 className="text-lg font-bold text-foreground mb-1">
+                      {dept.title}
+                    </h3>
+                    <p className="text-sm text-primary font-medium">
+                      {dept.subtitle}
+                    </p>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-muted-foreground text-sm text-center mb-4 line-clamp-2">
+                    {dept.description}
+                  </p>
+
+                  {/* Address */}
+                  {dept.address && (
+                    <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mb-4">
+                      <MapPin className="h-3 w-3" />
+                      <span className="line-clamp-1">{dept.address}</span>
                     </div>
-                  </GlassCard>
+                  )}
 
-                </div>;
-        })}
+                  {/* Primary Contact Number */}
+                  {dept.primaryContact && (
+                    <div className="text-center mb-4 p-3 bg-primary/10 rounded-lg">
+                      <div className="text-lg font-bold text-primary">
+                        {dept.primaryContact}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        رقم التواصل الأساسي
+                      </div>
+                    </div>
+                  )}
 
-            {/* General contacts without station */}
-            {emergencyContacts.filter(c => !c.station_id && c.type !== 'emergency').length > 0 && <div className="animate-slide-up">
-                <GlassCard className="mb-4">
-                  <div className="text-center">
-                    <h2 className="text-2xl font-bold text-foreground mb-2">أرقام عامة</h2>
-                    <p className="text-muted-foreground">أرقام لا تتبع لمركز محدد</p>
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 mt-auto">
+                    {/* Call Button */}
+                    {dept.primaryContact && (
+                      <Button
+                        onClick={() => handleCall(dept.primaryContact)}
+                        size="sm"
+                        className="flex-1 bg-gradient-primary hover:shadow-elegant"
+                      >
+                        <Phone className="ml-1 h-3 w-3" />
+                        اتصال
+                      </Button>
+                    )}
+
+                    {/* Map Button */}
+                    {dept.latitude && dept.longitude && dept.show_location !== false && (
+                      <Button
+                        onClick={() => openGoogleMapsDirections(
+                          Number(dept.latitude), 
+                          Number(dept.longitude), 
+                          dept.title
+                        )}
+                        size="sm"
+                        variant="outline"
+                        className="flex-1 border-primary/20 hover:bg-primary/10"
+                      >
+                        <Navigation className="ml-1 h-3 w-3" />
+                        خريطة
+                      </Button>
+                    )}
+
+                    {/* More Button - for additional contacts */}
+                    {dept.contacts.length > 1 && (
+                      <Button
+                        onClick={() => dept.type === 'station' && handleStationClick(dept.id)}
+                        size="sm"
+                        variant="outline"
+                        className="border-primary/20 hover:bg-primary/10"
+                      >
+                        <MoreHorizontal className="h-3 w-3" />
+                      </Button>
+                    )}
                   </div>
                 </GlassCard>
-
-                <div className="relative z-10 grid gap-4">
-                  {emergencyContacts.filter(c => !c.station_id && c.type !== 'emergency').map(contact => <div key={contact.id} className="max-w-4xl mx-auto">
-                    <GlassCard className="bg-card/95 border border-white/15 backdrop-blur-sm hover:scale-[1.02] transition-all duration-300 shadow-elegant">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h3 className="text-xl font-bold text-foreground">
-                              {contact.title}
-                            </h3>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${contact.available ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                              {contact.available ? 'متاح' : 'غير متاح'}
-                            </span>
-                          </div>
-                          
-                          <p className="text-muted-foreground mb-2">
-                            {contact.description}
-                          </p>
-                          
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
-                            <div className="flex items-center space-x-2 space-x-reverse">
-                              <Clock className="h-4 w-4" />
-                              <span>متاح على مدار الساعة</span>
-                            </div>
-                            {contact.type && <div className="flex items-center space-x-2 space-x-reverse">
-                                <Shield className="h-4 w-4" />
-                                <span className="capitalize">{contact.type}</span>
-                              </div>}
-                          </div>
-                          
-                          {contact.order_priority > 0 && <div className="text-xs text-primary/70">
-                              أولوية: {contact.order_priority}
-                            </div>}
-                        </div>
-                        
-                        <div className="text-left">
-                          <div className="text-2xl font-bold text-primary mb-2">
-                            {contact.number}
-                          </div>
-                          <Button onClick={() => handleCall(contact.number)} disabled={!contact.available} className="bg-gradient-primary hover:shadow-elegant transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-                            <Phone className="ml-2 h-4 w-4" />
-                            {contact.available ? 'اتصال' : 'غير متاح'}
-                          </Button>
-                        </div>
-                      </div>
-                     </GlassCard>
-                   </div>)}
-                </div>
-              </div>}
-          </div>}
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Location and Map */}
         {user && <LocationMap showNearbyStations={true} />}
