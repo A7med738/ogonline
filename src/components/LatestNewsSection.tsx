@@ -56,7 +56,7 @@ export const LatestNewsSection = () => {
     setTimeout(() => {
       setCurrentIndex(prev => (prev + 1) % latestNews.length);
       setIsAnimating(false);
-    }, 150);
+    }, 300);
   };
   const handlePrev = () => {
     if (isAnimating || latestNews.length === 0) return;
@@ -64,7 +64,7 @@ export const LatestNewsSection = () => {
     setTimeout(() => {
       setCurrentIndex(prev => (prev - 1 + latestNews.length) % latestNews.length);
       setIsAnimating(false);
-    }, 150);
+    }, 300);
   };
   if (loading) {
     return <div className="text-center py-8">
@@ -84,7 +84,7 @@ export const LatestNewsSection = () => {
       {/* Single News Card with Navigation */}
       <div className="max-w-sm mx-auto relative">
         {latestNews.length > 0 && <div className="relative overflow-hidden">
-            <div className={`transition-all duration-500 ease-in-out ${isAnimating ? 'transform translate-x-full opacity-0' : 'transform translate-x-0 opacity-100'}`}>
+            <div className={`transition-all duration-300 ease-in-out ${isAnimating ? 'transform translate-x-full opacity-0 scale-95' : 'transform translate-x-0 opacity-100 scale-100'}`}>
               <div className="glass-card rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-glass cursor-pointer" onClick={() => navigate('/news')}>
                 {/* News Image */}
                 {latestNews[currentIndex]?.image_url && <div className="h-32 overflow-hidden">
@@ -142,9 +142,9 @@ export const LatestNewsSection = () => {
             setTimeout(() => {
               setCurrentIndex(index);
               setIsAnimating(false);
-            }, 150);
+            }, 300);
           }
-        }} className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentIndex ? 'bg-primary' : 'bg-muted-foreground/40'}`} />)}
+        }} className={`w-2 h-2 rounded-full transition-all duration-300 hover:scale-125 ${index === currentIndex ? 'bg-primary scale-125' : 'bg-muted-foreground/40'}`} />)}
           </div>}
       </div>
 
