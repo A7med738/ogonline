@@ -34,6 +34,16 @@ interface NewsMediaItem {
   isExisting?: boolean;
 }
 
+interface StoredNewsMediaItem {
+  id: string;
+  news_id: string;
+  media_url: string;
+  media_type: string;
+  file_name?: string;
+  file_size?: number;
+  order_priority: number;
+}
+
 interface EmergencyContact {
   id: string;
   title: string;
@@ -81,6 +91,7 @@ const Admin = () => {
   
   // News state
   const [news, setNews] = useState<NewsItem[]>([]);
+  const [newsMedia, setNewsMedia] = useState<Record<string, StoredNewsMediaItem[]>>({});
   const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
   const [newNews, setNewNews] = useState({
     title: '',
@@ -188,6 +199,30 @@ const Admin = () => {
 
       if (error) throw error;
       setNews(data || []);
+
+      // Fetch media for all news items
+      if (data && data.length > 0) {
+        const newsIds = data.map(item => item.id);
+        const { data: mediaData, error: mediaError } = await supabase
+          .from('news_media')
+          .select('*')
+          .in('news_id', newsIds)
+          .order('order_priority', { ascending: true });
+
+        if (mediaError) {
+          console.error('Error fetching news media:', mediaError);
+        } else {
+          // Group media by news_id
+          const mediaByNewsId: Record<string, StoredNewsMediaItem[]> = {};
+          mediaData?.forEach(media => {
+            if (!mediaByNewsId[media.news_id]) {
+              mediaByNewsId[media.news_id] = [];
+            }
+            mediaByNewsId[media.news_id].push(media);
+          });
+          setNewsMedia(mediaByNewsId);
+        }
+      }
     } catch (error) {
       console.error('Error fetching news:', error);
     }
@@ -918,15 +953,15 @@ const Admin = () => {
                                   </Button>
                                 </div>
                              </div>
-                             {item.image_url && (
-                               <div className="md:w-48 flex-shrink-0">
-                                 <img 
-                                   src={item.image_url} 
-                                   alt={item.title}
-                                   className="w-full h-32 object-cover rounded-md border"
-                                 />
-                               </div>
-                             )}
+                              {(item.image_url || (newsMedia[item.id] && newsMedia[item.id].length > 0)) && (
+                                <div className="md:w-48 flex-shrink-0">
+                                  <img 
+                                    src={item.image_url || (newsMedia[item.id] && newsMedia[item.id][0]?.media_url)} 
+                                    alt={item.title}
+                                    className="w-full h-32 object-cover rounded-md border"
+                                  />
+                                </div>
+                              )}
                            </div>
                          </div>
                       )}
