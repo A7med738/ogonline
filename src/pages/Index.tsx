@@ -7,7 +7,6 @@ import { useState, useEffect } from "react";
 import { useNewsNotifications } from "@/hooks/useNewsNotifications";
 import { NewsNotificationBadge } from "@/components/NewsNotificationBadge";
 import { LatestNewsSection } from "@/components/LatestNewsSection";
-import { AnnouncementsBar } from "@/components/AnnouncementsBar";
 const Index = () => {
   const navigate = useNavigate();
   const {
@@ -31,9 +30,6 @@ const Index = () => {
     onClick: () => navigate("/city")
   }];
   return <div className="min-h-screen bg-background">
-      {/* Important Announcements Bar */}
-      <AnnouncementsBar />
-      
       <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
         <div className="text-center mb-12 animate-fade-in">
