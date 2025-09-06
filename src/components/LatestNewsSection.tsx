@@ -30,12 +30,12 @@ export const LatestNewsSection = () => {
   useEffect(() => {
     if (latestNews.length > 1) {
       const interval = setInterval(() => {
-        handleNext();
+        setCurrentIndex((prev) => (prev + 1) % latestNews.length);
       }, 4000);
 
       return () => clearInterval(interval);
     }
-  }, [latestNews.length, currentIndex]);
+  }, [latestNews.length]); // Only depend on latestNews.length, not currentIndex
 
   const fetchLatestNews = async () => {
     try {
@@ -43,7 +43,7 @@ export const LatestNewsSection = () => {
         .from('news')
         .select('id, title, summary, category, published_at, image_url')
         .order('published_at', { ascending: false })
-        .limit(5); // Get more news for rotation
+        .limit(5); // Get 5 news for rotation
       
       if (error) throw error;
       if (data) setLatestNews(data);
@@ -57,15 +57,19 @@ export const LatestNewsSection = () => {
   const handleNext = () => {
     if (isAnimating || latestNews.length === 0) return;
     setIsAnimating(true);
-    setCurrentIndex((prev) => (prev + 1) % latestNews.length);
-    setTimeout(() => setIsAnimating(false), 300);
+    setTimeout(() => {
+      setCurrentIndex((prev) => (prev + 1) % latestNews.length);
+      setIsAnimating(false);
+    }, 150);
   };
 
   const handlePrev = () => {
     if (isAnimating || latestNews.length === 0) return;
     setIsAnimating(true);
-    setCurrentIndex((prev) => (prev - 1 + latestNews.length) % latestNews.length);
-    setTimeout(() => setIsAnimating(false), 300);
+    setTimeout(() => {
+      setCurrentIndex((prev) => (prev - 1 + latestNews.length) % latestNews.length);
+      setIsAnimating(false);
+    }, 150);
   };
 
   if (loading) {
@@ -93,8 +97,8 @@ export const LatestNewsSection = () => {
         {latestNews.length > 0 && (
           <div className="relative overflow-hidden">
             <div
-              className={`transition-transform duration-300 ease-in-out ${
-                isAnimating ? 'transform -translate-x-full opacity-0' : 'transform translate-x-0 opacity-100'
+              className={`transition-all duration-500 ease-in-out ${
+                isAnimating ? 'transform translate-x-full opacity-0' : 'transform translate-x-0 opacity-100'
               }`}
             >
               <div
@@ -179,8 +183,10 @@ export const LatestNewsSection = () => {
                 onClick={() => {
                   if (!isAnimating) {
                     setIsAnimating(true);
-                    setCurrentIndex(index);
-                    setTimeout(() => setIsAnimating(false), 300);
+                    setTimeout(() => {
+                      setCurrentIndex(index);
+                      setIsAnimating(false);
+                    }, 150);
                   }
                 }}
                 className={`w-2 h-2 rounded-full transition-all duration-300 ${
