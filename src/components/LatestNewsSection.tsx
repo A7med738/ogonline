@@ -13,9 +13,18 @@ interface NewsItem {
   published_at: string;
   image_url?: string;
 }
+
+interface NewsMediaItem {
+  id: string;
+  news_id: string;
+  media_url: string;
+  media_type: string;
+  order_priority: number;
+}
 export const LatestNewsSection = () => {
   const navigate = useNavigate();
   const [latestNews, setLatestNews] = useState<NewsItem[]>([]);
+  const [newsMedia, setNewsMedia] = useState<Record<string, NewsMediaItem[]>>({});
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -43,7 +52,32 @@ export const LatestNewsSection = () => {
       }).limit(5); // Get 5 news for rotation
 
       if (error) throw error;
-      if (data) setLatestNews(data);
+      if (data) {
+        setLatestNews(data);
+        
+        // Fetch media for all news items
+        const newsIds = data.map(item => item.id);
+        const { data: mediaData, error: mediaError } = await supabase
+          .from('news_media')
+          .select('*')
+          .in('news_id', newsIds)
+          .eq('media_type', 'image')
+          .order('order_priority', { ascending: true });
+
+        if (mediaError) {
+          console.error('Error fetching news media:', mediaError);
+        } else {
+          // Group media by news_id
+          const mediaByNewsId: Record<string, NewsMediaItem[]> = {};
+          mediaData?.forEach(media => {
+            if (!mediaByNewsId[media.news_id]) {
+              mediaByNewsId[media.news_id] = [];
+            }
+            mediaByNewsId[media.news_id].push(media);
+          });
+          setNewsMedia(mediaByNewsId);
+        }
+      }
     } catch (error) {
       console.error('Error fetching latest news:', error);
     } finally {
@@ -87,8 +121,12 @@ export const LatestNewsSection = () => {
             <div className={`transition-all duration-300 ease-in-out ${isAnimating ? 'transform translate-x-full opacity-0 scale-95' : 'transform translate-x-0 opacity-100 scale-100'}`}>
               <div className="glass-card rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-glass cursor-pointer" onClick={() => navigate('/news')}>
                 {/* News Image */}
-                {latestNews[currentIndex]?.image_url && <div className="h-32 overflow-hidden">
-                    <img src={latestNews[currentIndex].image_url} alt={latestNews[currentIndex].title} className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" />
+                {(latestNews[currentIndex]?.image_url || (newsMedia[latestNews[currentIndex]?.id] && newsMedia[latestNews[currentIndex]?.id].length > 0)) && <div className="h-32 overflow-hidden">
+                    <img 
+                      src={latestNews[currentIndex]?.image_url || (newsMedia[latestNews[currentIndex]?.id] && newsMedia[latestNews[currentIndex]?.id][0]?.media_url)} 
+                      alt={latestNews[currentIndex]?.title} 
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" 
+                    />
                   </div>}
                 
                 {/* News Content */}
