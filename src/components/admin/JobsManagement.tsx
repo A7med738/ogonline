@@ -37,6 +37,7 @@ export const JobsManagement = () => {
 
   const loadJobs = async () => {
     try {
+      console.log('Loading jobs...');
       const { data, error } = await supabase
         .from('jobs')
         .select(`
@@ -45,8 +46,16 @@ export const JobsManagement = () => {
         `)
         .order('created_at', { ascending: false });
 
+      console.log('Jobs data:', data);
+      console.log('Jobs error:', error);
+
       if (error) throw error;
       setJobs((data as any) || []);
+      
+      toast({
+        title: "تم التحديث",
+        description: `تم تحميل ${data?.length || 0} وظيفة`,
+      });
     } catch (error) {
       console.error('Error loading jobs:', error);
       toast({
@@ -162,9 +171,19 @@ export const JobsManagement = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">إدارة إعلانات التوظيف</h3>
-        <Badge variant="outline" className="text-sm">
-          إجمالي الإعلانات: {jobs.length}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={loadJobs}
+            disabled={loading}
+          >
+            {loading ? "جاري التحميل..." : "إعادة تحميل"}
+          </Button>
+          <Badge variant="outline" className="text-sm">
+            إجمالي الإعلانات: {jobs.length}
+          </Badge>
+        </div>
       </div>
 
       <div className="space-y-4">
