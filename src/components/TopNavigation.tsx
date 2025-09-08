@@ -41,18 +41,6 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
     icon: Home,
     label: 'الرئيسية',
     path: '/'
-  }, {
-    icon: Newspaper,
-    label: 'أخبار المدينة',
-    path: '/news'
-  }, {
-    icon: Shield,
-    label: 'شرطة المدينة',
-    path: '/police'
-  }, {
-    icon: Building,
-    label: 'جهاز المدينة',
-    path: '/city'
   }, ...(user ? [{
     icon: User,
     label: 'الملف الشخصي',
