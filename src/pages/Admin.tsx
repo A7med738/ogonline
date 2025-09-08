@@ -126,9 +126,9 @@ const Admin = () => {
 
   const loadDashboardData = async () => {
     try {
-      // Load basic stats
-      const [usersRes, newsRes, jobsRes, commentsRes, reportsRes] = await Promise.all([
-        supabase.from('profiles').select('id', { count: 'exact' }),
+      // Load basic stats with verified users count
+      const [verifiedUsersRes, newsRes, jobsRes, commentsRes, reportsRes] = await Promise.all([
+        supabase.rpc('get_verified_users_count'),
         supabase.from('news').select('id', { count: 'exact' }),
         supabase.from('jobs').select('id', { count: 'exact' }),
         supabase.from('news_comments').select('id', { count: 'exact' }),
@@ -137,7 +137,7 @@ const Admin = () => {
 
       setStats(prev => ({
         ...prev,
-        totalUsers: usersRes.count || 0,
+        totalUsers: verifiedUsersRes.data || 0,
         totalNews: newsRes.count || 0,
         totalJobs: jobsRes.count || 0,
         totalComments: commentsRes.count || 0,
@@ -461,8 +461,9 @@ const Admin = () => {
                   <div className="flex items-center">
                     <Users className="h-8 w-8 text-blue-600" />
                     <div className="mr-4">
-                      <p className="text-sm font-medium text-muted-foreground">إجمالي المستخدمين</p>
+                      <p className="text-sm font-medium text-muted-foreground">المستخدمين المتحققين</p>
                       <p className="text-2xl font-bold">{stats.totalUsers}</p>
+                      <p className="text-xs text-muted-foreground mt-1">تم التحقق من الإيميل</p>
                     </div>
                   </div>
                 </Card>

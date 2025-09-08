@@ -686,6 +686,10 @@ export type Database = {
         Args: { "": string } | { "": unknown }
         Returns: unknown
       }
+      get_verified_users_count: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       halfvec_avg: {
         Args: { "": number[] }
         Returns: unknown
