@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Edit, Trash2, Save, X } from "lucide-react";
+import { Plus, Edit, Trash2, Save, X, Upload, Image as ImageIcon } from "lucide-react";
 
 interface NewsItem {
   id: string;
@@ -17,6 +17,7 @@ interface NewsItem {
   category: string;
   moderation_status: string;
   published_at: string;
+  image_url?: string;
 }
 
 export const NewsManagement = () => {
@@ -24,11 +25,13 @@ export const NewsManagement = () => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     summary: '',
     content: '',
-    category: 'عام'
+    category: 'عام',
+    image_url: ''
   });
 
   useEffect(() => {
@@ -54,15 +57,48 @@ export const NewsManagement = () => {
     }
   };
 
+  const uploadImage = async (file: File): Promise<string | null> => {
+    try {
+      setUploading(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `news-images/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('news-images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from('news-images')
+        .getPublicUrl(filePath);
+
+      return data.publicUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في رفع الصورة",
+        variant: "destructive"
+      });
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
+      const newsData = {
+        ...formData,
+        moderation_status: 'approved'
+      };
+
       if (editingId) {
         const { error } = await supabase
           .from('news')
-          .update({
-            ...formData,
-            moderation_status: 'approved'
-          })
+          .update(newsData)
           .eq('id', editingId);
 
         if (error) throw error;
@@ -70,21 +106,40 @@ export const NewsManagement = () => {
       } else {
         const { error } = await supabase
           .from('news')
-          .insert({
-            ...formData,
-            moderation_status: 'approved'
-          });
+          .insert(newsData);
 
         if (error) throw error;
+
+        // إرسال إشعار للمستخدمين
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          
+          if (user) {
+            await supabase.functions.invoke('notify-new-news', {
+              body: {
+                title: `خبر جديد: ${formData.title}`,
+                url: 'ogonline://news',
+                subtitle: formData.summary || 'اضغط لقراءة التفاصيل'
+              },
+              headers: {
+                Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+              }
+            });
+          }
+        } catch (notificationError) {
+          console.error('Error sending notification:', notificationError);
+          // لا نوقف العملية إذا فشل الإشعار
+        }
+
         setIsAdding(false);
       }
 
-      setFormData({ title: '', summary: '', content: '', category: 'عام' });
+      setFormData({ title: '', summary: '', content: '', category: 'عام', image_url: '' });
       loadNews();
       
       toast({
         title: "تم بنجاح",
-        description: editingId ? "تم تحديث الخبر" : "تم إضافة الخبر",
+        description: editingId ? "تم تحديث الخبر" : "تم إضافة الخبر وإرسال الإشعارات",
       });
     } catch (error) {
       console.error('Error saving news:', error);
@@ -101,7 +156,8 @@ export const NewsManagement = () => {
       title: item.title,
       summary: item.summary,
       content: item.content || '',
-      category: item.category
+      category: item.category,
+      image_url: item.image_url || ''
     });
     setEditingId(item.id);
     setIsAdding(true);
@@ -134,7 +190,7 @@ export const NewsManagement = () => {
   const handleCancel = () => {
     setIsAdding(false);
     setEditingId(null);
-    setFormData({ title: '', summary: '', content: '', category: 'عام' });
+    setFormData({ title: '', summary: '', content: '', category: 'عام', image_url: '' });
   };
 
   const categories = ['عام', 'محلي', 'خدمات', 'مرور', 'أمن', 'أحداث', 'إعلانات'];
@@ -184,6 +240,53 @@ export const NewsManagement = () => {
             </div>
 
             <div>
+              <label className="block text-sm font-medium mb-2">صورة الخبر (اختياري)</label>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const imageUrl = await uploadImage(file);
+                        if (imageUrl) {
+                          setFormData({ ...formData, image_url: imageUrl });
+                        }
+                      }
+                    }}
+                    disabled={uploading}
+                    className="flex-1"
+                  />
+                  {uploading && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Upload className="h-4 w-4 animate-spin" />
+                      جاري الرفع...
+                    </div>
+                  )}
+                </div>
+                {formData.image_url && (
+                  <div className="relative">
+                    <img 
+                      src={formData.image_url} 
+                      alt="معاينة الصورة" 
+                      className="max-w-xs h-32 object-cover rounded border"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-1 right-1"
+                      onClick={() => setFormData({ ...formData, image_url: '' })}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div>
               <label className="block text-sm font-medium mb-2">التصنيف</label>
               <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
                 <SelectTrigger>
@@ -215,17 +318,26 @@ export const NewsManagement = () => {
         {news.map((item) => (
           <Card key={item.id} className="p-4">
             <div className="flex justify-between items-start">
-              <div className="flex-1">
-                <h4 className="font-medium">{item.title}</h4>
-                <p className="text-sm text-muted-foreground mt-1">{item.summary}</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <Badge variant="outline">{item.category}</Badge>
-                  <Badge variant={item.moderation_status === 'approved' ? 'default' : 'destructive'}>
-                    {item.moderation_status === 'approved' ? 'مقبول' : item.moderation_status}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(item.published_at).toLocaleDateString('ar-EG')}
-                  </span>
+              <div className="flex gap-4 flex-1">
+                {item.image_url && (
+                  <img 
+                    src={item.image_url} 
+                    alt={item.title}
+                    className="w-20 h-20 object-cover rounded border flex-shrink-0"
+                  />
+                )}
+                <div className="flex-1">
+                  <h4 className="font-medium">{item.title}</h4>
+                  <p className="text-sm text-muted-foreground mt-1">{item.summary}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Badge variant="outline">{item.category}</Badge>
+                    <Badge variant={item.moderation_status === 'approved' ? 'default' : 'destructive'}>
+                      {item.moderation_status === 'approved' ? 'مقبول' : item.moderation_status}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(item.published_at).toLocaleDateString('ar-EG')}
+                    </span>
+                  </div>
                 </div>
               </div>
               <div className="flex gap-2">
