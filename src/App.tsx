@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,7 +9,6 @@ import { TopNavigation } from "@/components/TopNavigation";
 import { OneSignalHandler } from "@/components/OneSignalHandler";
 import { SidebarProvider, useSidebar } from "@/contexts/SidebarContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect } from "react";
 import Index from "./pages/Index";
 import News from "./pages/News";
 import Police from "./pages/Police";
