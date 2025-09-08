@@ -334,25 +334,26 @@ export const PoliceStationsManagement = () => {
       <div className="space-y-4">
         {stations.map((station) => (
           <Card key={station.id} className="p-4">
-            <div className="flex justify-between items-start mb-4">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4 gap-4">
               <div className="flex-1">
-                <h4 className="font-medium">{station.name}</h4>
-                <p className="text-sm text-muted-foreground">{station.area}</p>
+                <h4 className="font-medium text-lg">{station.name}</h4>
+                <p className="text-sm text-muted-foreground font-medium">{station.area}</p>
                 {station.address && (
-                  <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                    <MapPin className="h-3 w-3" />
-                    {station.address}
+                  <p className="text-sm text-muted-foreground flex items-start gap-1 mt-2">
+                    <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                    <span>{station.address}</span>
                   </p>
                 )}
                 {station.description && (
-                  <p className="text-sm mt-2">{station.description}</p>
+                  <p className="text-sm mt-2 p-2 bg-muted rounded">{station.description}</p>
                 )}
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setShowContacts(showContacts === station.id ? null : station.id)}
+                  className="w-full sm:w-auto"
                 >
                   أرقام الطوارئ
                 </Button>
@@ -360,19 +361,19 @@ export const PoliceStationsManagement = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => handleEdit(station)}
-                  className="flex items-center gap-1"
+                  className="flex items-center justify-center gap-1 w-full sm:w-auto"
                 >
                   <Edit className="h-4 w-4" />
-                  تعديل
+                  <span className="hidden sm:inline">تعديل</span>
                 </Button>
                 <Button
                   variant="destructive"
                   size="sm"
                   onClick={() => handleDelete(station.id)}
-                  className="flex items-center gap-1"
+                  className="flex items-center justify-center gap-1 w-full sm:w-auto"
                 >
                   <Trash2 className="h-4 w-4" />
-                  حذف
+                  <span className="hidden sm:inline">حذف</span>
                 </Button>
               </div>
             </div>
