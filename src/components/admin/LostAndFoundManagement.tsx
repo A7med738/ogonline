@@ -30,26 +30,31 @@ export const LostAndFoundManagement = () => {
   const [items, setItems] = useState<LostFoundItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const [statusFilter, setStatusFilter] = useState<'pending' | 'active' | 'rejected' | 'all'>('pending');
 
   useEffect(() => {
-    fetchPendingItems();
-  }, []);
+    fetchItems(statusFilter);
+  }, [statusFilter]);
 
-  const fetchPendingItems = async () => {
+  const fetchItems = async (status: 'pending' | 'active' | 'rejected' | 'all') => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('lost_and_found_items')
         .select(`
           *,
-          profiles (
+          profiles!lost_and_found_items_user_id_fkey (
             full_name
           )
-        `)
-        .eq('status', 'pending')
-        .order('date_reported', { ascending: false });
+        `);
+
+      if (status !== 'all') {
+        query = query.eq('status', status);
+      }
+
+      const { data, error } = await query.order('date_reported', { ascending: false });
 
       if (error) throw error;
-      setItems(data as any || []);
+      setItems((data as any) || []);
     } catch (error: any) {
       toast({
         title: "خطأ",
@@ -112,12 +117,28 @@ export const LostAndFoundManagement = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">إدارة المفقودات والموجودات</h2>
-        <Badge variant="secondary">{items.length} بلاغ في انتظار المراجعة</Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="secondary">{items.length} نتيجة</Badge>
+          <div className="hidden md:flex items-center gap-2">
+            <Button variant={statusFilter === 'pending' ? 'default' : 'outline'} size="sm" onClick={() => setStatusFilter('pending')}>
+              قيد المراجعة
+            </Button>
+            <Button variant={statusFilter === 'active' ? 'default' : 'outline'} size="sm" onClick={() => setStatusFilter('active')}>
+              المنشورة
+            </Button>
+            <Button variant={statusFilter === 'rejected' ? 'default' : 'outline'} size="sm" onClick={() => setStatusFilter('rejected')}>
+              المرفوضة
+            </Button>
+            <Button variant={statusFilter === 'all' ? 'default' : 'outline'} size="sm" onClick={() => setStatusFilter('all')}>
+              الكل
+            </Button>
+          </div>
+        </div>
       </div>
 
       {items.length === 0 ? (
         <GlassCard className="p-8 text-center">
-          <p className="text-muted-foreground">لا توجد بلاغات في انتظار المراجعة</p>
+          <p className="text-muted-foreground">لا توجد نتائج لهذا الفلتر</p>
         </GlassCard>
       ) : (
         <div className="space-y-4">
