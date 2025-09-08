@@ -74,6 +74,8 @@ const Jobs = () => {
         .from('jobs')
         .select('*')
         .eq('status', 'published')
+        .eq('moderation_status', 'approved')
+        .eq('is_active', true)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
