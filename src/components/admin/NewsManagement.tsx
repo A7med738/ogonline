@@ -316,48 +316,55 @@ export const NewsManagement = () => {
 
       <div className="space-y-4">
         {news.map((item) => (
-          <Card key={item.id} className="p-4">
-            <div className="flex justify-between items-start">
-              <div className="flex gap-4 flex-1">
-                {item.image_url && (
-                  <img 
-                    src={item.image_url} 
-                    alt={item.title}
-                    className="w-20 h-20 object-cover rounded border flex-shrink-0"
-                  />
-                )}
-                <div className="flex-1">
-                  <h4 className="font-medium">{item.title}</h4>
-                  <p className="text-sm text-muted-foreground mt-1">{item.summary}</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Badge variant="outline">{item.category}</Badge>
-                    <Badge variant={item.moderation_status === 'approved' ? 'default' : 'destructive'}>
-                      {item.moderation_status === 'approved' ? 'مقبول' : item.moderation_status}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(item.published_at).toLocaleDateString('ar-EG')}
-                    </span>
-                  </div>
+          <Card key={item.id} className="p-4 md:p-6">
+            <div className="space-y-4">
+              {/* Header with title and badges */}
+              <div className="space-y-3">
+                <h4 className="font-medium text-lg leading-tight">{item.title}</h4>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline" className="text-xs">{item.category}</Badge>
+                  <Badge variant={item.moderation_status === 'approved' ? 'default' : 'destructive'} className="text-xs">
+                    {item.moderation_status === 'approved' ? 'مقبول' : item.moderation_status}
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    {new Date(item.published_at).toLocaleDateString('ar-EG')}
+                  </Badge>
                 </div>
               </div>
-              <div className="flex gap-2">
+
+              {/* Content section */}
+              <div className="space-y-3">
+                {item.image_url && (
+                  <div className="w-full">
+                    <img 
+                      src={item.image_url} 
+                      alt={item.title}
+                      className="w-full max-w-sm h-32 md:h-40 object-cover rounded border"
+                    />
+                  </div>
+                )}
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.summary}</p>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handleEdit(item)}
-                  className="flex items-center gap-1"
+                  className="flex items-center justify-center gap-2 w-full sm:w-auto"
                 >
                   <Edit className="h-4 w-4" />
-                  تعديل
+                  <span>تعديل</span>
                 </Button>
                 <Button
                   variant="destructive"
                   size="sm"
                   onClick={() => handleDelete(item.id)}
-                  className="flex items-center gap-1"
+                  className="flex items-center justify-center gap-2 w-full sm:w-auto"
                 >
                   <Trash2 className="h-4 w-4" />
-                  حذف
+                  <span>حذف</span>
                 </Button>
               </div>
             </div>
