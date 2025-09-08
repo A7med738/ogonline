@@ -15,7 +15,6 @@ import Police from "./pages/Police";
 import PoliceStationDetails from "./pages/PoliceStationDetails";
 import City from "./pages/City";
 import Business from "./pages/Business";
-import Jobs from "./pages/Jobs";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
@@ -64,7 +63,6 @@ const AppContent = () => {
           <Route path="/police/station/:stationId" element={<PoliceStationDetails />} />
           <Route path="/city" element={<City />} />
           <Route path="/business" element={<Business />} />
-          <Route path="/jobs" element={<Jobs />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/profile" element={<Profile />} />
