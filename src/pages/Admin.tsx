@@ -22,7 +22,10 @@ import {
   Clock,
   MessageSquare,
   Briefcase,
-  UserX
+  UserX,
+  Building,
+  Megaphone,
+  Newspaper
 } from "lucide-react";
 import {
   Select,
@@ -370,13 +373,34 @@ const Admin = () => {
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-7 mb-8">
-            <TabsTrigger value="overview">نظرة عامة</TabsTrigger>
-            <TabsTrigger value="moderation">مراجعة المحتوى</TabsTrigger>
-            <TabsTrigger value="reports">التقارير</TabsTrigger>
-            <TabsTrigger value="news">الأخبار</TabsTrigger>
-            <TabsTrigger value="police">مراكز الشرطة</TabsTrigger>
-            <TabsTrigger value="departments">أجهزة المدينة</TabsTrigger>
-            <TabsTrigger value="announcements">الإعلانات</TabsTrigger>
+            <TabsTrigger value="overview" className="flex flex-col items-center gap-1 p-3">
+              <BarChart3 className="h-5 w-5" />
+              <span className="text-xs">نظرة عامة</span>
+            </TabsTrigger>
+            <TabsTrigger value="moderation" className="flex flex-col items-center gap-1 p-3">
+              <Shield className="h-5 w-5" />
+              <span className="text-xs">مراجعة المحتوى</span>
+            </TabsTrigger>
+            <TabsTrigger value="reports" className="flex flex-col items-center gap-1 p-3">
+              <Flag className="h-5 w-5" />
+              <span className="text-xs">التقارير</span>
+            </TabsTrigger>
+            <TabsTrigger value="news" className="flex flex-col items-center gap-1 p-3">
+              <Newspaper className="h-5 w-5" />
+              <span className="text-xs">الأخبار</span>
+            </TabsTrigger>
+            <TabsTrigger value="police" className="flex flex-col items-center gap-1 p-3">
+              <Shield className="h-5 w-5" />
+              <span className="text-xs">مراكز الشرطة</span>
+            </TabsTrigger>
+            <TabsTrigger value="departments" className="flex flex-col items-center gap-1 p-3">
+              <Building className="h-5 w-5" />
+              <span className="text-xs">أجهزة المدينة</span>
+            </TabsTrigger>
+            <TabsTrigger value="announcements" className="flex flex-col items-center gap-1 p-3">
+              <Megaphone className="h-5 w-5" />
+              <span className="text-xs">الإعلانات</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
