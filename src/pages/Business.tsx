@@ -70,7 +70,7 @@ const Business = () => {
         </div>
 
         {/* Business Cards Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+        <div className="grid grid-cols-3 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
           {businessItems.map((item, index) => <div key={item.title} className="relative">
               <NavigationCard title={item.title} description={item.description} icon={item.icon} onClick={item.onClick} className={`animate-slide-up ${!item.isActive ? 'opacity-60' : ''}`} style={{
             animationDelay: `${0.1 + index * 0.1}s`
