@@ -132,7 +132,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
       <div className="flex justify-between items-center px-4 py-3 bg-green-600 relative">
         <div className="flex items-center gap-3">
           
-          {location.pathname !== '/' && <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 p-2" onClick={() => navigate('/')}>
+          {location.pathname !== '/' && <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 p-2" onClick={() => navigate(-1)}>
               <ArrowRight className="h-4 w-4" />
             </Button>}
           <Popover open={isNewsOpen} onOpenChange={setIsNewsOpen}>
