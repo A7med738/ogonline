@@ -39,6 +39,8 @@ const jobFormSchema = z.object({
   location_description: z.string().min(1, "الموقع مطلوب"),
   payment: z.string().optional(),
   contact_method: z.string().min(1, "طريقة التواصل مطلوبة"),
+  status: z.enum(['draft', 'published']).default('published'),
+  expires_at: z.string().optional(),
 });
 
 type JobFormData = z.infer<typeof jobFormSchema>;
@@ -56,6 +58,7 @@ const Jobs = () => {
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
       job_type: 'permanent',
+      status: 'published',
     }
   });
 
@@ -70,7 +73,7 @@ const Jobs = () => {
       const { data, error } = await supabase
         .from('jobs')
         .select('*')
-        .eq('is_active', true)
+        .eq('status', 'published')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -97,6 +100,8 @@ const Jobs = () => {
 
     setLoading(true);
     try {
+      const expiryDate = data.expires_at ? new Date(data.expires_at) : null;
+      
       const { error } = await supabase
         .from('jobs')
         .insert({
@@ -106,6 +111,8 @@ const Jobs = () => {
           location_description: data.location_description,
           payment: data.payment,
           contact_method: data.contact_method,
+          status: data.status,
+          expires_at: expiryDate?.toISOString() || null,
           employer_id: user.id,
           latitude: selectedLocation?.latitude || null,
           longitude: selectedLocation?.longitude || null,
@@ -148,6 +155,12 @@ const Jobs = () => {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-4">الوظائف والفرص</h1>
             <p className="text-muted-foreground">اختر نوع المستخدم للمتابعة</p>
+            
+            <div className="mt-4">
+              <Button variant="outline" onClick={() => navigate('/my-jobs')}>
+                إدارة إعلاناتي
+              </Button>
+            </div>
           </div>
 
           <div className="max-w-2xl mx-auto space-y-4">
@@ -318,8 +331,48 @@ const Jobs = () => {
                   )}
                 />
 
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>حالة الإعلان</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="اختر حالة الإعلان" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="draft">حفظ كمسودة</SelectItem>
+                          <SelectItem value="published">نشر مباشرة</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="expires_at"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>تاريخ انتهاء الإعلان (اختياري)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          {...field} 
+                          type="date" 
+                          min={new Date().toISOString().split('T')[0]}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "جاري النشر..." : "نشر الوظيفة"}
+                  {loading ? "جاري النشر..." : (form.watch('status') === 'draft' ? "حفظ المسودة" : "نشر الإعلان")}
                 </Button>
               </form>
             </Form>

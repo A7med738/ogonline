@@ -178,6 +178,7 @@ export type Database = {
           created_at: string
           description: string | null
           employer_id: string
+          expires_at: string | null
           id: string
           is_active: boolean
           job_type: string
@@ -185,6 +186,7 @@ export type Database = {
           location_description: string | null
           longitude: number | null
           payment: string | null
+          status: string
           title: string
           updated_at: string
         }
@@ -193,6 +195,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           employer_id: string
+          expires_at?: string | null
           id?: string
           is_active?: boolean
           job_type: string
@@ -200,6 +203,7 @@ export type Database = {
           location_description?: string | null
           longitude?: number | null
           payment?: string | null
+          status?: string
           title: string
           updated_at?: string
         }
@@ -208,6 +212,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           employer_id?: string
+          expires_at?: string | null
           id?: string
           is_active?: boolean
           job_type?: string
@@ -215,6 +220,7 @@ export type Database = {
           location_description?: string | null
           longitude?: number | null
           payment?: string | null
+          status?: string
           title?: string
           updated_at?: string
         }

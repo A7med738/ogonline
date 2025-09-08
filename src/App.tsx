@@ -16,6 +16,7 @@ import PoliceStationDetails from "./pages/PoliceStationDetails";
 import City from "./pages/City";
 import Business from "./pages/Business";
 import Jobs from "./pages/Jobs";
+import MyJobs from "./pages/MyJobs";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
@@ -65,6 +66,7 @@ const AppContent = () => {
           <Route path="/city" element={<City />} />
           <Route path="/business" element={<Business />} />
           <Route path="/jobs" element={<Jobs />} />
+          <Route path="/my-jobs" element={<MyJobs />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/profile" element={<Profile />} />
