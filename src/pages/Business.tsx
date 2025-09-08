@@ -1,4 +1,4 @@
-import { Briefcase, MapPin, Gift, ShoppingBag, Users, Building2, TrendingUp } from "lucide-react";
+import { Briefcase, MapPin, Gift, ShoppingBag, Users, Building2, TrendingUp, Handshake } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,7 @@ const Business = () => {
   }, {
     title: "دليل المهنيين",
     description: "تواصل مع المهنيين والخبراء في المدينة",
-    icon: Users,
+    icon: Handshake,
     onClick: () => {},
     isActive: false
   }, {
