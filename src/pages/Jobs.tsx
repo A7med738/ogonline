@@ -450,7 +450,21 @@ const Jobs = () => {
                       <span className="text-sm text-muted-foreground">
                         {new Date(job.created_at).toLocaleDateString('ar-EG')}
                       </span>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          // استخراج رقم الهاتف من contact_method
+                          const phoneMatch = job.contact_method.match(/[\d\-\+\s\(\)]+/);
+                          if (phoneMatch) {
+                            const phoneNumber = phoneMatch[0].replace(/\s/g, '');
+                            window.location.href = `tel:${phoneNumber}`;
+                          } else {
+                            // إذا لم يتم العثور على رقم، اعرض رسالة
+                            alert('لا يوجد رقم هاتف متاح للاتصال');
+                          }
+                        }}
+                      >
                         تواصل الآن
                       </Button>
                     </div>
