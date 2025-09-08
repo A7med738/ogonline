@@ -1,4 +1,4 @@
-import { Newspaper, Shield, Building, Briefcase } from "lucide-react";
+import { Newspaper, Shield, Building, Briefcase, Handshake } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
 import { Button } from "@/components/ui/button";
@@ -31,7 +31,7 @@ const Index = () => {
   }, {
     title: "المال والأعمال",
     description: "استكشف الفرص التجارية في المدينة",
-    icon: Building,
+    icon: Handshake,
     onClick: () => navigate("/business")
   }];
   return <div className="min-h-screen bg-background">
