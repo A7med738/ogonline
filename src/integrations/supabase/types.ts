@@ -172,6 +172,54 @@ export type Database = {
           },
         ]
       }
+      jobs: {
+        Row: {
+          contact_method: string
+          created_at: string
+          description: string | null
+          employer_id: string
+          id: string
+          is_active: boolean
+          job_type: string
+          latitude: number | null
+          location_description: string | null
+          longitude: number | null
+          payment: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          contact_method: string
+          created_at?: string
+          description?: string | null
+          employer_id: string
+          id?: string
+          is_active?: boolean
+          job_type: string
+          latitude?: number | null
+          location_description?: string | null
+          longitude?: number | null
+          payment?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          contact_method?: string
+          created_at?: string
+          description?: string | null
+          employer_id?: string
+          id?: string
+          is_active?: boolean
+          job_type?: string
+          latitude?: number | null
+          location_description?: string | null
+          longitude?: number | null
+          payment?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       news: {
         Row: {
           category: string
