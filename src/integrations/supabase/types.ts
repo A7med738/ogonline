@@ -331,6 +331,69 @@ export type Database = {
         }
         Relationships: []
       }
+      lost_and_found_items: {
+        Row: {
+          category: string
+          contact_details: string
+          contact_method: string
+          created_at: string
+          date_lost_found: string | null
+          date_reported: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          latitude: number | null
+          location_description: string | null
+          longitude: number | null
+          status: string
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          contact_details: string
+          contact_method: string
+          created_at?: string
+          date_lost_found?: string | null
+          date_reported?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          latitude?: number | null
+          location_description?: string | null
+          longitude?: number | null
+          status?: string
+          title: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          contact_details?: string
+          contact_method?: string
+          created_at?: string
+          date_lost_found?: string | null
+          date_reported?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          latitude?: number | null
+          location_description?: string | null
+          longitude?: number | null
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       news: {
         Row: {
           category: string

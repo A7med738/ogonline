@@ -25,6 +25,7 @@ import EmailConfirmation from "./pages/EmailConfirmation";
 import FloatingChat from "@/components/FloatingChat";
 import CityServices from "./pages/CityServices";
 import LostAndFound from "./pages/LostAndFound";
+import LostAndFoundView from "./pages/LostAndFoundView";
 import ReportLost from "./pages/ReportLost";
 import ReportFound from "./pages/ReportFound";
 
@@ -70,6 +71,7 @@ const AppContent = () => {
           <Route path="/city" element={<City />} />
           <Route path="/city-services" element={<CityServices />} />
           <Route path="/services/lost-and-found" element={<LostAndFound />} />
+          <Route path="/services/lost-and-found/view-all" element={<LostAndFoundView />} />
           <Route path="/services/lost-and-found/report-lost" element={<ReportLost />} />
           <Route path="/services/lost-and-found/report-found" element={<ReportFound />} />
           <Route path="/business" element={<Business />} />
