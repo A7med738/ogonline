@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/integrations/supabase/client'
 import { formatDistanceToNow } from 'date-fns'
 import { ar } from 'date-fns/locale'
+import { ReportButton } from './ReportButton'
 
 interface NewsInteractionsProps {
   newsId: string
@@ -227,6 +228,11 @@ export const NewsInteractions = ({ newsId }: NewsInteractionsProps) => {
           <MessageCircle className="h-4 w-4" />
           <span>{comments.length}</span>
         </Button>
+        
+        <ReportButton 
+          contentType="news" 
+          contentId={newsId} 
+        />
       </div>
 
       {/* Comments Section */}

@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_actions: {
+        Row: {
+          action_type: string
+          admin_id: string
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          target_id: string | null
+          target_type: string | null
+        }
+        Insert: {
+          action_type: string
+          admin_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Update: {
+          action_type?: string
+          admin_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Relationships: []
+      }
       city_departments: {
         Row: {
           color: string
@@ -61,6 +94,39 @@ export type Database = {
           phone?: string
           show_location?: boolean | null
           title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      content_moderation: {
+        Row: {
+          action: string
+          content_id: string
+          content_type: string
+          created_at: string
+          id: string
+          moderator_id: string | null
+          reason: string | null
+          updated_at: string
+        }
+        Insert: {
+          action: string
+          content_id: string
+          content_type: string
+          created_at?: string
+          id?: string
+          moderator_id?: string | null
+          reason?: string | null
+          updated_at?: string
+        }
+        Update: {
+          action?: string
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          moderator_id?: string | null
+          reason?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -185,6 +251,7 @@ export type Database = {
           latitude: number | null
           location_description: string | null
           longitude: number | null
+          moderation_status: string | null
           payment: string | null
           status: string
           title: string
@@ -202,6 +269,7 @@ export type Database = {
           latitude?: number | null
           location_description?: string | null
           longitude?: number | null
+          moderation_status?: string | null
           payment?: string | null
           status?: string
           title: string
@@ -219,6 +287,7 @@ export type Database = {
           latitude?: number | null
           location_description?: string | null
           longitude?: number | null
+          moderation_status?: string | null
           payment?: string | null
           status?: string
           title?: string
@@ -233,6 +302,7 @@ export type Database = {
           created_at: string
           id: string
           image_url: string | null
+          moderation_status: string | null
           published_at: string
           summary: string
           title: string
@@ -244,6 +314,7 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string | null
+          moderation_status?: string | null
           published_at?: string
           summary: string
           title: string
@@ -255,6 +326,7 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string | null
+          moderation_status?: string | null
           published_at?: string
           summary?: string
           title?: string
@@ -506,6 +578,45 @@ export type Database = {
           last_visited_at?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_reports: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          report_reason: string
+          reported_content_id: string
+          reported_content_type: string
+          reporter_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          report_reason: string
+          reported_content_id: string
+          reported_content_type: string
+          reporter_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          report_reason?: string
+          reported_content_id?: string
+          reported_content_type?: string
+          reporter_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
         }
         Relationships: []
       }
