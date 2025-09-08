@@ -18,16 +18,6 @@ const LostAndFound = () => {
           <GlassCard className="p-4">
             <Button
               className="w-full h-14 text-base"
-              onClick={() => navigate("/services/lost-and-found/view-all")}
-            >
-              <Search className="w-5 h-5 ml-2" /> عرض المفقودات والموجودات
-            </Button>
-          </GlassCard>
-
-          <GlassCard className="p-4">
-            <Button
-              className="w-full h-14 text-base"
-              variant="outline"
               onClick={() => navigate("/services/lost-and-found/report-lost")}
             >
               <PackageSearch className="w-5 h-5 ml-2" /> أبلغ عن شيء مفقود

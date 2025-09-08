@@ -74,10 +74,10 @@ const BrowseLostAndFound: React.FC = () => {
           category: "مفاتيح",
           description: "ميدالية مفاتيح عليها شعار سيارة BMW",
           location: { lat: 30.0444, lng: 31.2357, address: "مول حدائق أكتوبر" },
-          contactMethod: "01123456789",
-          createdAt: "2024-01-14T15:45:00Z",
-          deliveryPlace: "تم تسليمه لأمن المجمع",
-          images: []
+          contactMethod: "التواصل عبر التطبيق",
+          createdAt: "2024-01-14T15:20:00Z",
+          images: [],
+          deliveryPlace: "تم تسليمه لأمن المجمع"
         }
       ];
       
@@ -125,21 +125,19 @@ const BrowseLostAndFound: React.FC = () => {
   };
 
   const handleContact = (contactMethod: string) => {
-    if (contactMethod.includes('@')) {
-      window.open(`mailto:${contactMethod}`, '_self');
-    } else {
+    if (contactMethod.startsWith('0') || contactMethod.startsWith('+')) {
       window.open(`tel:${contactMethod}`, '_self');
+    } else {
+      toast.info('يرجى التواصل عبر التطبيق');
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">جاري تحميل البيانات...</p>
-          </div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">جاري تحميل البيانات...</p>
         </div>
       </div>
     );
@@ -148,7 +146,7 @@ const BrowseLostAndFound: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 animate-fade-in">
           <h3 className="text-xl md:text-2xl font-bold text-foreground">عرض المفقودات والموجودات</h3>
         </div>
 
@@ -178,10 +176,10 @@ const BrowseLostAndFound: React.FC = () => {
 
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
               <SelectTrigger>
-                <SelectValue placeholder="الفئة" />
+                <SelectValue placeholder="التصنيف" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">جميع الفئات</SelectItem>
+                <SelectItem value="all">جميع التصنيفات</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category} value={category}>{category}</SelectItem>
                 ))}
@@ -194,68 +192,75 @@ const BrowseLostAndFound: React.FC = () => {
               setCategoryFilter("all");
             }}>
               <Filter className="w-4 h-4 ml-2" />
-              إعادة تعيين
+              مسح الفلاتر
             </Button>
           </div>
         </GlassCard>
 
         {/* Results */}
-        <div className="space-y-4">
-          {filteredItems.length === 0 ? (
-            <GlassCard className="p-8 text-center">
-              <p className="text-muted-foreground">لا توجد نتائج مطابقة للبحث</p>
-            </GlassCard>
-          ) : (
-            filteredItems.map((item) => (
-              <GlassCard key={item.id} className="p-4">
+        {filteredItems.length === 0 ? (
+          <GlassCard className="p-8 text-center">
+            <p className="text-muted-foreground">لا توجد نتائج مطابقة للبحث</p>
+          </GlassCard>
+        ) : (
+          <div className="grid gap-4">
+            {filteredItems.map((item) => (
+              <GlassCard key={item.id} className="p-4 hover:shadow-md transition-shadow">
                 <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant={item.type === 'lost' ? 'destructive' : 'default'}>
-                        {item.type === 'lost' ? 'مفقود' : 'موجود'}
-                      </Badge>
-                      <Badge variant="outline">{item.category}</Badge>
+                  {/* Content */}
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-2">
+                        <Badge variant={item.type === 'lost' ? 'destructive' : 'default'}>
+                          {item.type === 'lost' ? 'مفقود' : 'موجود'}
+                        </Badge>
+                        <Badge variant="outline">{item.category}</Badge>
+                      </div>
+                      <span className="text-sm text-muted-foreground">
+                        {formatDate(item.createdAt)}
+                      </span>
                     </div>
-                    
-                    <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
-                    
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
-                        <span>{item.location.address || `${item.location.lat.toFixed(4)}, ${item.location.lng.toFixed(4)}`}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        <span>{formatDate(item.createdAt)}</span>
-                      </div>
+
+                    <p className="text-foreground">{item.description}</p>
+
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <MapPin className="w-4 h-4" />
+                      <span>{item.location.address}</span>
                     </div>
 
                     {item.deliveryPlace && (
-                      <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-950/20 rounded text-xs">
+                      <div className="text-sm text-blue-600 bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
                         <strong>مكان التسليم:</strong> {item.deliveryPlace}
                       </div>
                     )}
+
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => handleContact(item.contactMethod)}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        {item.contactMethod.startsWith('0') || item.contactMethod.startsWith('+') ? (
+                          <Phone className="w-4 h-4 ml-1" />
+                        ) : (
+                          <Mail className="w-4 h-4 ml-1" />
+                        )}
+                        تواصل
+                      </Button>
+                    </div>
                   </div>
 
-                  <div className="flex flex-col gap-2 min-w-[120px]">
-                    <Button
-                      size="sm"
-                      onClick={() => handleContact(item.contactMethod)}
-                      className="w-full"
-                    >
-                      {item.contactMethod.includes('@') ? (
-                        <Mail className="w-4 h-4 ml-1" />
-                      ) : (
-                        <Phone className="w-4 h-4 ml-1" />
-                      )}
-                      تواصل
-                    </Button>
-                  </div>
+                  {/* Images placeholder */}
+                  {item.images && item.images.length > 0 && (
+                    <div className="w-32 h-32 bg-muted rounded-lg flex items-center justify-center">
+                      <span className="text-xs text-muted-foreground">صورة</span>
+                    </div>
+                  )}
                 </div>
               </GlassCard>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
