@@ -1,4 +1,4 @@
-import { Newspaper, Shield, Building, Briefcase, Handshake } from "lucide-react";
+import { Newspaper, Shield, Building, Briefcase, Handshake, Wrench } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,11 @@ const Index = () => {
     description: "تواصل مع إدارات المدينة المختلفة",
     icon: Building,
     onClick: () => navigate("/city")
+  }, {
+    title: "خدمات المدينة",
+    description: "خدمات ومرافق البلدية للمواطنين",
+    icon: Wrench,
+    onClick: () => navigate("/city-services")
   }, {
     title: "المال والأعمال",
     description: "استكشف الفرص التجارية في المدينة",

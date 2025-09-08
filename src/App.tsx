@@ -23,6 +23,10 @@ import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import EmailConfirmation from "./pages/EmailConfirmation";
 import FloatingChat from "@/components/FloatingChat";
+import CityServices from "./pages/CityServices";
+import LostAndFound from "./pages/LostAndFound";
+import ReportLost from "./pages/ReportLost";
+import ReportFound from "./pages/ReportFound";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +68,10 @@ const AppContent = () => {
           <Route path="/police" element={<Police />} />
           <Route path="/police/station/:stationId" element={<PoliceStationDetails />} />
           <Route path="/city" element={<City />} />
+          <Route path="/city-services" element={<CityServices />} />
+          <Route path="/services/lost-and-found" element={<LostAndFound />} />
+          <Route path="/services/lost-and-found/report-lost" element={<ReportLost />} />
+          <Route path="/services/lost-and-found/report-found" element={<ReportFound />} />
           <Route path="/business" element={<Business />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/my-jobs" element={<MyJobs />} />
