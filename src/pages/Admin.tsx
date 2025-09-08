@@ -31,6 +31,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { NewsManagement } from "@/components/admin/NewsManagement";
+import { PoliceStationsManagement } from "@/components/admin/PoliceStationsManagement";
+import { CityDepartmentsManagement } from "@/components/admin/CityDepartmentsManagement";
+import { AnnouncementsManagement } from "@/components/admin/AnnouncementsManagement";
 
 interface ContentItem {
   id: string;
@@ -365,11 +369,14 @@ const Admin = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-7 mb-8">
             <TabsTrigger value="overview">نظرة عامة</TabsTrigger>
             <TabsTrigger value="moderation">مراجعة المحتوى</TabsTrigger>
             <TabsTrigger value="reports">التقارير</TabsTrigger>
-            <TabsTrigger value="analytics">التحليلات</TabsTrigger>
+            <TabsTrigger value="news">الأخبار</TabsTrigger>
+            <TabsTrigger value="police">مراكز الشرطة</TabsTrigger>
+            <TabsTrigger value="departments">أجهزة المدينة</TabsTrigger>
+            <TabsTrigger value="announcements">الإعلانات</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -550,6 +557,22 @@ const Admin = () => {
                 )}
               </div>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="news">
+            <NewsManagement />
+          </TabsContent>
+
+          <TabsContent value="police">
+            <PoliceStationsManagement />
+          </TabsContent>
+
+          <TabsContent value="departments">
+            <CityDepartmentsManagement />
+          </TabsContent>
+
+          <TabsContent value="announcements">
+            <AnnouncementsManagement />
           </TabsContent>
 
           <TabsContent value="analytics">
