@@ -33,11 +33,6 @@ const Index = () => {
     description: "استكشف الفرص التجارية في المدينة",
     icon: Building,
     onClick: () => navigate("/business")
-  }, {
-    title: "الوظائف والفرص",
-    description: "ابحث عن عمل أو وظف عمال ومهنيين",
-    icon: Briefcase,
-    onClick: () => navigate("/jobs")
   }];
   return <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
