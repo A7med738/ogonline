@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/glass-card";
-import { Search, PackageSearch } from "lucide-react";
+import { Search, PackageSearch, Eye } from "lucide-react";
 
 const LostAndFound = () => {
   const navigate = useNavigate();
@@ -31,6 +31,16 @@ const LostAndFound = () => {
               onClick={() => navigate("/services/lost-and-found/report-found")}
             >
               <Search className="w-5 h-5 ml-2" /> أبلغ عن شيء وجدته
+            </Button>
+          </GlassCard>
+
+          <GlassCard className="p-4">
+            <Button
+              className="w-full h-14 text-base"
+              variant="secondary"
+              onClick={() => navigate("/services/lost-and-found/browse")}
+            >
+              <Eye className="w-5 h-5 ml-2" /> عرض المفقودات والموجودات
             </Button>
           </GlassCard>
         </div>
