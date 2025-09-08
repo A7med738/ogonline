@@ -64,7 +64,7 @@ const LostAndFoundView = () => {
 
   const filteredItems = items.filter(item => 
     filter === 'all' || item.type === filter
-  );
+  ).filter(item => item.status === 'active'); // إظهار البلاغات المعتمدة فقط
 
   const getTypeText = (type: string) => {
     return type === 'lost' ? 'مفقود' : 'موجود';
