@@ -12,14 +12,7 @@ const Index = () => {
   const {
     unreadCount
   } = useNewsNotifications();
-  const navigationItems: Array<{
-    title: string;
-    description: string;
-    icon: any;
-    onClick: () => void;
-    badge?: React.ReactNode;
-    iconColor?: string;
-  }> = [{
+  const navigationItems = [{
     title: "أخبار المدينة",
     description: "تابع آخر الأخبار والمستجدات في مدينتك",
     icon: Newspaper,
@@ -44,8 +37,7 @@ const Index = () => {
     title: "المال والأعمال",
     description: "استكشف الفرص التجارية في المدينة",
     icon: Handshake,
-    onClick: () => navigate("/business"),
-    iconColor: "from-yellow-700 via-yellow-600 to-yellow-800"
+    onClick: () => navigate("/business")
   }];
   return <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
@@ -61,7 +53,7 @@ const Index = () => {
 
         {/* Navigation Cards */}
         <div className="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-4 max-w-4xl mx-auto px-2 md:px-4">
-          {navigationItems.map((item, index) => <NavigationCard key={item.title} title={item.title} description={item.description} icon={item.icon} onClick={item.onClick} badge={item.badge} iconColor={item.iconColor} className="animate-slide-up" style={{
+          {navigationItems.map((item, index) => <NavigationCard key={item.title} title={item.title} description={item.description} icon={item.icon} onClick={item.onClick} badge={item.badge} className="animate-slide-up" style={{
           animationDelay: `${0.6 + index * 0.1}s`
         }} />)}
         </div>
