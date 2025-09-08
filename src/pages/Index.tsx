@@ -1,4 +1,4 @@
-import { Newspaper, Shield, Building, User, LogOut, Settings } from "lucide-react";
+import { Newspaper, Shield, Building, Briefcase } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,11 @@ const Index = () => {
     description: "تواصل مع إدارات المدينة المختلفة",
     icon: Building,
     onClick: () => navigate("/city")
+  }, {
+    title: "المال والأعمال",
+    description: "استكشف الفرص التجارية والوظيفية في المدينة",
+    icon: Briefcase,
+    onClick: () => navigate("/business")
   }];
   return <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
@@ -42,7 +47,7 @@ const Index = () => {
         </div>
 
         {/* Navigation Cards */}
-        <div className="grid grid-cols-3 gap-4 max-w-md md:max-w-lg mx-auto px-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto px-4">
           {navigationItems.map((item, index) => <NavigationCard key={item.title} title={item.title} description={item.description} icon={item.icon} onClick={item.onClick} badge={item.badge} className="animate-slide-up" style={{
           animationDelay: `${0.6 + index * 0.1}s`
         }} />)}
