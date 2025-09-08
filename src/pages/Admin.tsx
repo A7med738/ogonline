@@ -37,6 +37,7 @@ import { NewsManagement } from "@/components/admin/NewsManagement";
 import { PoliceStationsManagement } from "@/components/admin/PoliceStationsManagement";
 import { CityDepartmentsManagement } from "@/components/admin/CityDepartmentsManagement";
 import { AnnouncementsManagement } from "@/components/admin/AnnouncementsManagement";
+import { JobsManagement } from "@/components/admin/JobsManagement";
 
 interface ContentItem {
   id: string;
@@ -370,7 +371,7 @@ const Admin = () => {
           <p className="text-muted-foreground">إدارة ومراقبة محتوى التطبيق</p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">
           <Card 
             className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'overview' ? 'ring-2 ring-primary' : ''}`}
             onClick={() => setActiveTab('overview')}
@@ -438,6 +439,16 @@ const Admin = () => {
             <div className="flex flex-col items-center text-center gap-2">
               <Megaphone className="h-8 w-8 text-pink-600" />
               <span className="text-sm font-medium">الإعلانات</span>
+            </div>
+          </Card>
+
+          <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'jobs' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('jobs')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <Briefcase className="h-8 w-8 text-teal-600" />
+              <span className="text-sm font-medium">الوظائف</span>
             </div>
           </Card>
         </div>
@@ -629,6 +640,7 @@ const Admin = () => {
           {activeTab === 'police' && <PoliceStationsManagement />}
           {activeTab === 'departments' && <CityDepartmentsManagement />}
           {activeTab === 'announcements' && <AnnouncementsManagement />}
+          {activeTab === 'jobs' && <JobsManagement />}
         </div>
       </div>
     </div>
