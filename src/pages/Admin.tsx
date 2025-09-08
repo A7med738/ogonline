@@ -371,39 +371,79 @@ const Admin = () => {
           <p className="text-muted-foreground">إدارة ومراقبة محتوى التطبيق</p>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-7 mb-8">
-            <TabsTrigger value="overview" className="flex flex-col items-center gap-1 p-3">
-              <BarChart3 className="h-5 w-5" />
-              <span className="text-xs">نظرة عامة</span>
-            </TabsTrigger>
-            <TabsTrigger value="moderation" className="flex flex-col items-center gap-1 p-3">
-              <Shield className="h-5 w-5" />
-              <span className="text-xs">مراجعة المحتوى</span>
-            </TabsTrigger>
-            <TabsTrigger value="reports" className="flex flex-col items-center gap-1 p-3">
-              <Flag className="h-5 w-5" />
-              <span className="text-xs">التقارير</span>
-            </TabsTrigger>
-            <TabsTrigger value="news" className="flex flex-col items-center gap-1 p-3">
-              <Newspaper className="h-5 w-5" />
-              <span className="text-xs">الأخبار</span>
-            </TabsTrigger>
-            <TabsTrigger value="police" className="flex flex-col items-center gap-1 p-3">
-              <Shield className="h-5 w-5" />
-              <span className="text-xs">مراكز الشرطة</span>
-            </TabsTrigger>
-            <TabsTrigger value="departments" className="flex flex-col items-center gap-1 p-3">
-              <Building className="h-5 w-5" />
-              <span className="text-xs">أجهزة المدينة</span>
-            </TabsTrigger>
-            <TabsTrigger value="announcements" className="flex flex-col items-center gap-1 p-3">
-              <Megaphone className="h-5 w-5" />
-              <span className="text-xs">الإعلانات</span>
-            </TabsTrigger>
-          </TabsList>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
+          <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'overview' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('overview')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <BarChart3 className="h-8 w-8 text-blue-600" />
+              <span className="text-sm font-medium">نظرة عامة</span>
+            </div>
+          </Card>
 
-          <TabsContent value="overview">
+          <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'moderation' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('moderation')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <Shield className="h-8 w-8 text-green-600" />
+              <span className="text-sm font-medium">مراجعة المحتوى</span>
+            </div>
+          </Card>
+
+          <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'reports' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('reports')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <Flag className="h-8 w-8 text-red-600" />
+              <span className="text-sm font-medium">التقارير</span>
+            </div>
+          </Card>
+
+          <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'news' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('news')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <Newspaper className="h-8 w-8 text-purple-600" />
+              <span className="text-sm font-medium">الأخبار</span>
+            </div>
+          </Card>
+
+          <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'police' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('police')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <Shield className="h-8 w-8 text-indigo-600" />
+              <span className="text-sm font-medium">مراكز الشرطة</span>
+            </div>
+          </Card>
+
+          <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'departments' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('departments')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <Building className="h-8 w-8 text-orange-600" />
+              <span className="text-sm font-medium">أجهزة المدينة</span>
+            </div>
+          </Card>
+
+          <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'announcements' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('announcements')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <Megaphone className="h-8 w-8 text-pink-600" />
+              <span className="text-sm font-medium">الإعلانات</span>
+            </div>
+          </Card>
+        </div>
+
+          <div className={activeTab === 'overview' ? 'block' : 'hidden'}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <Card className="p-6">
                 <div className="flex items-center">
@@ -465,9 +505,9 @@ const Admin = () => {
                 <p className="text-sm text-muted-foreground mt-2">يحتاج موافقة</p>
               </Card>
             </div>
-          </TabsContent>
+          </div>
 
-          <TabsContent value="moderation">
+          <div className={activeTab === 'moderation' ? 'block' : 'hidden'}>
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4">مراجعة المحتوى</h3>
               <div className="space-y-4">
@@ -521,9 +561,9 @@ const Admin = () => {
                 )}
               </div>
             </Card>
-          </TabsContent>
+          </div>
 
-          <TabsContent value="reports">
+          <div className={activeTab === 'reports' ? 'block' : 'hidden'}>
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4">البلاغات المرسلة</h3>
               <div className="space-y-4">
@@ -581,70 +621,24 @@ const Admin = () => {
                 )}
               </div>
             </Card>
-          </TabsContent>
+          </div>
 
-          <TabsContent value="news">
+          <div className={activeTab === 'news' ? 'block' : 'hidden'}>
             <NewsManagement />
-          </TabsContent>
+          </div>
 
-          <TabsContent value="police">
+          <div className={activeTab === 'police' ? 'block' : 'hidden'}>
             <PoliceStationsManagement />
-          </TabsContent>
+          </div>
 
-          <TabsContent value="departments">
+          <div className={activeTab === 'departments' ? 'block' : 'hidden'}>
             <CityDepartmentsManagement />
-          </TabsContent>
+          </div>
 
-          <TabsContent value="announcements">
+          <div className={activeTab === 'announcements' ? 'block' : 'hidden'}>
             <AnnouncementsManagement />
-          </TabsContent>
-
-          <TabsContent value="analytics">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="p-6">
-                <div className="flex items-center mb-4">
-                  <BarChart3 className="h-6 w-6 text-blue-600 ml-2" />
-                  <h3 className="text-lg font-semibold">إحصائيات المحتوى</h3>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span>الأخبار المنشورة</span>
-                    <span className="font-semibold">{stats.totalNews}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>الوظائف المنشورة</span>
-                    <span className="font-semibold">{stats.totalJobs}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>التعليقات</span>
-                    <span className="font-semibold">{stats.totalComments}</span>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-6">
-                <div className="flex items-center mb-4">
-                  <Activity className="h-6 w-6 text-green-600 ml-2" />
-                  <h3 className="text-lg font-semibold">النشاط</h3>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span>المستخدمين النشطين</span>
-                    <span className="font-semibold">{stats.totalUsers}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>البلاغات المعلقة</span>
-                    <span className="font-semibold text-red-600">{stats.pendingReports}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>المحتوى في الانتظار</span>
-                    <span className="font-semibold text-yellow-600">{stats.pendingModeration}</span>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+        </div>
       </div>
     </div>
   );
