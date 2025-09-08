@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -443,71 +442,74 @@ const Admin = () => {
           </Card>
         </div>
 
-          <div className={activeTab === 'overview' ? 'block' : 'hidden'}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <Card className="p-6">
-                <div className="flex items-center">
-                  <Users className="h-8 w-8 text-blue-600" />
-                  <div className="mr-4">
-                    <p className="text-sm font-medium text-muted-foreground">إجمالي المستخدمين</p>
-                    <p className="text-2xl font-bold">{stats.totalUsers}</p>
+        <div>
+          {activeTab === 'overview' && (
+            <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <Card className="p-6">
+                  <div className="flex items-center">
+                    <Users className="h-8 w-8 text-blue-600" />
+                    <div className="mr-4">
+                      <p className="text-sm font-medium text-muted-foreground">إجمالي المستخدمين</p>
+                      <p className="text-2xl font-bold">{stats.totalUsers}</p>
+                    </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
 
-              <Card className="p-6">
-                <div className="flex items-center">
-                  <FileText className="h-8 w-8 text-green-600" />
-                  <div className="mr-4">
-                    <p className="text-sm font-medium text-muted-foreground">الأخبار</p>
-                    <p className="text-2xl font-bold">{stats.totalNews}</p>
+                <Card className="p-6">
+                  <div className="flex items-center">
+                    <FileText className="h-8 w-8 text-green-600" />
+                    <div className="mr-4">
+                      <p className="text-sm font-medium text-muted-foreground">الأخبار</p>
+                      <p className="text-2xl font-bold">{stats.totalNews}</p>
+                    </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
 
-              <Card className="p-6">
-                <div className="flex items-center">
-                  <Briefcase className="h-8 w-8 text-purple-600" />
-                  <div className="mr-4">
-                    <p className="text-sm font-medium text-muted-foreground">الوظائف</p>
-                    <p className="text-2xl font-bold">{stats.totalJobs}</p>
+                <Card className="p-6">
+                  <div className="flex items-center">
+                    <Briefcase className="h-8 w-8 text-purple-600" />
+                    <div className="mr-4">
+                      <p className="text-sm font-medium text-muted-foreground">الوظائف</p>
+                      <p className="text-2xl font-bold">{stats.totalJobs}</p>
+                    </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
 
-              <Card className="p-6">
-                <div className="flex items-center">
-                  <MessageSquare className="h-8 w-8 text-orange-600" />
-                  <div className="mr-4">
-                    <p className="text-sm font-medium text-muted-foreground">التعليقات</p>
-                    <p className="text-2xl font-bold">{stats.totalComments}</p>
+                <Card className="p-6">
+                  <div className="flex items-center">
+                    <MessageSquare className="h-8 w-8 text-orange-600" />
+                    <div className="mr-4">
+                      <p className="text-sm font-medium text-muted-foreground">التعليقات</p>
+                      <p className="text-2xl font-bold">{stats.totalComments}</p>
+                    </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="p-6">
+                  <div className="flex items-center mb-4">
+                    <AlertTriangle className="h-6 w-6 text-red-600 ml-2" />
+                    <h3 className="text-lg font-semibold">البلاغات المعلقة</h3>
+                  </div>
+                  <p className="text-3xl font-bold text-red-600">{stats.pendingReports}</p>
+                  <p className="text-sm text-muted-foreground mt-2">يتطلب مراجعة فورية</p>
+                </Card>
+
+                <Card className="p-6">
+                  <div className="flex items-center mb-4">
+                    <Clock className="h-6 w-6 text-yellow-600 ml-2" />
+                    <h3 className="text-lg font-semibold">المحتوى في الانتظار</h3>
+                  </div>
+                  <p className="text-3xl font-bold text-yellow-600">{stats.pendingModeration}</p>
+                  <p className="text-sm text-muted-foreground mt-2">يحتاج موافقة</p>
+                </Card>
+              </div>
             </div>
+          )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="p-6">
-                <div className="flex items-center mb-4">
-                  <AlertTriangle className="h-6 w-6 text-red-600 ml-2" />
-                  <h3 className="text-lg font-semibold">البلاغات المعلقة</h3>
-                </div>
-                <p className="text-3xl font-bold text-red-600">{stats.pendingReports}</p>
-                <p className="text-sm text-muted-foreground mt-2">يتطلب مراجعة فورية</p>
-              </Card>
-
-              <Card className="p-6">
-                <div className="flex items-center mb-4">
-                  <Clock className="h-6 w-6 text-yellow-600 ml-2" />
-                  <h3 className="text-lg font-semibold">المحتوى في الانتظار</h3>
-                </div>
-                <p className="text-3xl font-bold text-yellow-600">{stats.pendingModeration}</p>
-                <p className="text-sm text-muted-foreground mt-2">يحتاج موافقة</p>
-              </Card>
-            </div>
-          </div>
-
-          <div className={activeTab === 'moderation' ? 'block' : 'hidden'}>
+          {activeTab === 'moderation' && (
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4">مراجعة المحتوى</h3>
               <div className="space-y-4">
@@ -561,9 +563,9 @@ const Admin = () => {
                 )}
               </div>
             </Card>
-          </div>
+          )}
 
-          <div className={activeTab === 'reports' ? 'block' : 'hidden'}>
+          {activeTab === 'reports' && (
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4">البلاغات المرسلة</h3>
               <div className="space-y-4">
@@ -621,23 +623,12 @@ const Admin = () => {
                 )}
               </div>
             </Card>
-          </div>
+          )}
 
-          <div className={activeTab === 'news' ? 'block' : 'hidden'}>
-            <NewsManagement />
-          </div>
-
-          <div className={activeTab === 'police' ? 'block' : 'hidden'}>
-            <PoliceStationsManagement />
-          </div>
-
-          <div className={activeTab === 'departments' ? 'block' : 'hidden'}>
-            <CityDepartmentsManagement />
-          </div>
-
-          <div className={activeTab === 'announcements' ? 'block' : 'hidden'}>
-            <AnnouncementsManagement />
-          </div>
+          {activeTab === 'news' && <NewsManagement />}
+          {activeTab === 'police' && <PoliceStationsManagement />}
+          {activeTab === 'departments' && <CityDepartmentsManagement />}
+          {activeTab === 'announcements' && <AnnouncementsManagement />}
         </div>
       </div>
     </div>
