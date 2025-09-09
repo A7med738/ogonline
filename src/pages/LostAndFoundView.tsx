@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, Calendar, User, Phone, Mail } from "lucide-react";
+import { Search, MapPin, Calendar, User, Phone, Mail, Lock } from "lucide-react";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface LostAndFoundItem {
   id: string;
@@ -24,6 +26,10 @@ interface LostAndFoundItem {
   profiles?: {
     full_name: string;
   } | null;
+  secure_contact?: {
+    contact_method: string;
+    contact_details: string;
+  } | null;
 }
 
 const LostAndFoundView = () => {
@@ -31,6 +37,8 @@ const LostAndFoundView = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'lost' | 'found'>('all');
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchItems();
@@ -50,7 +58,21 @@ const LostAndFoundView = () => {
         .order('date_reported', { ascending: false });
 
       if (error) throw error;
-      setItems(data as any || []);
+      
+      // Fetch secure contact details for each item if user is authenticated
+      const itemsWithContact = await Promise.all(
+        (data || []).map(async (item) => {
+          const { data: contactData } = await supabase
+            .rpc('get_lost_found_contact', { item_id: item.id });
+          
+          return {
+            ...item,
+            secure_contact: contactData?.[0] || null
+          };
+        })
+      );
+      
+      setItems(itemsWithContact as any || []);
     } catch (error: any) {
       toast({
         title: "خطأ",
@@ -180,15 +202,34 @@ const LostAndFoundView = () => {
                     </div>
 
                     <div className="flex items-center gap-1 text-sm">
-                      {item.contact_method === 'phone' || item.contact_method === 'both' ? (
-                        <Phone className="w-4 h-4" />
+                      {!user ? (
+                        <>
+                          <Lock className="w-4 h-4" />
+                          <span className="text-muted-foreground">للحصول على معلومات التواصل:</span>
+                          <Button 
+                            variant="link" 
+                            size="sm" 
+                            className="p-0 h-auto font-medium text-primary"
+                            onClick={() => navigate('/auth')}
+                          >
+                            تسجيل الدخول
+                          </Button>
+                        </>
                       ) : (
-                        <Mail className="w-4 h-4" />
+                        <>
+                          {(item.secure_contact?.contact_method === 'phone' || item.secure_contact?.contact_method === 'both') ? (
+                            <Phone className="w-4 h-4" />
+                          ) : (
+                            <Mail className="w-4 h-4" />
+                          )}
+                          <span className="text-muted-foreground">
+                            للتواصل: {formatContactMethod(item.secure_contact?.contact_method || '')}
+                          </span>
+                          <span className="text-foreground font-medium">
+                            {item.secure_contact?.contact_details || 'غير متاح'}
+                          </span>
+                        </>
                       )}
-                      <span className="text-muted-foreground">
-                        للتواصل: {formatContactMethod(item.contact_method)}
-                      </span>
-                      <span className="text-foreground font-medium">{item.contact_details}</span>
                     </div>
 
                     <div className="flex flex-wrap gap-2">
