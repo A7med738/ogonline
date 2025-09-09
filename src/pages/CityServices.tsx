@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
-import { Search, Users, Wrench, HandHeart, Siren } from "lucide-react";
+import { Search, Users, Wrench, HandHeart, Siren, Building2, Calendar, Zap, Bus, MapPin, BarChart3, Construction, Trash2, Stethoscope, Laptop } from "lucide-react";
 
 const CityServices = () => {
   const navigate = useNavigate();
@@ -11,30 +11,105 @@ const CityServices = () => {
       description: "الإبلاغ أو البحث عن مفقودات",
       icon: Search,
       onClick: () => navigate("/services/lost-and-found"),
+      isActive: true
+    },
+    {
+      title: "دليل الأعمال والخدمات",
+      description: "دليل المحلات التجارية والمطاعم والورش الحرفية مع التقييمات",
+      icon: Building2,
+      onClick: () => {},
+      isActive: false
+    },
+    {
+      title: "فعاليات وجدول الأنشطة",
+      description: "الفعاليات العامة والمهرجانات والأنشطة الرياضية في المدينة",
+      icon: Calendar,
+      onClick: () => {},
+      isActive: false
+    },
+    {
+      title: "خدمات المرافق",
+      description: "الإبلاغ عن أعطال المياه والكهرباء والاستعلام عن الفواتير",
+      icon: Zap,
+      onClick: () => {},
+      isActive: false
+    },
+    {
+      title: "المواصلات والنقل",
+      description: "معلومات خطوط المواصلات العامة ومواعيدها وأقرب المواقف",
+      icon: Bus,
+      onClick: () => {},
+      isActive: false
+    },
+    {
+      title: "المرافق العامة",
+      description: "دليل الحدائق والمكتبات والملاعب والمراكز المجتمعية",
+      icon: MapPin,
+      onClick: () => {},
+      isActive: false
+    },
+    {
+      title: "استطلاعات الرأي",
+      description: "استطلاعات رأي السكان حول القرارات والمشاريع الجديدة",
+      icon: BarChart3,
+      onClick: () => {},
+      isActive: false
+    },
+    {
+      title: "مشاريع تحت التنفيذ",
+      description: "عرض مشاريع البلدية مع الجدول الزمني ونسبة الإنجاز",
+      icon: Construction,
+      onClick: () => {},
+      isActive: false
+    },
+    {
+      title: "خدمات النظافة والبيئة",
+      description: "مواعيد جمع القمامة وأماكن إعادة التدوير والإبلاغ عن مشاكل النظافة",
+      icon: Trash2,
+      onClick: () => {},
+      isActive: false
+    },
+    {
+      title: "دليل الصحة",
+      description: "خريطة الصيدليات المناوبة والعيادات والمستشفيات مع أرقام الطوارئ",
+      icon: Stethoscope,
+      onClick: () => {},
+      isActive: false
+    },
+    {
+      title: "مساحات العمل المشتركة",
+      description: "دليل أماكن العمل المشتركة والمكتبات الهادئة للعمل والدراسة",
+      icon: Laptop,
+      onClick: () => {},
+      isActive: false
     },
     {
       title: "مبادرات الحي",
       description: "مبادرات مجتمعية ونشاطات الحي",
       icon: Users,
       onClick: () => navigate("/services/neighborhood-initiatives"),
+      isActive: false
     },
     {
       title: "بلاغات وتحسينات",
       description: "الإبلاغ عن أعطال واقتراح تحسينات",
       icon: Wrench,
       onClick: () => navigate("/services/reports-improvements"),
+      isActive: false
     },
     {
       title: "تبرعات ومساعدات",
       description: "مبادرات تبرع ودعم المحتاجين",
       icon: HandHeart,
       onClick: () => navigate("/services/donations-aid"),
+      isActive: false
     },
     {
       title: "دليل الطوارئ",
       description: "أرقام وعناوين الطوارئ المهمة",
       icon: Siren,
       onClick: () => navigate("/services/emergency-directory"),
+      isActive: false
     },
   ];
 
@@ -45,17 +120,28 @@ const CityServices = () => {
           <h3 className="md:text-2xl text-xl font-bold text-foreground">خدمات المدينة</h3>
         </div>
 
-        <div className="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-4 max-w-4xl mx-auto px-2 md:px-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
           {services.map((svc, index) => (
-            <NavigationCard
-              key={svc.title}
-              title={svc.title}
-              description={svc.description}
-              icon={svc.icon}
-              onClick={svc.onClick}
-              className="animate-slide-up"
-              style={{ animationDelay: `${0.4 + index * 0.08}s` }}
-            />
+            <div key={svc.title} className="relative">
+              <NavigationCard
+                title={svc.title}
+                description={svc.description}
+                icon={svc.icon}
+                onClick={svc.onClick}
+                className={`animate-slide-up ${!svc.isActive ? 'opacity-60' : ''}`}
+                style={{ animationDelay: `${0.1 + index * 0.1}s` }}
+              />
+              {!svc.isActive && (
+                <div className="absolute top-2 right-2 bg-accent text-accent-foreground text-xs px-2 py-1 rounded-full z-10">
+                  قريباً
+                </div>
+              )}
+              {svc.isActive && (
+                <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full z-10">
+                  متاح
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </div>
