@@ -100,9 +100,7 @@ const Business = () => {
               {!item.isActive && <div className="absolute top-2 right-2 bg-accent text-accent-foreground text-xs px-2 py-1 rounded-full z-10">
                   قريباً
                 </div>}
-              {item.isActive && <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full z-10">
-                  متاح
-                </div>}
+              {item.isActive}
             </div>)}
         </div>
 
