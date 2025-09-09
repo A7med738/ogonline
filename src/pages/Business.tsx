@@ -1,4 +1,4 @@
-import { Briefcase, ShoppingBag, Building2, TrendingUp, Lightbulb, DollarSign, Users, Calendar, Scale, Laptop, Trophy, ArrowLeft } from "lucide-react";
+import { Briefcase, ShoppingBag, Building2, TrendingUp, Lightbulb, DollarSign, Users, Calendar, Scale, Laptop, Trophy, GraduationCap, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,12 @@ const Business = () => {
     icon: Briefcase,
     onClick: () => navigate("/jobs"),
     isActive: true
+  }, {
+    title: "بنك المواهب",
+    description: "قاعدة بيانات للمواهب المتخصصة في المدينة للعمل على مشاريع محددة",
+    icon: GraduationCap,
+    onClick: () => {},
+    isActive: false
   }, {
     title: "حاضنة أعمال المدينة",
     description: "ربط رواد الأعمال بالخبراء والموجهين لمساعدة الأفكار الجديدة على النمو",
