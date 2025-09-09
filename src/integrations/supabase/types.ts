@@ -750,60 +750,7 @@ export type Database = {
       }
     }
     Views: {
-      lost_and_found_public: {
-        Row: {
-          category: string | null
-          contact_details: string | null
-          contact_method: string | null
-          created_at: string | null
-          date_lost_found: string | null
-          date_reported: string | null
-          description: string | null
-          id: string | null
-          image_url: string | null
-          latitude: number | null
-          location_description: string | null
-          longitude: number | null
-          status: string | null
-          title: string | null
-          type: string | null
-        }
-        Insert: {
-          category?: string | null
-          contact_details?: never
-          contact_method?: string | null
-          created_at?: string | null
-          date_lost_found?: string | null
-          date_reported?: string | null
-          description?: string | null
-          id?: string | null
-          image_url?: string | null
-          latitude?: number | null
-          location_description?: string | null
-          longitude?: number | null
-          status?: string | null
-          title?: string | null
-          type?: string | null
-        }
-        Update: {
-          category?: string | null
-          contact_details?: never
-          contact_method?: string | null
-          created_at?: string | null
-          date_lost_found?: string | null
-          date_reported?: string | null
-          description?: string | null
-          id?: string | null
-          image_url?: string | null
-          latitude?: number | null
-          location_description?: string | null
-          longitude?: number | null
-          status?: string | null
-          title?: string | null
-          type?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       binary_quantize: {
