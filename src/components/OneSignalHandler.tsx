@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { parseDeepLink } from '@/utils/deepLinkUtils';
 
 declare global {
   interface Window {
@@ -26,12 +27,33 @@ export const OneSignalHandler = () => {
         }
         
         if (targetUrl) {
-          // Extract the path from the full URL if it's a full URL
-          const url = new URL(targetUrl);
-          const path = url.pathname + url.search + url.hash;
-          
-          console.log('Navigating to:', path);
-          navigate(path);
+          // Check if it's a deep link
+          if (targetUrl.startsWith('ogonline://')) {
+            // Handle deep link using utility function
+            const { path, params } = parseDeepLink(targetUrl);
+            console.log('Deep link detected:', { path, params });
+            
+            // Build navigation path with parameters
+            let navigationPath = `/${path}`;
+            if (Object.keys(params).length > 0) {
+              const searchParams = new URLSearchParams(params);
+              navigationPath += `?${searchParams.toString()}`;
+            }
+            
+            console.log('Navigating to:', navigationPath);
+            navigate(navigationPath);
+          } else {
+            // Handle regular URL
+            try {
+              const url = new URL(targetUrl);
+              const path = url.pathname + url.search + url.hash;
+              console.log('Regular URL detected, navigating to:', path);
+              navigate(path);
+            } catch (error) {
+              console.error('Invalid URL format:', targetUrl);
+              navigate('/news');
+            }
+          }
         } else {
           console.warn('No URL found in notification payload');
           // Fallback to news page

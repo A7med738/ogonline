@@ -25,9 +25,10 @@ export const sendNewsNotification = async (data: NotificationData) => {
 };
 
 
+import { generateUniversalUrl, DEEP_LINK_PATHS } from '@/utils/deepLinkUtils';
+
 export const generateNewsUrl = (newsId: string) => {
-  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://example.com';
-  return `${baseUrl}/news?id=${newsId}`;
+  return generateUniversalUrl(DEEP_LINK_PATHS.NEWS, { id: newsId });
 };
 
 export const sendTestNotification = async (newsItem: { id: string; title: string }) => {

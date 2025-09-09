@@ -10,5 +10,17 @@
         "F2:10:4F:D8:78:90:7D:DB:44:36:03:90:5D:52:D0:BD:80:EC:75:1E:32:EE:56:28:CF:52:5C:07:10:D8:D5:C4"
       ]
     }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "co.median.android.odxmwym",
+      "sha256_cert_fingerprints": [
+        "F2:10:4F:D8:78:90:7D:DB:44:36:03:90:5D:52:D0:BD:80:EC:75:1E:32:EE:56:28:CF:52:5C:07:10:D8:D5:C4"
+      ]
+    }
   }
 ]

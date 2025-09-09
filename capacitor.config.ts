@@ -21,6 +21,10 @@ const config: CapacitorConfig = {
   ios: {
     allowsLinkPreview: false,
     scrollEnabled: true
+  },
+  // Deep Link configuration
+  app: {
+    customUrlScheme: 'ogonline'
   }
 };
 
