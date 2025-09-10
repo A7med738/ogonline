@@ -36,10 +36,10 @@ const CityServices = () => {
     },
     {
       title: "المواصلات والنقل",
-      description: "معلومات خطوط المواصلات العامة ومواعيدها وأقرب المواقف",
+      description: "دورات المدارس وخدمات النقل المدرسي",
       icon: Bus,
-      onClick: () => {},
-      isActive: false
+      onClick: () => navigate("/services/school-transport"),
+      isActive: true
     },
     {
       title: "المرافق العامة",

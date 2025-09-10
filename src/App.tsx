@@ -28,6 +28,9 @@ import LostAndFound from "./pages/LostAndFound";
 import LostAndFoundView from "./pages/LostAndFoundView";
 import ReportLost from "./pages/ReportLost";
 import ReportFound from "./pages/ReportFound";
+import SchoolTransport from "./pages/SchoolTransport";
+import SchoolTransportRequest from "./pages/SchoolTransportRequest";
+import SchoolTransportOffer from "./pages/SchoolTransportOffer";
 
 const queryClient = new QueryClient();
 
@@ -74,6 +77,9 @@ const AppContent = () => {
           <Route path="/services/lost-and-found/view-all" element={<LostAndFoundView />} />
           <Route path="/services/lost-and-found/report-lost" element={<ReportLost />} />
           <Route path="/services/lost-and-found/report-found" element={<ReportFound />} />
+          <Route path="/services/school-transport" element={<SchoolTransport />} />
+          <Route path="/services/school-transport/request" element={<SchoolTransportRequest />} />
+          <Route path="/services/school-transport/offer" element={<SchoolTransportOffer />} />
           <Route path="/business" element={<Business />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/my-jobs" element={<MyJobs />} />
