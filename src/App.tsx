@@ -31,6 +31,7 @@ import ReportFound from "./pages/ReportFound";
 import SchoolTransport from "./pages/SchoolTransport";
 import SchoolTransportRequest from "./pages/SchoolTransportRequest";
 import SchoolTransportOffer from "./pages/SchoolTransportOffer";
+import MySchoolTransports from "./pages/MySchoolTransports";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +81,7 @@ const AppContent = () => {
           <Route path="/services/school-transport" element={<SchoolTransport />} />
           <Route path="/services/school-transport/request" element={<SchoolTransportRequest />} />
           <Route path="/services/school-transport/offer" element={<SchoolTransportOffer />} />
+          <Route path="/services/school-transport/my-transports" element={<MySchoolTransports />} />
           <Route path="/business" element={<Business />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/my-jobs" element={<MyJobs />} />

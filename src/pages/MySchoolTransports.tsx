@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Search, MapPin, Users, Phone, DollarSign, Calendar, Clock, Trash2, Edit } from 'lucide-react';
+import { ArrowLeft, MapPin, Users, Phone, DollarSign, Clock, Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -25,7 +25,7 @@ interface SchoolTransportRequest {
   updated_at: string;
 }
 
-const SchoolTransport = () => {
+const MySchoolTransports = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [requests, setRequests] = useState<SchoolTransportRequest[]>([]);
@@ -33,23 +33,27 @@ const SchoolTransport = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
 
   const fetchData = async () => {
+    if (!user) return;
+
     try {
       const { data: requestsData, error: requestsError } = await supabase
         .from('school_transport_requests')
         .select('*')
+        .eq('user_id', user.id)
         .eq('type', 'request')
-        .eq('status', 'active')
         .order('created_at', { ascending: false });
 
       const { data: offersData, error: offersError } = await supabase
         .from('school_transport_requests')
         .select('*')
+        .eq('user_id', user.id)
         .eq('type', 'offer')
-        .eq('status', 'active')
         .order('created_at', { ascending: false });
 
       if (requestsError) throw requestsError;
@@ -59,6 +63,7 @@ const SchoolTransport = () => {
       setOffers(offersData || []);
     } catch (error) {
       console.error('Error fetching data:', error);
+      toast.error('حدث خطأ أثناء تحميل البيانات');
     } finally {
       setLoading(false);
     }
@@ -95,6 +100,35 @@ const SchoolTransport = () => {
     }
   };
 
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('school_transport_requests')
+        .update({ status: newStatus })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast.success('تم تحديث حالة الدورة بنجاح');
+      fetchData(); // Refresh the data
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast.error('حدث خطأ أثناء تحديث الحالة');
+    }
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-foreground mb-4">يجب تسجيل الدخول</h2>
+          <p className="text-muted-foreground mb-4">يجب تسجيل الدخول لعرض دوراتك</p>
+          <Button onClick={() => navigate('/auth')}>تسجيل الدخول</Button>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -114,15 +148,15 @@ const SchoolTransport = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate('/city-services')}
+            onClick={() => navigate('/services/school-transport')}
             className="flex items-center gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
             العودة
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">دورات المدارس</h1>
-            <p className="text-muted-foreground">ابحث عن دورات مدرسية أو أضف طلبك</p>
+            <h1 className="text-2xl font-bold text-foreground">دوراتي</h1>
+            <p className="text-muted-foreground">إدارة طلبات الدورات والدورات المتاحة الخاصة بك</p>
           </div>
         </div>
 
@@ -143,23 +177,13 @@ const SchoolTransport = () => {
             <Plus className="h-4 w-4" />
             عرض دورة متاحة
           </Button>
-          {user && (
-            <Button
-              onClick={() => navigate('/services/school-transport/my-transports')}
-              variant="secondary"
-              className="flex items-center gap-2"
-            >
-              <Edit className="h-4 w-4" />
-              دوراتي
-            </Button>
-          )}
         </div>
 
         {/* Tabs */}
         <Tabs defaultValue="requests" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="requests">طلبات الدورات</TabsTrigger>
-            <TabsTrigger value="offers">الدورات المتاحة</TabsTrigger>
+            <TabsTrigger value="requests">طلباتي ({requests.length})</TabsTrigger>
+            <TabsTrigger value="offers">عروضي ({offers.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="requests" className="mt-6">
@@ -168,7 +192,10 @@ const SchoolTransport = () => {
                 <Card>
                   <CardContent className="text-center py-8">
                     <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">لا توجد طلبات دورات حالياً</p>
+                    <p className="text-muted-foreground mb-4">لا توجد طلبات دورات حالياً</p>
+                    <Button onClick={() => navigate('/services/school-transport/request')}>
+                      إضافة طلب جديد
+                    </Button>
                   </CardContent>
                 </Card>
               ) : (
@@ -182,7 +209,11 @@ const SchoolTransport = () => {
                             {request.description || 'طلب دورة مدرسية'}
                           </CardDescription>
                         </div>
-                        <Badge variant="secondary">طلب</Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={request.status === 'active' ? 'default' : 'secondary'}>
+                            {request.status === 'active' ? 'نشط' : 'مكتمل'}
+                          </Badge>
+                        </div>
                       </div>
                     </CardHeader>
                     <CardContent>
@@ -221,37 +252,41 @@ const SchoolTransport = () => {
                             <Phone className="h-4 w-4" />
                             تواصل
                           </Button>
-                          {user && user.id === request.user_id && (
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="destructive" size="sm" className="flex items-center gap-2">
-                                  <Trash2 className="h-4 w-4" />
-                                  حذف
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    هل أنت متأكد من حذف هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => handleDelete(request.id)}
-                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                  >
-                                    حذف
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
+                          {request.status === 'active' && (
+                            <Button
+                              onClick={() => handleStatusChange(request.id, 'completed')}
+                              variant="outline"
+                              size="sm"
+                            >
+                              تم إكماله
+                            </Button>
                           )}
                         </div>
-                        <span className="text-sm text-muted-foreground">
-                          {request.contact_number}
-                        </span>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="destructive" size="sm" className="flex items-center gap-2">
+                              <Trash2 className="h-4 w-4" />
+                              حذف
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                هل أنت متأكد من حذف هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDelete(request.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                حذف
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </CardContent>
                   </Card>
@@ -266,7 +301,10 @@ const SchoolTransport = () => {
                 <Card>
                   <CardContent className="text-center py-8">
                     <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">لا توجد دورات متاحة حالياً</p>
+                    <p className="text-muted-foreground mb-4">لا توجد دورات متاحة حالياً</p>
+                    <Button onClick={() => navigate('/services/school-transport/offer')}>
+                      إضافة دورة جديدة
+                    </Button>
                   </CardContent>
                 </Card>
               ) : (
@@ -280,7 +318,11 @@ const SchoolTransport = () => {
                             {offer.description || 'دورة مدرسية متاحة'}
                           </CardDescription>
                         </div>
-                        <Badge variant="default">متاح</Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={offer.status === 'active' ? 'default' : 'secondary'}>
+                            {offer.status === 'active' ? 'نشط' : 'مكتمل'}
+                          </Badge>
+                        </div>
                       </div>
                     </CardHeader>
                     <CardContent>
@@ -327,37 +369,41 @@ const SchoolTransport = () => {
                             <Phone className="h-4 w-4" />
                             تواصل
                           </Button>
-                          {user && user.id === offer.user_id && (
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="destructive" size="sm" className="flex items-center gap-2">
-                                  <Trash2 className="h-4 w-4" />
-                                  حذف
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    هل أنت متأكد من حذف هذه الدورة؟ لا يمكن التراجع عن هذا الإجراء.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => handleDelete(offer.id)}
-                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                  >
-                                    حذف
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
+                          {offer.status === 'active' && (
+                            <Button
+                              onClick={() => handleStatusChange(offer.id, 'completed')}
+                              variant="outline"
+                              size="sm"
+                            >
+                              تم إكماله
+                            </Button>
                           )}
                         </div>
-                        <span className="text-sm text-muted-foreground">
-                          {offer.contact_number}
-                        </span>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="destructive" size="sm" className="flex items-center gap-2">
+                              <Trash2 className="h-4 w-4" />
+                              حذف
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                هل أنت متأكد من حذف هذه الدورة؟ لا يمكن التراجع عن هذا الإجراء.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDelete(offer.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                حذف
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </CardContent>
                   </Card>
@@ -371,4 +417,4 @@ const SchoolTransport = () => {
   );
 };
 
-export default SchoolTransport;
+export default MySchoolTransports;
