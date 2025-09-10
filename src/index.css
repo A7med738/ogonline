@@ -22,19 +22,17 @@
 All colors MUST be HSL.
 */
 
-/* Apply Lateef font to Arabic text */
-*:lang(ar),
-[dir="rtl"] {
+/* Apply Lateef as the main font for all text */
+* {
   font-family: 'Lateef', system-ui, -apple-system, sans-serif;
+  font-size: 1.1rem; /* زيادة حجم الخط الأساسي */
 }
 
-/* Apply Lateef font to elements with Arabic text */
-:is(*) {
-  font-family: system-ui, -apple-system, sans-serif;
-}
-
-:is(*):has(:lang(ar)) {
-  font-family: 'Lateef', system-ui, -apple-system, sans-serif;
+/* Lalezar font for special headings and decorative text */
+.lalezar {
+  font-family: 'Lalezar', 'Lateef', system-ui, -apple-system, sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 @layer base {
@@ -154,7 +152,9 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground font-cairo;
+    @apply bg-background text-foreground;
+    font-family: 'Lateef', system-ui, -apple-system, sans-serif;
+    font-size: 1.125rem; /* زيادة حجم الخط في body */
     direction: rtl;
   }
 

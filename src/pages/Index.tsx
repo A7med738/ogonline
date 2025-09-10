@@ -1,4 +1,4 @@
-import { Newspaper, Shield, Building, Briefcase, Handshake, Wrench } from "lucide-react";
+import { Newspaper, Shield, Building, Briefcase, Handshake, Wrench, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
 import { Button } from "@/components/ui/button";
@@ -13,31 +13,36 @@ const Index = () => {
     unreadCount
   } = useNewsNotifications();
   const navigationItems = [{
-    title: "أخبار المدينة",
-    description: "تابع آخر الأخبار والمستجدات في مدينتك",
-    icon: Newspaper,
-    onClick: () => navigate("/news"),
-    badge: unreadCount > 0 ? <NewsNotificationBadge count={unreadCount} /> : undefined
+    title: "جهاز المدينة",
+    description: "تواصل مع إدارات المدينة المختلفة",
+    icon: Building,
+    onClick: () => navigate("/city")
   }, {
     title: "شرطة المدينة",
     description: "أرقام التواصل مع مركز الشرطة للطوارئ والخدمات",
     icon: Shield,
     onClick: () => navigate("/police")
   }, {
-    title: "جهاز المدينة",
-    description: "تواصل مع إدارات المدينة المختلفة",
-    icon: Building,
-    onClick: () => navigate("/city")
+    title: "أخبار المدينة",
+    description: "تابع آخر الأخبار والمستجدات في مدينتك",
+    icon: Newspaper,
+    onClick: () => navigate("/news"),
+    badge: unreadCount > 0 ? <NewsNotificationBadge count={unreadCount} /> : undefined
+  }, {
+    title: "المال والأعمال",
+    description: "استكشف الفرص التجارية في المدينة",
+    icon: Handshake,
+    onClick: () => navigate("/business")
   }, {
     title: "خدمات المدينة",
     description: "خدمات ومرافق البلدية للمواطنين",
     icon: Wrench,
     onClick: () => navigate("/city-services")
   }, {
-    title: "المال والأعمال",
-    description: "استكشف الفرص التجارية في المدينة",
-    icon: Handshake,
-    onClick: () => navigate("/business")
+    title: "عقارات المدينة",
+    description: "ابحث عن العقارات المتاحة للبيع والإيجار",
+    icon: Home,
+    onClick: () => navigate("/real-estate")
   }];
   return <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
