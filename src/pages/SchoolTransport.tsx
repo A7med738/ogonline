@@ -115,42 +115,42 @@ const SchoolTransport = () => {
             variant="ghost"
             size="sm"
             onClick={() => navigate('/city-services')}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 shrink-0"
           >
             <ArrowLeft className="h-4 w-4" />
-            العودة
+            <span className="hidden sm:inline">العودة</span>
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">دورات المدارس</h1>
-            <p className="text-muted-foreground">ابحث عن دورات مدرسية أو أضف طلبك</p>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">دورات المدينة</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">ابحث عن دورات مدرسية أو أضف طلبك</p>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-6">
           <Button
             onClick={() => navigate('/services/school-transport/request')}
-            className="flex items-center gap-2"
+            className="flex items-center justify-center gap-2 flex-1"
           >
             <Plus className="h-4 w-4" />
-            طلب دورة جديدة
+            <span className="text-sm sm:text-base">طلب دورة جديدة</span>
           </Button>
           <Button
             onClick={() => navigate('/services/school-transport/offer')}
             variant="outline"
-            className="flex items-center gap-2"
+            className="flex items-center justify-center gap-2 flex-1"
           >
             <Plus className="h-4 w-4" />
-            عرض دورة متاحة
+            <span className="text-sm sm:text-base">عرض دورة متاحة</span>
           </Button>
           {user && (
             <Button
               onClick={() => navigate('/services/school-transport/my-transports')}
               variant="secondary"
-              className="flex items-center gap-2"
+              className="flex items-center justify-center gap-2 flex-1 sm:flex-none"
             >
               <Edit className="h-4 w-4" />
-              دوراتي
+              <span className="text-sm sm:text-base">دوراتي</span>
             </Button>
           )}
         </div>
@@ -186,47 +186,49 @@ const SchoolTransport = () => {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">
+                          <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                          <span className="text-sm truncate">
                             من: {request.from_location}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">
+                          <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                          <span className="text-sm truncate">
                             إلى: {request.to_location}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4 text-muted-foreground" />
+                          <Users className="h-4 w-4 text-muted-foreground shrink-0" />
                           <span className="text-sm">
                             عدد الأطفال: {request.number_of_children}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-muted-foreground" />
+                          <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
                           <span className="text-sm">
                             {formatDate(request.created_at)}
                           </span>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between mt-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4">
                         <div className="flex items-center gap-2">
                           <Button
                             onClick={() => handleContact(request.contact_number)}
-                            className="flex items-center gap-2"
+                            className="flex items-center gap-2 flex-1 sm:flex-none"
+                            size="sm"
                           >
                             <Phone className="h-4 w-4" />
-                            تواصل
+                            <span className="hidden sm:inline">تواصل</span>
+                            <span className="sm:hidden">اتصال</span>
                           </Button>
                           {user && user.id === request.user_id && (
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
                                 <Button variant="destructive" size="sm" className="flex items-center gap-2">
                                   <Trash2 className="h-4 w-4" />
-                                  حذف
+                                  <span className="hidden sm:inline">حذف</span>
                                 </Button>
                               </AlertDialogTrigger>
                               <AlertDialogContent>
@@ -249,7 +251,7 @@ const SchoolTransport = () => {
                             </AlertDialog>
                           )}
                         </div>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-xs sm:text-sm text-muted-foreground text-center sm:text-right">
                           {request.contact_number}
                         </span>
                       </div>
@@ -284,55 +286,57 @@ const SchoolTransport = () => {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">
+                          <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                          <span className="text-sm truncate">
                             من: {offer.from_location}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">
+                          <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                          <span className="text-sm truncate">
                             إلى: {offer.to_location}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4 text-muted-foreground" />
+                          <Users className="h-4 w-4 text-muted-foreground shrink-0" />
                           <span className="text-sm">
                             عدد الأطفال المطلوب: {offer.number_of_children}
                           </span>
                         </div>
                         {offer.price && (
                           <div className="flex items-center gap-2">
-                            <DollarSign className="h-4 w-4 text-muted-foreground" />
+                            <DollarSign className="h-4 w-4 text-muted-foreground shrink-0" />
                             <span className="text-sm">
                               السعر: {offer.price} ريال
                             </span>
                           </div>
                         )}
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-muted-foreground" />
+                        <div className="flex items-center gap-2 sm:col-span-2">
+                          <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
                           <span className="text-sm">
                             {formatDate(offer.created_at)}
                           </span>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between mt-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4">
                         <div className="flex items-center gap-2">
                           <Button
                             onClick={() => handleContact(offer.contact_number)}
-                            className="flex items-center gap-2"
+                            className="flex items-center gap-2 flex-1 sm:flex-none"
+                            size="sm"
                           >
                             <Phone className="h-4 w-4" />
-                            تواصل
+                            <span className="hidden sm:inline">تواصل</span>
+                            <span className="sm:hidden">اتصال</span>
                           </Button>
                           {user && user.id === offer.user_id && (
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
                                 <Button variant="destructive" size="sm" className="flex items-center gap-2">
                                   <Trash2 className="h-4 w-4" />
-                                  حذف
+                                  <span className="hidden sm:inline">حذف</span>
                                 </Button>
                               </AlertDialogTrigger>
                               <AlertDialogContent>
@@ -355,7 +359,7 @@ const SchoolTransport = () => {
                             </AlertDialog>
                           )}
                         </div>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-xs sm:text-sm text-muted-foreground text-center sm:text-right">
                           {offer.contact_number}
                         </span>
                       </div>

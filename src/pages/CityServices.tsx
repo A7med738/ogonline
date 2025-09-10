@@ -35,7 +35,7 @@ const CityServices = () => {
       isActive: false
     },
     {
-      title: "المواصلات والنقل",
+      title: "دورات المدينة",
       description: "دورات المدارس وخدمات النقل المدرسي",
       icon: Bus,
       onClick: () => navigate("/services/school-transport"),
