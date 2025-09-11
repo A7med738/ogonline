@@ -40,11 +40,17 @@ export const LatestNewsSection = () => {
   useEffect(() => {
     if (latestNews.length > 1) {
       const interval = setInterval(() => {
-        setCurrentIndex(prev => (prev + 1) % latestNews.length);
+        if (!isAnimating) {
+          setIsAnimating(true);
+          setTimeout(() => {
+            setCurrentIndex(prev => (prev + 1) % latestNews.length);
+            setIsAnimating(false);
+          }, 200);
+        }
       }, 4000);
       return () => clearInterval(interval);
     }
-  }, [latestNews.length]); // Only depend on latestNews.length, not currentIndex
+  }, [latestNews.length, isAnimating]); // Include isAnimating in dependencies
 
   const fetchLatestNews = async () => {
     try {
@@ -94,7 +100,7 @@ export const LatestNewsSection = () => {
     setTimeout(() => {
       setCurrentIndex(prev => (prev + 1) % latestNews.length);
       setIsAnimating(false);
-    }, 300);
+    }, 200);
   };
   const handlePrev = () => {
     if (isAnimating || latestNews.length === 0) return;
@@ -102,7 +108,7 @@ export const LatestNewsSection = () => {
     setTimeout(() => {
       setCurrentIndex(prev => (prev - 1 + latestNews.length) % latestNews.length);
       setIsAnimating(false);
-    }, 300);
+    }, 200);
   };
   if (loading) {
     return (
@@ -135,10 +141,12 @@ export const LatestNewsSection = () => {
         className="text-center mb-6"
       >
         <div className="flex items-center justify-center space-x-2 rtl:space-x-reverse mb-3">
-          <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-lg flex items-center justify-center shadow-lg">
             <Newspaper className="w-4 h-4 text-white" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-800">أحدث أخبار المدينة</h2>
+          <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent">
+            أحدث أخبار المدينة
+          </h2>
         </div>
       </motion.div>
 
@@ -147,32 +155,45 @@ export const LatestNewsSection = () => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.4 }}
-        className="max-w-sm sm:max-w-md mx-auto relative"
+        className="max-w-xs sm:max-w-sm md:max-w-md mx-auto relative overflow-hidden"
       >
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
-            initial={{ opacity: 0, x: 300 }}
+            initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -300 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="relative"
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            className="relative w-full"
           >
-            <Card className="overflow-hidden border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+            <Card className="overflow-hidden border-0 shadow-xl bg-white/90 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 cursor-pointer group min-h-[200px]"
                   onClick={() => navigate('/news')}>
               {/* News Image */}
-              {(latestNews[currentIndex]?.image_url || (newsMedia[latestNews[currentIndex]?.id] && newsMedia[latestNews[currentIndex]?.id].length > 0)) && (
+              {(latestNews[currentIndex]?.image_url || (newsMedia[latestNews[currentIndex]?.id] && newsMedia[latestNews[currentIndex]?.id].length > 0)) ? (
                 <div className="h-40 sm:h-48 overflow-hidden relative">
                   <img 
                     src={latestNews[currentIndex]?.image_url || (newsMedia[latestNews[currentIndex]?.id] && newsMedia[latestNews[currentIndex]?.id][0]?.media_url)} 
                     alt={latestNews[currentIndex]?.title} 
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                   
                   {/* Category Badge */}
                   <div className="absolute top-3 right-3">
-                    <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white border-0 shadow-lg">
+                    <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white border-0 shadow-lg backdrop-blur-sm">
+                      {latestNews[currentIndex]?.category}
+                    </Badge>
+                  </div>
+                </div>
+              ) : (
+                <div className="h-40 sm:h-48 bg-gradient-to-br from-emerald-100 to-cyan-100 flex items-center justify-center relative">
+                  <div className="text-center">
+                    <Newspaper className="w-12 h-12 text-emerald-500 mx-auto mb-2" />
+                    <p className="text-emerald-600 font-medium text-sm">أخبار المدينة</p>
+                  </div>
+                  {/* Category Badge */}
+                  <div className="absolute top-3 right-3">
+                    <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white border-0 shadow-lg backdrop-blur-sm">
                       {latestNews[currentIndex]?.category}
                     </Badge>
                   </div>
@@ -224,7 +245,7 @@ export const LatestNewsSection = () => {
                 variant="ghost" 
                 size="sm" 
                 onClick={handlePrev} 
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 bg-white/80 backdrop-blur-sm hover:bg-white/90 text-gray-700 border-0 shadow-lg" 
+                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 bg-white/90 backdrop-blur-sm hover:bg-white text-gray-700 border-0 shadow-lg hover:shadow-xl transition-all duration-200" 
                 disabled={isAnimating}
               >
                 <ChevronRight className="h-4 w-4" />
@@ -239,7 +260,7 @@ export const LatestNewsSection = () => {
                 variant="ghost" 
                 size="sm" 
                 onClick={handleNext} 
-                className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 bg-white/80 backdrop-blur-sm hover:bg-white/90 text-gray-700 border-0 shadow-lg" 
+                className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 bg-white/90 backdrop-blur-sm hover:bg-white text-gray-700 border-0 shadow-lg hover:shadow-xl transition-all duration-200" 
                 disabled={isAnimating}
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -260,16 +281,16 @@ export const LatestNewsSection = () => {
                     setTimeout(() => {
                       setCurrentIndex(index);
                       setIsAnimating(false);
-                    }, 300);
+                    }, 200);
                   }
                 }}
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.8 }}
                 className={cn(
-                  "w-2 h-2 rounded-full transition-all duration-300",
+                  "h-2 rounded-full transition-all duration-300 shadow-sm",
                   index === currentIndex 
-                    ? "bg-gradient-to-r from-emerald-500 to-cyan-500 w-8" 
-                    : "bg-gray-300 hover:bg-gray-400"
+                    ? "bg-gradient-to-r from-emerald-500 to-cyan-500 w-8 shadow-lg" 
+                    : "bg-gray-300 hover:bg-gray-400 w-2"
                 )}
               />
             ))}
@@ -290,7 +311,7 @@ export const LatestNewsSection = () => {
         >
           <Button
             onClick={() => navigate('/news')}
-            className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white shadow-lg px-6 py-2"
+            className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white shadow-lg hover:shadow-xl px-6 py-2 rounded-xl transition-all duration-200"
           >
             عرض جميع الأخبار
             <ArrowRight className="w-4 h-4 mr-2" />
