@@ -16,22 +16,21 @@ export const useDeepLink = () => {
         const handleUrl = (url: string) => {
           console.log('Deep link received:', url);
           
-          if (url.includes('auth/callback')) {
-            // Get auth session after OAuth redirect
+          if (url.includes('auth/callback') || url.includes('email-confirmation')) {
+            // Handle email confirmation and auth callback
             supabase.auth.getSession().then(({ data: { session }, error }) => {
               if (error) {
-                toast({
-                  title: "خطأ في المصادقة",
-                  description: "حدث خطأ أثناء تسجيل الدخول",
-                  variant: "destructive"
-                });
-                navigate('/auth');
+                console.error('Auth error:', error);
+                navigate('/email-confirmation');
               } else if (session) {
                 toast({
-                  title: "تم تسجيل الدخول بنجاح!",
+                  title: "تم تأكيد البريد الإلكتروني بنجاح!",
                   description: "مرحباً بك في التطبيق",
                 });
                 navigate('/');
+              } else {
+                // No session yet, go to email confirmation page
+                navigate('/email-confirmation');
               }
             });
           } else if (url.startsWith('ogonline://')) {

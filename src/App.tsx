@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { TopNavigation } from "@/components/TopNavigation";
 import { OneSignalHandler } from "@/components/OneSignalHandler";
 import { SidebarProvider, useSidebar } from "@/contexts/SidebarContext";
+import { useDeepLink } from "@/hooks/useDeepLink";
 import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import News from "./pages/News";
@@ -39,6 +40,9 @@ const AppContent = () => {
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const { isVisible: sidebarVisible } = useSidebar();
+  
+  // Enable deep link handling
+  useDeepLink();
 
   useEffect(() => {
     if (user) {
