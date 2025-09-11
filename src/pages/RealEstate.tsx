@@ -29,6 +29,9 @@ import { cn } from '@/lib/utils';
 import AnimatedIcon from '@/components/AnimatedIcon';
 import RealEstateCard from '@/components/RealEstateCard';
 import RealEstateFilters from '@/components/RealEstateFilters';
+import RealEstateOnboarding from '@/components/RealEstateOnboarding';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 interface RealEstateItem {
   id: string;
@@ -48,14 +51,60 @@ interface RealEstateItem {
 
 const RealEstate = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [userRealEstateType, setUserRealEstateType] = useState<'buyer' | 'seller' | 'broker' | null>(null);
+
+  // Check if user needs onboarding
+  useEffect(() => {
+    const checkUserRealEstateType = async () => {
+      if (user) {
+        const { data } = await supabase
+          .from('user_real_estate_preferences')
+          .select('user_type')
+          .eq('user_id', user.id)
+          .single();
+        
+        if (data) {
+          setUserRealEstateType(data.user_type);
+        } else {
+          // First time user, show onboarding
+          setShowOnboarding(true);
+        }
+      }
+    };
+    
+    checkUserRealEstateType();
+  }, [user]);
 
   const handleViewDetails = (id: string) => {
     navigate(`/real-estate/${id}`);
+  };
+
+  const handleOnboardingComplete = async (userType: 'buyer' | 'seller' | 'broker', preferences: any) => {
+    if (user) {
+      // Save user preferences to database
+      await supabase
+        .from('user_real_estate_preferences')
+        .upsert({
+          user_id: user.id,
+          user_type: userType,
+          preferences: preferences,
+          created_at: new Date().toISOString()
+        });
+      
+      setUserRealEstateType(userType);
+      setShowOnboarding(false);
+    }
+  };
+
+  const handleOnboardingSkip = () => {
+    setShowOnboarding(false);
   };
 
   const handleLike = (id: string) => {
@@ -92,94 +141,138 @@ const RealEstate = () => {
     { id: 'villa', label: 'فيلات وقصور', icon: Crown, color: 'from-red-500 to-rose-500' }
   ];
 
-  const sampleData: RealEstateItem[] = [
-    {
-      id: '1',
-      title: 'شقة فاخرة في قلب المدينة',
-      type: 'sale',
-      price: '2,500,000',
-      location: 'الرياض، حي النخيل',
-      area: '150 متر مربع',
-      bedrooms: 3,
-      bathrooms: 2,
-      image: '/placeholder.svg',
-      featured: true,
-      rating: 4.8,
-      views: 1250,
-      likes: 89
-    },
-    {
-      id: '2',
-      title: 'شقة للإيجار - إطلالة بحرية',
-      type: 'rent',
-      price: '8,000',
-      location: 'جدة، الكورنيش',
-      area: '120 متر مربع',
-      bedrooms: 2,
-      bathrooms: 2,
-      image: '/placeholder.svg',
-      featured: false,
-      rating: 4.6,
-      views: 890,
-      likes: 67
-    },
-    {
-      id: '3',
-      title: 'أرض سكنية - موقع مميز',
-      type: 'land',
-      price: '1,200,000',
-      location: 'الدمام، حي الفيصلية',
-      area: '500 متر مربع',
-      image: '/placeholder.svg',
-      featured: true,
-      rating: 4.9,
-      views: 2100,
-      likes: 156
-    },
-    {
-      id: '4',
-      title: 'محل تجاري - شارع رئيسي',
-      type: 'commercial',
-      price: '15,000',
-      location: 'الرياض، شارع التحلية',
-      area: '80 متر مربع',
-      image: '/placeholder.svg',
-      featured: false,
-      rating: 4.4,
-      views: 650,
-      likes: 43
-    },
-    {
-      id: '5',
-      title: 'مكتب إداري - طابق كامل',
-      type: 'office',
-      price: '25,000',
-      location: 'الرياض، حي العليا',
-      area: '200 متر مربع',
-      image: '/placeholder.svg',
-      featured: true,
-      rating: 4.7,
-      views: 980,
-      likes: 72
-    },
-    {
-      id: '6',
-      title: 'فيلا فاخرة - حديقة واسعة',
-      type: 'villa',
-      price: '4,500,000',
-      location: 'جدة، حي الروضة',
-      area: '400 متر مربع',
-      bedrooms: 5,
-      bathrooms: 4,
-      image: '/placeholder.svg',
-      featured: true,
-      rating: 4.9,
-      views: 3200,
-      likes: 234
-    }
-  ];
+  // Fetch real estate data from database
+  const [realEstateData, setRealEstateData] = useState<RealEstateItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredData = sampleData.filter(item => {
+  useEffect(() => {
+    fetchRealEstateData();
+  }, []);
+
+  const fetchRealEstateData = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*')
+        .eq('status', 'approved')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Transform data to match RealEstateItem interface
+      const transformedData: RealEstateItem[] = (data || []).map(property => ({
+        id: property.id,
+        title: property.title,
+        type: property.transaction_type === 'sale' ? 'sale' : 'rent',
+        price: property.price.toString(),
+        location: property.location,
+        area: property.area ? `${property.area} متر مربع` : 'غير محدد',
+        bedrooms: property.bedrooms,
+        bathrooms: property.bathrooms,
+        image: property.images?.[0] || 'https://via.placeholder.com/400x300',
+        featured: false,
+        rating: 4.5, // Default rating
+        views: property.views_count || 0,
+        likes: property.likes_count || 0
+      }));
+
+      setRealEstateData(transformedData);
+    } catch (error) {
+      console.error('Error fetching real estate data:', error);
+      // Fallback to sample data
+      setRealEstateData([
+        {
+          id: '1',
+          title: 'شقة فاخرة في قلب المدينة',
+          type: 'sale',
+          price: '2,500,000',
+          location: 'الرياض، حي النخيل',
+          area: '150 متر مربع',
+          bedrooms: 3,
+          bathrooms: 2,
+          image: '/placeholder.svg',
+          featured: true,
+          rating: 4.8,
+          views: 1250,
+          likes: 89
+        },
+        {
+          id: '2',
+          title: 'شقة للإيجار - إطلالة بحرية',
+          type: 'rent',
+          price: '8,000',
+          location: 'جدة، الكورنيش',
+          area: '120 متر مربع',
+          bedrooms: 2,
+          bathrooms: 2,
+          image: '/placeholder.svg',
+          featured: false,
+          rating: 4.6,
+          views: 890,
+          likes: 67
+        },
+        {
+          id: '3',
+          title: 'أرض سكنية - موقع مميز',
+          type: 'land',
+          price: '1,200,000',
+          location: 'الدمام، حي الفيصلية',
+          area: '500 متر مربع',
+          image: '/placeholder.svg',
+          featured: true,
+          rating: 4.9,
+          views: 2100,
+          likes: 156
+        },
+        {
+          id: '4',
+          title: 'محل تجاري - شارع رئيسي',
+          type: 'commercial',
+          price: '15,000',
+          location: 'الرياض، شارع التحلية',
+          area: '80 متر مربع',
+          image: '/placeholder.svg',
+          featured: false,
+          rating: 4.4,
+          views: 650,
+          likes: 43
+        },
+        {
+          id: '5',
+          title: 'مكتب إداري - طابق كامل',
+          type: 'office',
+          price: '25,000',
+          location: 'الرياض، حي العليا',
+          area: '200 متر مربع',
+          image: '/placeholder.svg',
+          featured: true,
+          rating: 4.7,
+          views: 980,
+          likes: 72
+        },
+        {
+          id: '6',
+          title: 'فيلا فاخرة - حديقة واسعة',
+          type: 'villa',
+          price: '4,500,000',
+          location: 'جدة، حي الروضة',
+          area: '400 متر مربع',
+          bedrooms: 5,
+          bathrooms: 4,
+          image: '/placeholder.svg',
+          featured: true,
+          rating: 4.9,
+          views: 3200,
+          likes: 234
+        }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredData = realEstateData.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          item.location.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesType = selectedType === 'all' || item.type === selectedType;
@@ -409,31 +502,37 @@ const RealEstate = () => {
             </div>
           </div>
 
-          <motion.div 
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className={cn(
-              "grid gap-4 sm:gap-6",
-              viewMode === 'grid' 
-                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" 
-                : "grid-cols-1"
-            )}
-          >
-            <AnimatePresence>
-              {filteredData.map((item, index) => (
-                <RealEstateCard
-                  key={item.id}
-                  item={item}
-                  viewMode={viewMode}
-                  onViewDetails={handleViewDetails}
-                  onLike={handleLike}
-                  onShare={handleShare}
-                  onContact={handleContact}
-                />
-              ))}
-            </AnimatePresence>
-          </motion.div>
+          {loading ? (
+            <div className="flex items-center justify-center py-16">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+            </div>
+          ) : (
+            <motion.div 
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className={cn(
+                "grid gap-4 sm:gap-6",
+                viewMode === 'grid' 
+                  ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" 
+                  : "grid-cols-1"
+              )}
+            >
+              <AnimatePresence>
+                {filteredData.map((item, index) => (
+                  <RealEstateCard
+                    key={item.id}
+                    item={item}
+                    viewMode={viewMode}
+                    onViewDetails={handleViewDetails}
+                    onLike={handleLike}
+                    onShare={handleShare}
+                    onContact={handleContact}
+                  />
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          )}
         </motion.div>
 
         {/* Empty State */}
@@ -472,6 +571,14 @@ const RealEstate = () => {
         onApplyFilters={handleApplyFilters}
         onResetFilters={handleResetFilters}
       />
+
+      {/* Onboarding Modal */}
+      {showOnboarding && (
+        <RealEstateOnboarding
+          onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingSkip}
+        />
+      )}
     </div>
   );
 };

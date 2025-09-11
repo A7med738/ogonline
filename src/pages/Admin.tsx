@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import PropertyManagement from "@/components/PropertyManagement";
 import { 
   Users, 
   FileText, 
@@ -404,6 +405,16 @@ const Admin = () => {
           </Card>
 
           <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'properties' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('properties')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <Building className="h-8 w-8 text-emerald-600" />
+              <span className="text-sm font-medium">العقارات</span>
+            </div>
+          </Card>
+
+          <Card 
             className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'news' ? 'ring-2 ring-primary' : ''}`}
             onClick={() => setActiveTab('news')}
           >
@@ -465,6 +476,10 @@ const Admin = () => {
         </div>
 
         <div>
+          {activeTab === 'properties' && (
+            <PropertyManagement />
+          )}
+
           {activeTab === 'overview' && (
             <div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
