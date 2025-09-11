@@ -341,39 +341,28 @@ const RealEstate = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-cyan-50 to-blue-50">
-      {/* Header - Mobile Optimized */}
-      <motion.div 
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-white/20 shadow-lg"
-      >
-        <div className="px-4 py-4">
-          {/* Mobile Header */}
-          <div className="flex items-center justify-between mb-4">
-            <motion.div 
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="flex items-center space-x-2 rtl:space-x-reverse"
-            >
-              <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg">
-                <AnimatedIcon size={20} className="text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent">
-                  العقارات
-                </h1>
-                <p className="text-xs text-gray-600 hidden sm:block">اكتشف أفضل العقارات</p>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-              className="flex items-center space-x-2 rtl:space-x-reverse"
-            >
+      <div className="px-4 py-6">
+        {/* Search and Filters */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mb-6"
+        >
+          <div className="flex flex-col sm:flex-row gap-4 mb-4">
+            {/* Search Bar */}
+            <div className="flex-1 relative">
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="ابحث عن عقار..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pr-10 pl-3 py-3 text-base bg-white/70 backdrop-blur-sm border-white/30 rounded-xl shadow-lg focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+              />
+            </div>
+            
+            {/* Filter and View Controls */}
+            <div className="flex items-center space-x-2 rtl:space-x-reverse">
               <Button
                 variant="outline"
                 size="sm"
@@ -401,28 +390,10 @@ const RealEstate = () => {
                   <List className="w-4 h-4" />
                 </Button>
               </div>
-            </motion.div>
+            </div>
           </div>
+        </motion.div>
 
-          {/* Search Bar - Mobile Optimized */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="relative"
-          >
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="ابحث عن عقار..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pr-10 pl-3 py-3 text-base bg-white/70 backdrop-blur-sm border-white/30 rounded-xl shadow-lg focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
-            />
-          </motion.div>
-        </div>
-      </motion.div>
-
-      <div className="px-4 py-6">
         {/* Property Types - Mobile Optimized */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}

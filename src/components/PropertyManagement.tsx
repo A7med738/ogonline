@@ -27,7 +27,10 @@ import {
   Bed,
   Bath,
   Star,
-  MessageSquare
+  MessageSquare,
+  Check,
+  X,
+  User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';

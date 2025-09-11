@@ -68,6 +68,23 @@ BEGIN
         )
       );
   END IF;
+  
+  -- Alternative policy for users with admin role in auth.users
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'properties' AND policyname = 'Admin users can update any property') THEN
+    CREATE POLICY "Admin users can update any property" ON properties
+      FOR UPDATE USING (
+        EXISTS (
+          SELECT 1 FROM auth.users 
+          WHERE id = auth.uid() AND raw_user_meta_data->>'role' = 'admin'
+        )
+      );
+  END IF;
+  
+  -- Temporary policy to allow any authenticated user to update properties (for testing)
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'properties' AND policyname = 'Authenticated users can update properties') THEN
+    CREATE POLICY "Authenticated users can update properties" ON properties
+      FOR UPDATE USING (auth.uid() IS NOT NULL);
+  END IF;
 END $$;
 
 -- Create function to update updated_at
