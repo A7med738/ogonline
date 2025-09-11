@@ -6,7 +6,10 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   server: {
     url: 'https://3e2213ca-bd16-4ff2-8f69-45d0069c6783.lovableproject.com?forceHideBadge=true',
-    cleartext: true
+    cleartext: true,
+    hostname: 'ogonline.lovable.app',
+    iosScheme: 'ogonline',
+    androidScheme: 'https'
   },
   plugins: {
     CapacitorHttp: {

@@ -25,10 +25,11 @@ export const sendNewsNotification = async (data: NotificationData) => {
 };
 
 
-import { generateUniversalUrl, DEEP_LINK_PATHS } from '@/utils/deepLinkUtils';
+import { generateUniversalUrl, DEEP_LINK_PATHS, generateDeepLink } from '@/utils/deepLinkUtils';
 
 export const generateNewsUrl = (newsId: string) => {
-  return generateUniversalUrl(DEEP_LINK_PATHS.NEWS, { id: newsId });
+  // Always use deep link scheme for notifications to ensure app opens
+  return generateDeepLink(DEEP_LINK_PATHS.NEWS, { id: newsId });
 };
 
 export const sendTestNotification = async (newsItem: { id: string; title: string }) => {

@@ -19,9 +19,14 @@ export const generateDeepLink = (path: string, params?: Record<string, string>):
 };
 
 /**
- * Generate a web fallback URL
+ * Generate a web fallback URL with deep link fallback
  */
 export const generateWebUrl = (path: string, params?: Record<string, string>): string => {
+  // Check if running in mobile app context
+  if (typeof window !== 'undefined' && window.Capacitor?.isNativePlatform?.()) {
+    return generateDeepLink(path, params);
+  }
+  
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://3e2213ca-bd16-4ff2-8f69-45d0069c6783.lovableproject.com';
   let url = `${baseUrl}/${path}`;
   

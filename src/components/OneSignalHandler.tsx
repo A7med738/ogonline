@@ -27,6 +27,8 @@ export const OneSignalHandler = () => {
         }
         
         if (targetUrl) {
+          console.log('Processing notification URL:', targetUrl);
+          
           // Check if it's a deep link
           if (targetUrl.startsWith('ogonline://')) {
             // Handle deep link using utility function
@@ -42,6 +44,17 @@ export const OneSignalHandler = () => {
             
             console.log('Navigating to:', navigationPath);
             navigate(navigationPath);
+          } else if (targetUrl.includes('ogonline.lovable.app') || targetUrl.includes('3e2213ca-bd16-4ff2-8f69-45d0069c6783.lovableproject.com')) {
+            // Handle Lovable app URLs - extract path and navigate
+            try {
+              const url = new URL(targetUrl);
+              const path = url.pathname + url.search + url.hash;
+              console.log('App URL detected, navigating to:', path);
+              navigate(path);
+            } catch (error) {
+              console.error('Invalid app URL format:', targetUrl);
+              navigate('/news');
+            }
           } else {
             // Handle regular URL
             try {
