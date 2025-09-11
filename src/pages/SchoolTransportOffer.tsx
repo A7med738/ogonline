@@ -46,7 +46,7 @@ const SchoolTransportOffer = () => {
 
     setLoading(true);
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('school_transport_requests')
         .insert({
           user_id: user.id,

@@ -664,6 +664,93 @@ export type Database = {
         }
         Relationships: []
       }
+      school_transport_matches: {
+        Row: {
+          created_at: string
+          id: string
+          offer_id: string
+          request_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          offer_id: string
+          request_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          offer_id?: string
+          request_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "school_transport_matches_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "school_transport_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "school_transport_matches_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "school_transport_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      school_transport_requests: {
+        Row: {
+          contact_number: string
+          created_at: string
+          description: string | null
+          from_location: string
+          id: string
+          number_of_children: number
+          price: number | null
+          status: string
+          to_location: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contact_number: string
+          created_at?: string
+          description?: string | null
+          from_location: string
+          id?: string
+          number_of_children: number
+          price?: number | null
+          status?: string
+          to_location: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contact_number?: string
+          created_at?: string
+          description?: string | null
+          from_location?: string
+          id?: string
+          number_of_children?: number
+          price?: number | null
+          status?: string
+          to_location?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_news_activity: {
         Row: {
           created_at: string

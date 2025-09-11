@@ -42,14 +42,14 @@ const MySchoolTransports = () => {
     if (!user) return;
 
     try {
-      const { data: requestsData, error: requestsError } = await supabase
+      const { data: requestsData, error: requestsError } = await (supabase as any)
         .from('school_transport_requests')
         .select('*')
         .eq('user_id', user.id)
         .eq('type', 'request')
         .order('created_at', { ascending: false });
 
-      const { data: offersData, error: offersError } = await supabase
+      const { data: offersData, error: offersError } = await (supabase as any)
         .from('school_transport_requests')
         .select('*')
         .eq('user_id', user.id)
@@ -85,7 +85,7 @@ const MySchoolTransports = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('school_transport_requests')
         .delete()
         .eq('id', id);
@@ -102,7 +102,7 @@ const MySchoolTransports = () => {
 
   const handleStatusChange = async (id: string, newStatus: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('school_transport_requests')
         .update({ status: newStatus })
         .eq('id', id);

@@ -38,14 +38,14 @@ const SchoolTransport = () => {
 
   const fetchData = async () => {
     try {
-      const { data: requestsData, error: requestsError } = await supabase
+      const { data: requestsData, error: requestsError } = await (supabase as any)
         .from('school_transport_requests')
         .select('*')
         .eq('type', 'request')
         .eq('status', 'active')
         .order('created_at', { ascending: false });
 
-      const { data: offersData, error: offersError } = await supabase
+      const { data: offersData, error: offersError } = await (supabase as any)
         .from('school_transport_requests')
         .select('*')
         .eq('type', 'offer')
@@ -80,7 +80,7 @@ const SchoolTransport = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('school_transport_requests')
         .delete()
         .eq('id', id);
