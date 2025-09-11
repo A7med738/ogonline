@@ -1,6 +1,8 @@
 import { LucideIcon } from "lucide-react";
-import { GlassCard } from "@/components/ui/glass-card";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+
 interface NavigationCardProps {
   title: string;
   description: string;
@@ -9,7 +11,9 @@ interface NavigationCardProps {
   className?: string;
   style?: React.CSSProperties;
   badge?: React.ReactNode;
+  color?: string;
 }
+
 export const NavigationCard = ({
   title,
   description,
@@ -17,26 +21,58 @@ export const NavigationCard = ({
   onClick,
   className,
   style,
-  badge
+  badge,
+  color = "from-emerald-500 to-cyan-500"
 }: NavigationCardProps) => {
-  return <GlassCard className={cn("cursor-pointer group hover:scale-[1.02] transition-all duration-500 active:scale-[0.98] p-4 pt-6", "hover:shadow-xl hover:shadow-primary/20 border-white/10 hover:border-primary/30", "before:absolute before:inset-0 before:bg-gradient-to-br before:from-primary/5 before:to-transparent before:opacity-0 before:transition-opacity before:duration-500 hover:before:opacity-100", "relative overflow-hidden aspect-square max-w-36 md:max-w-32", className)} onClick={onClick} style={style}>
-      <div className="flex flex-col items-center justify-center h-full relative z-10">
-        <div className="relative group/icon mb-3 mt-1 md:mt-0 flex items-center justify-center">
-          <div className="bg-gradient-to-br from-green-500 via-green-400 to-green-600 p-3 rounded-xl shadow-lg group-hover:shadow-green-500/30 transition-all duration-300">
-            <Icon className="h-4 w-4 text-white drop-shadow-sm" />
-          </div>
-          <div className="absolute inset-0 -z-10 pointer-events-none bg-gradient-to-br from-primary via-primary-glow to-primary rounded-xl opacity-0 group-hover:opacity-10 blur-xl transition-all duration-500"></div>
-          {badge}
-        </div>
-        <div className="text-center px-1">
-          <h6 className="text-[13px] font-semibold text-foreground/90 mb-1 group-hover:text-primary transition-colors duration-300 leading-tight">
+  return (
+    <motion.div
+      whileHover={{ scale: 1.05, y: -5 }}
+      whileTap={{ scale: 0.95 }}
+      className="cursor-pointer"
+      onClick={onClick}
+    >
+      <Card className={cn(
+        "relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 group",
+        `bg-gradient-to-br ${color}`
+      )}>
+        <CardContent className="p-3 sm:p-4 text-center">
+          <motion.div
+            whileHover={{ rotate: 360 }}
+            transition={{ duration: 0.6 }}
+            className="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-2 sm:mb-3 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center"
+          >
+            <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+          </motion.div>
+          <h3 className="text-white font-semibold text-xs sm:text-sm leading-tight">
             {title}
-          </h6>
+          </h3>
+          {badge && (
+            <div className="absolute top-1 right-1">
+              {badge}
+            </div>
+          )}
           
-        </div>
-      </div>
-      
-      {/* Decorative gradient overlay */}
-      <div className="absolute top-0 right-0 w-56 h-56 bg-gradient-to-bl from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-bl-full"></div>
-    </GlassCard>;
+          {/* Hover effect */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            whileHover={{ opacity: 1, scale: 1 }}
+            className="absolute inset-0 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center"
+          >
+            <motion.div
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 1, repeat: Infinity }}
+              className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center"
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              >
+                →
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
 };

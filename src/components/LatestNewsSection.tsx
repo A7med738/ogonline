@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Newspaper, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 interface NewsItem {
   id: string;
   title: string;
@@ -101,94 +105,198 @@ export const LatestNewsSection = () => {
     }, 300);
   };
   if (loading) {
-    return <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
-      </div>;
+    return (
+      <div className="text-center py-8">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full mx-auto"
+        />
+      </div>
+    );
   }
+
   if (latestNews.length === 0) {
     return null;
   }
-  return <div className="mt-12 animate-fade-in">
-      {/* Section Header */}
-      <div className="text-center mb-6">
-        <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2">أحدث أخبار المدينة</h2>
-        
-      </div>
 
-      {/* Single News Card with Navigation */}
-      <div className="max-w-sm mx-auto relative">
-        {latestNews.length > 0 && <div className="relative overflow-hidden">
-            <div className={`transition-all duration-300 ease-in-out ${isAnimating ? 'transform translate-x-full opacity-0 scale-95' : 'transform translate-x-0 opacity-100 scale-100'}`}>
-              <div className="glass-card rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-glass cursor-pointer" onClick={() => navigate('/news')}>
-                {/* News Image */}
-                {(latestNews[currentIndex]?.image_url || (newsMedia[latestNews[currentIndex]?.id] && newsMedia[latestNews[currentIndex]?.id].length > 0)) && <div className="h-32 overflow-hidden">
-                    <img 
-                      src={latestNews[currentIndex]?.image_url || (newsMedia[latestNews[currentIndex]?.id] && newsMedia[latestNews[currentIndex]?.id][0]?.media_url)} 
-                      alt={latestNews[currentIndex]?.title} 
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" 
-                    />
-                  </div>}
-                
-                {/* News Content */}
-                <div className="p-4 space-y-2">
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="mt-8 sm:mt-12"
+    >
+      {/* Section Header */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="text-center mb-6"
+      >
+        <div className="flex items-center justify-center space-x-2 rtl:space-x-reverse mb-3">
+          <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-lg flex items-center justify-center">
+            <Newspaper className="w-4 h-4 text-white" />
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800">أحدث أخبار المدينة</h2>
+        </div>
+      </motion.div>
+
+      {/* News Carousel */}
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.4 }}
+        className="max-w-sm sm:max-w-md mx-auto relative"
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, x: 300 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -300 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="relative"
+          >
+            <Card className="overflow-hidden border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+                  onClick={() => navigate('/news')}>
+              {/* News Image */}
+              {(latestNews[currentIndex]?.image_url || (newsMedia[latestNews[currentIndex]?.id] && newsMedia[latestNews[currentIndex]?.id].length > 0)) && (
+                <div className="h-40 sm:h-48 overflow-hidden relative">
+                  <img 
+                    src={latestNews[currentIndex]?.image_url || (newsMedia[latestNews[currentIndex]?.id] && newsMedia[latestNews[currentIndex]?.id][0]?.media_url)} 
+                    alt={latestNews[currentIndex]?.title} 
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  
                   {/* Category Badge */}
-                  <span className="inline-block bg-gradient-primary text-white px-2 py-1 rounded-full text-xs font-medium">
-                    {latestNews[currentIndex]?.category}
-                  </span>
-                  
-                  {/* Title */}
-                  <h3 className="text-sm font-bold text-foreground line-clamp-2 leading-tight">
-                    {latestNews[currentIndex]?.title}
-                  </h3>
-                  
-                  {/* Summary */}
-                  <p className="text-foreground/80 text-xs line-clamp-2 leading-relaxed">
-                    {latestNews[currentIndex]?.summary}
-                  </p>
-                  
-                  {/* Date */}
-                  <div className="flex items-center text-muted-foreground text-xs pt-1">
-                    <Calendar className="h-3 w-3 ml-1" />
-                    <span>
-                      {formatDistanceToNow(new Date(latestNews[currentIndex]?.published_at), {
-                    addSuffix: true,
-                    locale: ar
-                  })}
-                    </span>
+                  <div className="absolute top-3 right-3">
+                    <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white border-0 shadow-lg">
+                      {latestNews[currentIndex]?.category}
+                    </Badge>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Navigation Arrows */}
-            {latestNews.length > 1 && <>
-                <Button variant="ghost" size="sm" onClick={handlePrev} className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 bg-black/20 hover:bg-black/40 text-white border-0" disabled={isAnimating}>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
+              )}
+              
+              {/* News Content */}
+              <CardContent className="p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg font-bold text-gray-800 line-clamp-2 leading-tight mb-2 group-hover:text-emerald-600 transition-colors">
+                  {latestNews[currentIndex]?.title}
+                </h3>
                 
-                <Button variant="ghost" size="sm" onClick={handleNext} className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 bg-black/20 hover:bg-black/40 text-white border-0" disabled={isAnimating}>
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-              </>}
-          </div>}
+                <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed mb-4">
+                  {latestNews[currentIndex]?.summary}
+                </p>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center text-gray-500 text-xs sm:text-sm">
+                    <Calendar className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
+                    <span>
+                      {formatDistanceToNow(new Date(latestNews[currentIndex]?.published_at), {
+                        addSuffix: true,
+                        locale: ar
+                      })}
+                    </span>
+                  </div>
+                  
+                  <motion.div
+                    whileHover={{ x: 5 }}
+                    className="flex items-center text-emerald-600 text-sm font-medium"
+                  >
+                    <span className="hidden sm:inline">اقرأ المزيد</span>
+                    <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                  </motion.div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Navigation Arrows */}
+        {latestNews.length > 1 && (
+          <>
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handlePrev} 
+                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 bg-white/80 backdrop-blur-sm hover:bg-white/90 text-gray-700 border-0 shadow-lg" 
+                disabled={isAnimating}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </motion.div>
+            
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleNext} 
+                className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 bg-white/80 backdrop-blur-sm hover:bg-white/90 text-gray-700 border-0 shadow-lg" 
+                disabled={isAnimating}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+            </motion.div>
+          </>
+        )}
 
         {/* Indicators */}
-        {latestNews.length > 1 && <div className="flex justify-center space-x-1 space-x-reverse mt-4">
-            {latestNews.map((_, index) => <button key={index} onClick={() => {
-          if (!isAnimating) {
-            setIsAnimating(true);
-            setTimeout(() => {
-              setCurrentIndex(index);
-              setIsAnimating(false);
-            }, 300);
-          }
-        }} className={`w-2 h-2 rounded-full transition-all duration-300 hover:scale-125 ${index === currentIndex ? 'bg-primary scale-125' : 'bg-muted-foreground/40'}`} />)}
-          </div>}
-      </div>
+        {latestNews.length > 1 && (
+          <div className="flex justify-center space-x-2 rtl:space-x-reverse mt-4">
+            {latestNews.map((_, index) => (
+              <motion.button
+                key={index}
+                onClick={() => {
+                  if (!isAnimating) {
+                    setIsAnimating(true);
+                    setTimeout(() => {
+                      setCurrentIndex(index);
+                      setIsAnimating(false);
+                    }, 300);
+                  }
+                }}
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.8 }}
+                className={cn(
+                  "w-2 h-2 rounded-full transition-all duration-300",
+                  index === currentIndex 
+                    ? "bg-gradient-to-r from-emerald-500 to-cyan-500 w-8" 
+                    : "bg-gray-300 hover:bg-gray-400"
+                )}
+              />
+            ))}
+          </div>
+        )}
+      </motion.div>
 
       {/* View All Button */}
-      <div className="text-center mt-6">
-        
-      </div>
-    </div>;
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="text-center mt-6"
+      >
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <Button
+            onClick={() => navigate('/news')}
+            className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white shadow-lg px-6 py-2"
+          >
+            عرض جميع الأخبار
+            <ArrowRight className="w-4 h-4 mr-2" />
+          </Button>
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
 };
