@@ -16,6 +16,7 @@ interface NewsItem {
   category: string;
   published_at: string;
   image_url?: string;
+  likes_count?: number;
 }
 
 interface NewsMediaItem {
@@ -63,7 +64,22 @@ export const LatestNewsSection = () => {
 
       if (error) throw error;
       if (data) {
-        setLatestNews(data);
+        // Fetch likes count for each news item
+        const newsWithLikes = await Promise.all(
+          data.map(async (news) => {
+            const { count } = await supabase
+              .from('news_likes')
+              .select('*', { count: 'exact', head: true })
+              .eq('news_id', news.id);
+            
+            return {
+              ...news,
+              likes_count: count || 0
+            };
+          })
+        );
+        
+        setLatestNews(newsWithLikes);
         
         // Fetch media for all news items
         const newsIds = data.map(item => item.id);
@@ -155,7 +171,7 @@ export const LatestNewsSection = () => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.4 }}
-        className="max-w-xs sm:max-w-sm md:max-w-md mx-auto relative overflow-hidden"
+        className="max-w-sm sm:max-w-md md:max-w-lg mx-auto relative overflow-hidden"
       >
         <AnimatePresence mode="wait">
           <motion.div
@@ -166,34 +182,41 @@ export const LatestNewsSection = () => {
             transition={{ duration: 0.15, ease: "easeOut" }}
             className="relative w-full"
           >
-            <Card className="overflow-hidden border-0 shadow-xl bg-white/90 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 cursor-pointer group min-h-[200px]"
+            <Card className="overflow-hidden border-0 shadow-xl bg-white/90 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 cursor-pointer group min-h-[250px] sm:min-h-[300px]"
                   onClick={() => navigate('/news')}>
               {/* News Image */}
               {(latestNews[currentIndex]?.image_url || (newsMedia[latestNews[currentIndex]?.id] && newsMedia[latestNews[currentIndex]?.id].length > 0)) ? (
-                <div className="h-40 sm:h-48 overflow-hidden relative">
+                <div className="h-48 sm:h-56 overflow-hidden relative">
                   <img 
                     src={latestNews[currentIndex]?.image_url || (newsMedia[latestNews[currentIndex]?.id] && newsMedia[latestNews[currentIndex]?.id][0]?.media_url)} 
                     alt={latestNews[currentIndex]?.title} 
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   
                   {/* Category Badge */}
-                  <div className="absolute top-3 right-3">
-                    <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white border-0 shadow-lg backdrop-blur-sm">
+                  <div className="absolute top-4 right-4">
+                    <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white border-0 shadow-lg backdrop-blur-sm text-xs sm:text-sm px-2 py-1">
                       {latestNews[currentIndex]?.category}
                     </Badge>
                   </div>
+                  
+                  {/* News Title Overlay */}
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <h3 className="text-white font-bold text-sm sm:text-base line-clamp-2 drop-shadow-lg">
+                      {latestNews[currentIndex]?.title}
+                    </h3>
+                  </div>
                 </div>
               ) : (
-                <div className="h-40 sm:h-48 bg-gradient-to-br from-emerald-100 to-cyan-100 flex items-center justify-center relative">
+                <div className="h-48 sm:h-56 bg-gradient-to-br from-emerald-100 to-cyan-100 flex items-center justify-center relative">
                   <div className="text-center">
-                    <Newspaper className="w-12 h-12 text-emerald-500 mx-auto mb-2" />
-                    <p className="text-emerald-600 font-medium text-sm">أخبار المدينة</p>
+                    <Newspaper className="w-16 h-16 text-emerald-500 mx-auto mb-3" />
+                    <p className="text-emerald-600 font-medium text-sm sm:text-base">أخبار المدينة</p>
                   </div>
                   {/* Category Badge */}
-                  <div className="absolute top-3 right-3">
-                    <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white border-0 shadow-lg backdrop-blur-sm">
+                  <div className="absolute top-4 right-4">
+                    <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white border-0 shadow-lg backdrop-blur-sm text-xs sm:text-sm px-2 py-1">
                       {latestNews[currentIndex]?.category}
                     </Badge>
                   </div>
@@ -202,11 +225,7 @@ export const LatestNewsSection = () => {
               
               {/* News Content */}
               <CardContent className="p-4 sm:p-6">
-                <h3 className="text-base sm:text-lg font-bold text-gray-800 line-clamp-2 leading-tight mb-2 group-hover:text-emerald-600 transition-colors">
-                  {latestNews[currentIndex]?.title}
-                </h3>
-                
-                <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed mb-4">
+                <p className="text-gray-600 text-sm sm:text-base line-clamp-3 leading-relaxed mb-4">
                   {latestNews[currentIndex]?.summary}
                 </p>
                 
@@ -225,7 +244,7 @@ export const LatestNewsSection = () => {
                     whileHover={{ x: 5 }}
                     className="flex items-center text-emerald-600 text-sm font-medium"
                   >
-                    <span className="hidden sm:inline">اقرأ المزيد</span>
+                    <span className="text-xs sm:text-sm">اقرأ المزيد</span>
                     <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                   </motion.div>
                 </div>
