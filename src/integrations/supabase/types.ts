@@ -967,6 +967,10 @@ export type Database = {
         Args: { "": string } | { "": unknown }
         Returns: unknown
       }
+      check_rate_limit: {
+        Args: { limit_count?: number; operation: string; time_window?: unknown }
+        Returns: boolean
+      }
       get_lost_found_contact: {
         Args: { item_id: string }
         Returns: {
@@ -1058,6 +1062,14 @@ export type Database = {
       l2_normalize: {
         Args: { "": string } | { "": unknown } | { "": unknown }
         Returns: string
+      }
+      log_sensitive_access: {
+        Args: {
+          access_type: string
+          accessed_id: string
+          accessed_table: string
+        }
+        Returns: undefined
       }
       match_embeddings: {
         Args: {
