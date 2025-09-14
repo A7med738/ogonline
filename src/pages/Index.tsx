@@ -138,7 +138,7 @@ const Index = () => {
       description: "مساجد وكنائس ودور العبادة في المدينة",
       icon: Moon,
       color: "from-slate-500 to-gray-600",
-      onClick: () => navigate("/places-of-worship")
+      onClick: () => navigate("/worship-places")
     }
   ];
   return (

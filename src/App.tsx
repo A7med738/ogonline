@@ -39,6 +39,7 @@ import EducationalServices from "./pages/EducationalServices";
 import MedicalServices from "./pages/MedicalServices";
 import MallDetails from "./pages/MallDetails";
 import CityMalls from "./pages/CityMalls";
+import WorshipPlaces from "./pages/WorshipPlaces";
 
 const queryClient = new QueryClient();
 
@@ -96,6 +97,7 @@ const AppContent = () => {
           <Route path="/real-estate/:id" element={<RealEstateDetails />} />
           <Route path="/city-malls" element={<CityMalls />} />
           <Route path="/mall/:id" element={<MallDetails />} />
+          <Route path="/worship-places" element={<WorshipPlaces />} />
           <Route path="/educational-services" element={<EducationalServices />} />
           <Route path="/medical-services" element={<MedicalServices />} />
           <Route path="/business" element={<Business />} />

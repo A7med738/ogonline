@@ -42,6 +42,7 @@ import { AnnouncementsManagement } from "@/components/admin/AnnouncementsManagem
 import { JobsManagement } from "@/components/admin/JobsManagement";
 import { LostAndFoundManagement } from "@/components/admin/LostAndFoundManagement";
 import MallsManagement from "@/pages/admin/MallsManagement";
+import WorshipPlacesManagement from "@/pages/admin/WorshipPlacesManagement";
 
 interface ContentItem {
   id: string;
@@ -485,6 +486,16 @@ const Admin = () => {
               <span className="text-sm font-medium">المولات</span>
             </div>
           </Card>
+
+          <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'worship' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('worship')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <Building className="h-8 w-8 text-green-600" />
+              <span className="text-sm font-medium">دور العبادة</span>
+            </div>
+          </Card>
         </div>
 
         <div>
@@ -682,6 +693,7 @@ const Admin = () => {
           {activeTab === 'jobs' && <JobsManagement />}
           {activeTab === 'lost-found' && <LostAndFoundManagement />}
           {activeTab === 'malls' && <MallsManagement />}
+          {activeTab === 'worship' && <WorshipPlacesManagement />}
         </div>
       </div>
     </div>

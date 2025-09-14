@@ -12,7 +12,7 @@ interface ImageUploadProps {
   aspectRatio?: "square" | "video" | "auto";
 }
 
-export const ImageUpload = ({ 
+const ImageUpload = ({ 
   value, 
   onChange, 
   placeholder = "اضغط لرفع صورة",
@@ -155,3 +155,5 @@ export const ImageUpload = ({
     </div>
   );
 };
+
+export default ImageUpload;

@@ -12,7 +12,7 @@ interface MultiImageUploadProps {
   maxImages?: number;
 }
 
-export const MultiImageUpload = ({ 
+const MultiImageUpload = ({ 
   value = [], 
   onChange, 
   placeholder = "اضغط لرفع صور",
@@ -162,3 +162,5 @@ export const MultiImageUpload = ({
     </div>
   );
 };
+
+export default MultiImageUpload;
