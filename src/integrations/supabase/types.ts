@@ -972,6 +972,302 @@ export type Database = {
         }
         Relationships: []
       }
+      malls: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          address: string | null
+          phone: string | null
+          website: string | null
+          is_open: boolean
+          closing_time: string | null
+          rating: number | null
+          image_url: string | null
+          logo_url: string | null
+          about: string | null
+          google_maps_url: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          address?: string | null
+          phone?: string | null
+          website?: string | null
+          is_open?: boolean
+          closing_time?: string | null
+          rating?: number | null
+          image_url?: string | null
+          logo_url?: string | null
+          about?: string | null
+          google_maps_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          address?: string | null
+          phone?: string | null
+          website?: string | null
+          is_open?: boolean
+          closing_time?: string | null
+          rating?: number | null
+          image_url?: string | null
+          logo_url?: string | null
+          about?: string | null
+          google_maps_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      mall_services: {
+        Row: {
+          id: string
+          mall_id: string
+          name: string
+          icon: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          mall_id: string
+          name: string
+          icon: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          mall_id?: string
+          name?: string
+          icon?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mall_services_mall_id_fkey"
+            columns: ["mall_id"]
+            isOneToOne: false
+            referencedRelation: "malls"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      mall_shops: {
+        Row: {
+          id: string
+          mall_id: string
+          name: string
+          category: string | null
+          floor: string | null
+          logo_url: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          mall_id: string
+          name: string
+          category?: string | null
+          floor?: string | null
+          logo_url?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          mall_id?: string
+          name?: string
+          category?: string | null
+          floor?: string | null
+          logo_url?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mall_shops_mall_id_fkey"
+            columns: ["mall_id"]
+            isOneToOne: false
+            referencedRelation: "malls"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      mall_restaurants: {
+        Row: {
+          id: string
+          mall_id: string
+          name: string
+          cuisine: string | null
+          logo_url: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          mall_id: string
+          name: string
+          cuisine?: string | null
+          logo_url?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          mall_id?: string
+          name?: string
+          cuisine?: string | null
+          logo_url?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mall_restaurants_mall_id_fkey"
+            columns: ["mall_id"]
+            isOneToOne: false
+            referencedRelation: "malls"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      mall_cinema: {
+        Row: {
+          id: string
+          mall_id: string
+          name: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          mall_id: string
+          name: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          mall_id?: string
+          name?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mall_cinema_mall_id_fkey"
+            columns: ["mall_id"]
+            isOneToOne: false
+            referencedRelation: "malls"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      mall_movies: {
+        Row: {
+          id: string
+          cinema_id: string
+          title: string
+          genre: string | null
+          show_time: string | null
+          image_url: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          cinema_id: string
+          title: string
+          genre?: string | null
+          show_time?: string | null
+          image_url?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          cinema_id?: string
+          title?: string
+          genre?: string | null
+          show_time?: string | null
+          image_url?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mall_movies_cinema_id_fkey"
+            columns: ["cinema_id"]
+            isOneToOne: false
+            referencedRelation: "mall_cinema"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      mall_games: {
+        Row: {
+          id: string
+          mall_id: string
+          name: string
+          description: string | null
+          image_url: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          mall_id: string
+          name: string
+          description?: string | null
+          image_url?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          mall_id?: string
+          name?: string
+          description?: string | null
+          image_url?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mall_games_mall_id_fkey"
+            columns: ["mall_id"]
+            isOneToOne: false
+            referencedRelation: "malls"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      mall_events: {
+        Row: {
+          id: string
+          mall_id: string
+          title: string
+          event_date: string | null
+          image_url: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          mall_id: string
+          title: string
+          event_date?: string | null
+          image_url?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          mall_id?: string
+          title?: string
+          event_date?: string | null
+          image_url?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mall_events_mall_id_fkey"
+            columns: ["mall_id"]
+            isOneToOne: false
+            referencedRelation: "malls"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       safe_transport_requests: {
