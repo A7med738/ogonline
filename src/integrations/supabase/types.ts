@@ -976,7 +976,6 @@ export type Database = {
     Views: {
       safe_transport_requests: {
         Row: {
-          contact_info: string | null
           created_at: string | null
           description: string | null
           from_location: string | null
@@ -986,10 +985,9 @@ export type Database = {
           status: string | null
           to_location: string | null
           type: string | null
-          user_id: string | null
+          updated_at: string | null
         }
         Insert: {
-          contact_info?: never
           created_at?: string | null
           description?: string | null
           from_location?: string | null
@@ -999,10 +997,9 @@ export type Database = {
           status?: string | null
           to_location?: string | null
           type?: string | null
-          user_id?: never
+          updated_at?: string | null
         }
         Update: {
-          contact_info?: never
           created_at?: string | null
           description?: string | null
           from_location?: string | null
@@ -1012,7 +1009,7 @@ export type Database = {
           status?: string | null
           to_location?: string | null
           type?: string | null
-          user_id?: never
+          updated_at?: string | null
         }
         Relationships: []
       }
