@@ -790,7 +790,21 @@ export type Database = {
             foreignKeyName: "school_transport_matches_offer_id_fkey"
             columns: ["offer_id"]
             isOneToOne: false
+            referencedRelation: "safe_transport_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "school_transport_matches_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
             referencedRelation: "school_transport_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "school_transport_matches_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "safe_transport_requests"
             referencedColumns: ["id"]
           },
           {
@@ -960,7 +974,48 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      safe_transport_requests: {
+        Row: {
+          contact_info: string | null
+          created_at: string | null
+          description: string | null
+          from_location: string | null
+          id: string | null
+          number_of_children: number | null
+          price: number | null
+          status: string | null
+          to_location: string | null
+          type: string | null
+          user_id: string | null
+        }
+        Insert: {
+          contact_info?: never
+          created_at?: string | null
+          description?: string | null
+          from_location?: string | null
+          id?: string | null
+          number_of_children?: number | null
+          price?: number | null
+          status?: string | null
+          to_location?: string | null
+          type?: string | null
+          user_id?: never
+        }
+        Update: {
+          contact_info?: never
+          created_at?: string | null
+          description?: string | null
+          from_location?: string | null
+          id?: string | null
+          number_of_children?: number | null
+          price?: number | null
+          status?: string | null
+          to_location?: string | null
+          type?: string | null
+          user_id?: never
+        }
+        Relationships: []
+      }
     }
     Functions: {
       binary_quantize: {
@@ -970,6 +1025,10 @@ export type Database = {
       check_rate_limit: {
         Args: { limit_count?: number; operation: string; time_window?: unknown }
         Returns: boolean
+      }
+      create_safe_transport_match: {
+        Args: { _offer_id: string; _request_id: string }
+        Returns: string
       }
       get_lost_found_contact: {
         Args: { item_id: string }
