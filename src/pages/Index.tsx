@@ -1,4 +1,4 @@
-import { Newspaper, Shield, Building, Briefcase, Handshake, Wrench, Home, Star, TrendingUp } from "lucide-react";
+import { Newspaper, Shield, Building, Briefcase, Handshake, Wrench, Home, Star, TrendingUp, GraduationCap, Heart, ShoppingBag, Moon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
 import { Card, CardContent } from "@/components/ui/card";
@@ -60,6 +60,15 @@ const Index = () => {
   };
   const navigationItems = [
     {
+      id: "news",
+      title: "أخبار المدينة",
+      description: "تابع آخر الأخبار والمستجدات في مدينتك",
+      icon: Newspaper,
+      color: "from-green-500 to-emerald-500",
+      onClick: () => navigate("/news"),
+      badge: unreadCount > 0 ? <NewsNotificationBadge count={unreadCount} /> : undefined
+    },
+    {
       id: "city",
       title: "جهاز المدينة",
       description: "تواصل مع إدارات المدينة المختلفة",
@@ -72,17 +81,8 @@ const Index = () => {
       title: "شرطة المدينة",
       description: "أرقام التواصل مع مركز الشرطة للطوارئ والخدمات",
       icon: Shield,
-      color: "from-red-500 to-pink-500",
+      color: "from-blue-800 to-blue-900",
       onClick: () => navigate("/police")
-    },
-    {
-      id: "news",
-      title: "أخبار المدينة",
-      description: "تابع آخر الأخبار والمستجدات في مدينتك",
-      icon: Newspaper,
-      color: "from-green-500 to-emerald-500",
-      onClick: () => navigate("/news"),
-      badge: unreadCount > 0 ? <NewsNotificationBadge count={unreadCount} /> : undefined
     },
     {
       id: "business",
@@ -107,6 +107,38 @@ const Index = () => {
       icon: Home,
       color: "from-emerald-500 to-teal-500",
       onClick: () => navigate("/real-estate")
+    },
+    {
+      id: "educational-services",
+      title: "خدمات تعليمية",
+      description: "خدمات تعليمية ومدارس في المدينة",
+      icon: GraduationCap,
+      color: "from-indigo-500 to-purple-500",
+      onClick: () => navigate("/educational-services")
+    },
+    {
+      id: "medical-services",
+      title: "خدمات طبية",
+      description: "مستشفيات ومراكز طبية في المدينة",
+      icon: Heart,
+      color: "from-rose-500 to-pink-500",
+      onClick: () => navigate("/medical-services")
+    },
+    {
+      id: "city-malls",
+      title: "مولات المدينة",
+      description: "مولات ومراكز تسوق في المدينة",
+      icon: ShoppingBag,
+      color: "from-amber-500 to-yellow-500",
+      onClick: () => navigate("/city-malls")
+    },
+    {
+      id: "places-of-worship",
+      title: "دور العبادة",
+      description: "مساجد وكنائس ودور العبادة في المدينة",
+      icon: Moon,
+      color: "from-slate-500 to-gray-600",
+      onClick: () => navigate("/places-of-worship")
     }
   ];
   return (
@@ -156,7 +188,6 @@ const Index = () => {
             variants={itemVariants}
             className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-600 via-cyan-600 to-blue-600 bg-clip-text text-transparent mb-2"
           >
-            حدائق أكتوبر أونلاين
           </motion.h1>
           
 
@@ -173,12 +204,12 @@ const Index = () => {
             variants={itemVariants}
             className="text-center mb-6"
           >
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-800">خدمات المدينة</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800"></h2>
           </motion.div>
 
           <motion.div 
             variants={containerVariants}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4"
+            className="grid grid-cols-4 gap-2 sm:gap-3 md:gap-4"
           >
             {navigationItems.map((item, index) => {
               const IconComponent = item.icon;
@@ -195,15 +226,15 @@ const Index = () => {
                     "relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 group",
                     `bg-gradient-to-br ${item.color}`
                   )}>
-                    <CardContent className="p-3 sm:p-4 text-center">
+                    <CardContent className="p-2 sm:p-3 text-center">
                       <motion.div
                         whileHover={{ rotate: 360 }}
                         transition={{ duration: 0.6 }}
-                        className="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-2 sm:mb-3 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center"
+                        className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-1 sm:mb-2 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center"
                       >
-                        <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                        <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                       </motion.div>
-                      <h3 className="text-white font-semibold text-xs sm:text-sm leading-tight">
+                      <h3 className="text-white font-semibold text-xs leading-tight">
                         {item.title}
                       </h3>
                       {item.badge && (
