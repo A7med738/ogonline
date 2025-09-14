@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   MapPin, 
   Phone, 
@@ -12,8 +9,6 @@ import {
   Users, 
   Clock, 
   Heart, 
-  Search,
-  Filter,
   Calendar,
   BookOpen,
   GraduationCap,
@@ -55,16 +50,8 @@ interface WorshipPlace {
 const WorshipPlaces = () => {
   const [worshipPlaces, setWorshipPlaces] = useState<WorshipPlace[]>([]);
   const [filteredPlaces, setFilteredPlaces] = useState<WorshipPlace[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedType, setSelectedType] = useState('all');
   const [loading, setLoading] = useState(true);
 
-  const worshipTypes = [
-    { value: 'all', label: 'جميع الأنواع' },
-    { value: 'مسجد', label: 'مساجد' },
-    { value: 'كنيسة', label: 'كنائس' },
-    { value: 'معبد', label: 'معابد' }
-  ];
 
   const getIconComponent = (iconName: string) => {
     const icons: { [key: string]: any } = {
@@ -85,8 +72,8 @@ const WorshipPlaces = () => {
   }, []);
 
   useEffect(() => {
-    filterPlaces();
-  }, [worshipPlaces, searchTerm, selectedType]);
+    setFilteredPlaces(worshipPlaces);
+  }, [worshipPlaces]);
 
   const loadWorshipPlaces = async () => {
     try {
@@ -127,25 +114,6 @@ const WorshipPlaces = () => {
     }
   };
 
-  const filterPlaces = () => {
-    let filtered = worshipPlaces;
-
-    // Filter by search term
-    if (searchTerm) {
-      filtered = filtered.filter(place =>
-        place.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        place.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        place.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Filter by type
-    if (selectedType !== 'all') {
-      filtered = filtered.filter(place => place.type === selectedType);
-    }
-
-    setFilteredPlaces(filtered);
-  };
 
   const formatPrayerTimes = (prayerTimes: any) => {
     if (!prayerTimes) return null;
@@ -173,44 +141,6 @@ const WorshipPlaces = () => {
   return (
     <div className="min-h-screen bg-gray-50 px-3 py-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            دور العبادة
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            اكتشف دور العبادة في مدينتك واعرف أوقات الصلاة والفعاليات
-          </p>
-        </div>
-
-        {/* Search and Filter */}
-        <div className="mb-8 space-y-4 sm:space-y-0 sm:flex sm:items-center sm:space-x-4">
-          <div className="relative flex-1">
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <Input
-              placeholder="ابحث عن دار عبادة..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pr-10 text-right"
-            />
-          </div>
-          <div className="flex items-center space-x-2">
-            <Filter className="w-5 h-5 text-gray-500" />
-            <Select value={selectedType} onValueChange={setSelectedType}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="اختر النوع" />
-              </SelectTrigger>
-              <SelectContent>
-                {worshipTypes.map(type => (
-                  <SelectItem key={type.value} value={type.value}>
-                    {type.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
         {/* Worship Places Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPlaces.map((place) => (
@@ -361,22 +291,6 @@ const WorshipPlaces = () => {
           ))}
         </div>
 
-        {filteredPlaces.length === 0 && !loading && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <Building className="w-16 h-16 mx-auto" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              لا توجد دور عبادة
-            </h3>
-            <p className="text-gray-600">
-              {searchTerm || selectedType !== 'all' 
-                ? 'لم نجد دور عبادة تطابق البحث' 
-                : 'لا توجد دور عبادة مضافة بعد'
-              }
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
