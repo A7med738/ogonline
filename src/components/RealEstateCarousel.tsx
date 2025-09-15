@@ -309,7 +309,7 @@ export const RealEstateCarousel: React.FC<RealEstateCarouselProps> = ({
                       <div className="text-2xl font-bold text-emerald-600">
                         {item.price}
                         <span className="text-sm text-gray-500">
-                          {item.type === 'rent' ? ' ريال/شهر' : ' ريال'}
+                          {item.type === 'rent' ? ' جنيه/شهر' : ' جنيه'}
                         </span>
                       </div>
                     </div>

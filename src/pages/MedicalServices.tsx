@@ -1,37 +1,69 @@
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
 import { Heart, Stethoscope, Building2, Hospital } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const MedicalServices = () => {
   const navigate = useNavigate();
+  const [counts, setCounts] = useState({
+    hospitals: 0,
+    clinics: 0,
+    healthUnits: 0,
+    medicalCenters: 0
+  });
+
+  useEffect(() => {
+    loadCounts();
+  }, []);
+
+  const loadCounts = async () => {
+    try {
+      const [hospitalsRes, clinicsRes, healthUnitsRes, medicalCentersRes] = await Promise.all([
+        supabase.from('hospitals').select('id', { count: 'exact' }).eq('is_active', true),
+        supabase.from('clinics').select('id', { count: 'exact' }).eq('is_active', true),
+        supabase.from('health_units').select('id', { count: 'exact' }).eq('is_active', true),
+        supabase.from('medical_centers').select('id', { count: 'exact' }).eq('is_active', true)
+      ]);
+
+      setCounts({
+        hospitals: hospitalsRes.count || 0,
+        clinics: clinicsRes.count || 0,
+        healthUnits: healthUnitsRes.count || 0,
+        medicalCenters: medicalCentersRes.count || 0
+      });
+    } catch (error) {
+      console.error('Error loading counts:', error);
+    }
+  };
 
   const medicalItems = [
     {
-      title: "وحدات صحية",
-      description: "الوحدات الصحية والمراكز الطبية الأساسية",
-      icon: Heart,
-      onClick: () => navigate("/medical-services/health-units"),
+      title: "مستشفيات",
+      description: `${counts.hospitals} مستشفى عام وخاص في المدينة`,
+      icon: Hospital,
+      onClick: () => navigate("/medical-services/hospitals"),
       isActive: true
     },
     {
       title: "عيادات",
-      description: "عيادات خاصة ومتخصصة في المدينة",
+      description: `${counts.clinics} عيادة خاصة ومتخصصة`,
       icon: Stethoscope,
       onClick: () => navigate("/medical-services/clinics"),
       isActive: true
     },
     {
-      title: "مراكز طبية",
-      description: "مراكز طبية متخصصة ومرافق صحية",
-      icon: Building2,
-      onClick: () => navigate("/medical-services/medical-centers"),
+      title: "وحدات صحية",
+      description: `${counts.healthUnits} وحدة صحية ومركز طبي أساسي`,
+      icon: Heart,
+      onClick: () => navigate("/medical-services/health-units"),
       isActive: true
     },
     {
-      title: "مستشفيات",
-      description: "مستشفيات عامة وخاصة في المدينة",
-      icon: Hospital,
-      onClick: () => navigate("/medical-services/hospitals"),
+      title: "مراكز طبية",
+      description: `${counts.medicalCenters} مركز طبي متخصص ومرافق صحية`,
+      icon: Building2,
+      onClick: () => navigate("/medical-services/medical-centers"),
       isActive: true
     }
   ];

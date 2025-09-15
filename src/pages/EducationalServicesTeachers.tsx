@@ -169,7 +169,7 @@ const EducationalServicesTeachers = () => {
                       {teacher.hourly_rate && (
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <DollarSign className="h-4 w-4" />
-                          <span>{teacher.hourly_rate} SAR/ساعة</span>
+                          <span>{teacher.hourly_rate} جنيه/ساعة</span>
                         </div>
                       )}
                       {teacher.available_hours && (

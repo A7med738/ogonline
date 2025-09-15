@@ -248,7 +248,7 @@ const AddPropertyModal = ({ isOpen, onClose, onSuccess }: AddPropertyModalProps)
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="price">السعر (ريال سعودي) *</Label>
+          <Label htmlFor="price">السعر (جنيه مصري) *</Label>
           <Input
             id="price"
             type="number"

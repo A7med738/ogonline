@@ -209,7 +209,7 @@ export const RealEstateCard: React.FC<RealEstateCardProps> = ({
                   <div className="text-2xl sm:text-3xl font-bold text-emerald-600 mb-1">
                     {item.price}
                     <span className="text-xs sm:text-sm text-gray-500">
-                      {item.type === 'rent' ? ' ريال/شهر' : ' ريال'}
+                      {item.type === 'rent' ? ' جنيه/شهر' : ' جنيه'}
                     </span>
                   </div>
                   <div className="flex items-center justify-end">
@@ -383,7 +383,7 @@ export const RealEstateCard: React.FC<RealEstateCardProps> = ({
               <div className="text-xl sm:text-2xl font-bold text-emerald-600">
                 {item.price}
                 <span className="text-xs sm:text-sm text-gray-500">
-                  {item.type === 'rent' ? ' ريال/شهر' : ' ريال'}
+                  {item.type === 'rent' ? ' جنيه/شهر' : ' جنيه'}
                 </span>
               </div>
             </div>

@@ -171,7 +171,7 @@ const SchoolTransportOffer = () => {
                 <div className="space-y-2">
                   <Label htmlFor="price" className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4" />
-                    السعر (ريال سعودي) - اختياري
+                    السعر (جنيه مصري) - اختياري
                   </Label>
                   <Input
                     id="price"

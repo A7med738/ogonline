@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.schools (
   logo_url TEXT,
   established_year INTEGER,
   capacity INTEGER,
-  fees_range TEXT, -- e.g., "1000-5000 SAR"
+  fees_range TEXT, -- e.g., "1000-5000 جنيه"
   curriculum TEXT, -- e.g., "Egyptian", "American", "British", "IB"
   languages TEXT[], -- e.g., ["Arabic", "English", "French"]
   facilities TEXT[], -- e.g., ["Library", "Lab", "Sports", "Cafeteria"]
@@ -230,16 +230,16 @@ CREATE TRIGGER update_teachers_updated_at
 
 -- Insert sample data
 INSERT INTO public.schools (name, type, level, address, phone, description, established_year, capacity, fees_range, curriculum, languages, facilities, transportation, rating) VALUES 
-('مدرسة النور الدولية', 'international', 'all', 'شارع النور، حدائق أكتوبر', '01001234567', 'مدرسة دولية تقدم تعليم متميز', 2010, 500, '15000-25000 SAR', 'American', ARRAY['Arabic', 'English'], ARRAY['Library', 'Lab', 'Sports', 'Cafeteria'], true, 4.5),
+('مدرسة النور الدولية', 'international', 'all', 'شارع النور، حدائق أكتوبر', '01001234567', 'مدرسة دولية تقدم تعليم متميز', 2010, 500, '15000-25000 جنيه', 'American', ARRAY['Arabic', 'English'], ARRAY['Library', 'Lab', 'Sports', 'Cafeteria'], true, 4.5),
 ('مدرسة الأمل الابتدائية', 'public', 'primary', 'شارع الأمل، حدائق أكتوبر', '01001234568', 'مدرسة حكومية للتعليم الابتدائي', 2005, 300, 'مجاني', 'Egyptian', ARRAY['Arabic'], ARRAY['Library', 'Sports'], false, 4.0);
 
 INSERT INTO public.nurseries (name, type, age_groups, address, phone, description, established_year, capacity, fees_range, operating_hours, facilities, transportation, meals_included, rating) VALUES 
-('حضانة الأزهار', 'private', ARRAY['6 months - 2 years', '2-4 years'], 'شارع الأزهار، حدائق أكتوبر', '01001234569', 'حضانة متخصصة في رعاية الأطفال', 2015, 50, '800-1500 SAR', '7:00 AM - 4:00 PM', ARRAY['Playground', 'Nursery', 'Security', 'CCTV'], true, true, 4.3),
-('حضانة المستقبل', 'community', ARRAY['2-4 years'], 'شارع المستقبل، حدائق أكتوبر', '01001234570', 'حضانة مجتمعية للأطفال', 2018, 30, '500-800 SAR', '8:00 AM - 3:00 PM', ARRAY['Playground', 'Security'], false, false, 4.1);
+('حضانة الأزهار', 'private', ARRAY['6 months - 2 years', '2-4 years'], 'شارع الأزهار، حدائق أكتوبر', '01001234569', 'حضانة متخصصة في رعاية الأطفال', 2015, 50, '800-1500 جنيه', '7:00 AM - 4:00 PM', ARRAY['Playground', 'Nursery', 'Security', 'CCTV'], true, true, 4.3),
+('حضانة المستقبل', 'community', ARRAY['2-4 years'], 'شارع المستقبل، حدائق أكتوبر', '01001234570', 'حضانة مجتمعية للأطفال', 2018, 30, '500-800 جنيه', '8:00 AM - 3:00 PM', ARRAY['Playground', 'Security'], false, false, 4.1);
 
 INSERT INTO public.educational_centers (name, type, subjects, age_groups, address, phone, description, established_year, capacity, fees_range, class_schedule, facilities, online_classes, individual_sessions, rating) VALUES 
-('مركز النجاح التعليمي', 'tutoring', ARRAY['Math', 'Science', 'English'], ARRAY['6-12 years', '13-18 years'], 'شارع النجاح، حدائق أكتوبر', '01001234571', 'مركز تعليمي متخصص في الدروس الخصوصية', 2012, 100, '50-100 SAR/hour', 'Monday-Friday 4:00-8:00 PM', ARRAY['Computer Lab', 'Library', 'Study Rooms'], true, true, 4.4),
-('مركز اللغات الحديث', 'language', ARRAY['English', 'French', 'German'], ARRAY['13-18 years', 'Adults'], 'شارع اللغات، حدائق أكتوبر', '01001234572', 'مركز متخصص في تعليم اللغات', 2016, 80, '80-150 SAR/hour', 'Saturday-Thursday 6:00-10:00 PM', ARRAY['Language Lab', 'Library'], true, true, 4.6);
+('مركز النجاح التعليمي', 'tutoring', ARRAY['Math', 'Science', 'English'], ARRAY['6-12 years', '13-18 years'], 'شارع النجاح، حدائق أكتوبر', '01001234571', 'مركز تعليمي متخصص في الدروس الخصوصية', 2012, 100, '50-100 جنيه/ساعة', 'Monday-Friday 4:00-8:00 PM', ARRAY['Computer Lab', 'Library', 'Study Rooms'], true, true, 4.4),
+('مركز اللغات الحديث', 'language', ARRAY['English', 'French', 'German'], ARRAY['13-18 years', 'Adults'], 'شارع اللغات، حدائق أكتوبر', '01001234572', 'مركز متخصص في تعليم اللغات', 2016, 80, '80-150 جنيه/ساعة', 'Saturday-Thursday 6:00-10:00 PM', ARRAY['Language Lab', 'Library'], true, true, 4.6);
 
 INSERT INTO public.teachers (name, specialization, subjects, education_level, experience_years, phone, description, hourly_rate, available_hours, teaching_methods, age_groups, languages, qualifications, rating, is_verified) VALUES 
 ('أستاذ أحمد محمد', 'Mathematics', ARRAY['Math', 'Physics'], 'master', 8, '01001234573', 'مدرس رياضيات و فيزياء بخبرة 8 سنوات', 60.00, '4:00-8:00 PM', ARRAY['Online', 'In-person', 'Individual'], ARRAY['Secondary', 'University'], ARRAY['Arabic', 'English'], ARRAY['Teaching Certificate', 'Masters in Math'], 4.7, true),

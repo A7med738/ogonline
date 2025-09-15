@@ -45,6 +45,11 @@ import EducationalServicesSchools from "./pages/EducationalServicesSchools";
 import EducationalServicesNurseries from "./pages/EducationalServicesNurseries";
 import EducationalServicesCenters from "./pages/EducationalServicesCenters";
 import EducationalServicesTeachers from "./pages/EducationalServicesTeachers";
+import MedicalServicesManagement from "./pages/admin/MedicalServicesManagement";
+import MedicalServicesHospitals from "./pages/MedicalServicesHospitals";
+import MedicalServicesClinics from "./pages/MedicalServicesClinics";
+import MedicalServicesHealthUnits from "./pages/MedicalServicesHealthUnits";
+import MedicalServicesMedicalCenters from "./pages/MedicalServicesMedicalCenters";
 
 const queryClient = new QueryClient();
 
@@ -109,12 +114,17 @@ const AppContent = () => {
           <Route path="/educational-services/centers" element={<EducationalServicesCenters />} />
           <Route path="/educational-services/teachers" element={<EducationalServicesTeachers />} />
           <Route path="/medical-services" element={<MedicalServices />} />
+          <Route path="/medical-services/hospitals" element={<MedicalServicesHospitals />} />
+          <Route path="/medical-services/clinics" element={<MedicalServicesClinics />} />
+          <Route path="/medical-services/health-units" element={<MedicalServicesHealthUnits />} />
+          <Route path="/medical-services/medical-centers" element={<MedicalServicesMedicalCenters />} />
           <Route path="/business" element={<Business />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/my-jobs" element={<MyJobs />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/educational-services" element={<EducationalServicesManagement />} />
+          <Route path="/admin/medical-services" element={<MedicalServicesManagement />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/email-confirmation" element={<EmailConfirmation />} />
           <Route path="*" element={<NotFound />} />

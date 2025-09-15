@@ -107,7 +107,7 @@ export const RealEstateFilters: React.FC<RealEstateFiltersProps> = ({
       content: (
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label>السعر (ريال)</Label>
+            <Label>السعر (جنيه)</Label>
             <Slider
               value={filters.priceRange}
               onValueChange={(value) => setFilters(prev => ({ ...prev, priceRange: value as [number, number] }))}

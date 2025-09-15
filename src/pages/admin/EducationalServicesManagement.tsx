@@ -513,7 +513,7 @@ const EducationalServicesManagement = () => {
               {teacher.hourly_rate && (
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <DollarSign className="h-4 w-4" />
-                  <span>{teacher.hourly_rate} SAR/ساعة</span>
+                  <span>{teacher.hourly_rate} جنيه/ساعة</span>
                 </div>
               )}
               {teacher.available_hours && (
@@ -661,7 +661,7 @@ const EducationalServicesManagement = () => {
                   id="fees_range"
                   value={formData.fees_range || ''}
                   onChange={(e) => setFormData({ ...formData, fees_range: e.target.value })}
-                  placeholder="مثل: 1000-5000 SAR"
+                  placeholder="مثل: 1000-5000 جنيه"
                 />
               </div>
             </div>
@@ -737,7 +737,7 @@ const EducationalServicesManagement = () => {
                   id="fees_range"
                   value={formData.fees_range || ''}
                   onChange={(e) => setFormData({ ...formData, fees_range: e.target.value })}
-                  placeholder="مثل: 500-1500 SAR"
+                  placeholder="مثل: 500-1500 جنيه"
                 />
               </div>
             </div>
@@ -817,7 +817,7 @@ const EducationalServicesManagement = () => {
                   id="fees_range"
                   value={formData.fees_range || ''}
                   onChange={(e) => setFormData({ ...formData, fees_range: e.target.value })}
-                  placeholder="مثل: 50-100 SAR/hour"
+                  placeholder="مثل: 50-100 جنيه/ساعة"
                 />
               </div>
             </div>
@@ -915,7 +915,7 @@ const EducationalServicesManagement = () => {
                   type="number"
                   value={formData.hourly_rate || ''}
                   onChange={(e) => setFormData({ ...formData, hourly_rate: parseFloat(e.target.value) || 0 })}
-                  placeholder="السعر بالريال السعودي"
+                  placeholder="السعر بالجنيه المصري"
                 />
               </div>
             </div>
