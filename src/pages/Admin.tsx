@@ -26,7 +26,8 @@ import {
   Building,
   Megaphone,
   Newspaper,
-  ShoppingBag
+  ShoppingBag,
+  GraduationCap
 } from "lucide-react";
 import {
   Select,
@@ -43,6 +44,7 @@ import { JobsManagement } from "@/components/admin/JobsManagement";
 import { LostAndFoundManagement } from "@/components/admin/LostAndFoundManagement";
 import MallsManagement from "@/pages/admin/MallsManagement";
 import WorshipPlacesManagement from "@/pages/admin/WorshipPlacesManagement";
+import EducationalServicesManagement from "@/pages/admin/EducationalServicesManagement";
 
 interface ContentItem {
   id: string;
@@ -496,6 +498,16 @@ const Admin = () => {
               <span className="text-sm font-medium">دور العبادة</span>
             </div>
           </Card>
+
+          <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'educational' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('educational')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <GraduationCap className="h-8 w-8 text-indigo-600" />
+              <span className="text-sm font-medium">الخدمات التعليمية</span>
+            </div>
+          </Card>
         </div>
 
         <div>
@@ -694,6 +706,7 @@ const Admin = () => {
           {activeTab === 'lost-found' && <LostAndFoundManagement />}
           {activeTab === 'malls' && <MallsManagement />}
           {activeTab === 'worship' && <WorshipPlacesManagement />}
+          {activeTab === 'educational' && <EducationalServicesManagement />}
         </div>
       </div>
     </div>

@@ -1,35 +1,67 @@
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
 import { GraduationCap, Baby, BookOpen, Users } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const EducationalServices = () => {
   const navigate = useNavigate();
+  const [counts, setCounts] = useState({
+    schools: 0,
+    nurseries: 0,
+    centers: 0,
+    teachers: 0
+  });
+
+  useEffect(() => {
+    loadCounts();
+  }, []);
+
+  const loadCounts = async () => {
+    try {
+      const [schoolsRes, nurseriesRes, centersRes, teachersRes] = await Promise.all([
+        supabase.from('schools').select('id', { count: 'exact' }).eq('is_active', true),
+        supabase.from('nurseries').select('id', { count: 'exact' }).eq('is_active', true),
+        supabase.from('educational_centers').select('id', { count: 'exact' }).eq('is_active', true),
+        supabase.from('teachers').select('id', { count: 'exact' }).eq('is_active', true)
+      ]);
+
+      setCounts({
+        schools: schoolsRes.count || 0,
+        nurseries: nurseriesRes.count || 0,
+        centers: centersRes.count || 0,
+        teachers: teachersRes.count || 0
+      });
+    } catch (error) {
+      console.error('Error loading counts:', error);
+    }
+  };
 
   const educationalItems = [
     {
       title: "مدارس",
-      description: "مدارس حكومية وخاصة في المدينة",
+      description: `${counts.schools} مدرسة حكومية وخاصة في المدينة`,
       icon: GraduationCap,
       onClick: () => navigate("/educational-services/schools"),
       isActive: true
     },
     {
       title: "حضانات",
-      description: "حضانات ومراكز رعاية الأطفال",
+      description: `${counts.nurseries} حضانة ومركز رعاية أطفال`,
       icon: Baby,
       onClick: () => navigate("/educational-services/nurseries"),
       isActive: true
     },
     {
       title: "سناتر",
-      description: "مراكز تعليمية ومراجعة",
+      description: `${counts.centers} مركز تعليمي ومراجعة`,
       icon: BookOpen,
       onClick: () => navigate("/educational-services/centers"),
       isActive: true
     },
     {
       title: "مدرسين",
-      description: "دليل المدرسين والدروس الخصوصية",
+      description: `${counts.teachers} مدرس ودروس خصوصية`,
       icon: Users,
       onClick: () => navigate("/educational-services/teachers"),
       isActive: true

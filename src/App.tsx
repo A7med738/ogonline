@@ -40,6 +40,11 @@ import MedicalServices from "./pages/MedicalServices";
 import MallDetails from "./pages/MallDetails";
 import CityMalls from "./pages/CityMalls";
 import WorshipPlaces from "./pages/WorshipPlaces";
+import EducationalServicesManagement from "./pages/admin/EducationalServicesManagement";
+import EducationalServicesSchools from "./pages/EducationalServicesSchools";
+import EducationalServicesNurseries from "./pages/EducationalServicesNurseries";
+import EducationalServicesCenters from "./pages/EducationalServicesCenters";
+import EducationalServicesTeachers from "./pages/EducationalServicesTeachers";
 
 const queryClient = new QueryClient();
 
@@ -99,12 +104,17 @@ const AppContent = () => {
           <Route path="/mall/:id" element={<MallDetails />} />
           <Route path="/worship-places" element={<WorshipPlaces />} />
           <Route path="/educational-services" element={<EducationalServices />} />
+          <Route path="/educational-services/schools" element={<EducationalServicesSchools />} />
+          <Route path="/educational-services/nurseries" element={<EducationalServicesNurseries />} />
+          <Route path="/educational-services/centers" element={<EducationalServicesCenters />} />
+          <Route path="/educational-services/teachers" element={<EducationalServicesTeachers />} />
           <Route path="/medical-services" element={<MedicalServices />} />
           <Route path="/business" element={<Business />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/my-jobs" element={<MyJobs />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/educational-services" element={<EducationalServicesManagement />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/email-confirmation" element={<EmailConfirmation />} />
           <Route path="*" element={<NotFound />} />
