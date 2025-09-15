@@ -147,9 +147,9 @@ const Index = () => {
       <div className="px-4 py-6">
         {/* Hero Section - Mobile Optimized */}
         <motion.div 
-          variants={heroVariants}
-          initial="hidden"
-          animate="visible"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center mb-8 sm:mb-12"
         >
           <div className="relative mb-6 sm:mb-8">
@@ -185,7 +185,9 @@ const Index = () => {
           </div>
           
           <motion.h1 
-            variants={itemVariants}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
             className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-600 via-cyan-600 to-blue-600 bg-clip-text text-transparent mb-2"
           >
           </motion.h1>
@@ -195,20 +197,23 @@ const Index = () => {
 
         {/* Services Grid - Mobile Optimized */}
         <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ staggerChildren: 0.1, delayChildren: 0.2 }}
           className="mb-8"
         >
           <motion.div 
-            variants={itemVariants}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
             className="text-center mb-6"
           >
             <h2 className="text-xl sm:text-2xl font-bold text-gray-800"></h2>
           </motion.div>
 
           <motion.div 
-            variants={containerVariants}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             className="grid grid-cols-4 gap-2 sm:gap-3 md:gap-4"
           >
             {navigationItems.map((item, index) => {
@@ -216,7 +221,9 @@ const Index = () => {
               return (
                 <motion.div
                   key={item.id}
-                  variants={itemVariants}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, ease: "easeOut", delay: index * 0.1 }}
                   whileHover={{ scale: 1.05, y: -5 }}
                   whileTap={{ scale: 0.95 }}
                   className="cursor-pointer"
@@ -272,9 +279,9 @@ const Index = () => {
 
         {/* Latest News Section */}
         <motion.div
-          variants={itemVariants}
-          initial="hidden"
-          animate="visible"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
         >
           <LatestNewsSection />
         </motion.div>

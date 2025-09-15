@@ -131,14 +131,16 @@ const News = () => {
 
         {/* News Grid */}
         <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ staggerChildren: 0.1, delayChildren: 0.2 }}
           className="space-y-6"
         >
           {loading ? (
             <motion.div 
-              variants={itemVariants}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 100, damping: 15 }}
               className="text-center py-16"
             >
               <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-emerald-200 to-cyan-200 rounded-full flex items-center justify-center">
@@ -148,7 +150,9 @@ const News = () => {
             </motion.div>
           ) : newsData.length === 0 ? (
             <motion.div 
-              variants={itemVariants}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 100, damping: 15 }}
               className="text-center py-16"
             >
               <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full flex items-center justify-center">
@@ -165,7 +169,9 @@ const News = () => {
               return (
                 <motion.div
                   key={news.id}
-                  variants={itemVariants}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ type: "spring", stiffness: 100, damping: 15, delay: index * 0.1 }}
                   whileHover={{ scale: 1.02 }}
                   className="w-full"
                 >

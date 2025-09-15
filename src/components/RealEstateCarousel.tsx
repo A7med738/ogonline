@@ -224,9 +224,11 @@ export const RealEstateCarousel: React.FC<RealEstateCarouselProps> = ({
           {items.map((item, index) => (
             <motion.div
               key={item.id}
-              variants={itemVariants}
-              whileHover="hover"
+              initial={{ opacity: 0, y: 50, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              whileHover={{ scale: 1.05, y: -10 }}
               whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 100, damping: 15 }}
               className="flex-shrink-0 px-3"
               style={{ width: `${100 / itemsPerView}%` }}
             >

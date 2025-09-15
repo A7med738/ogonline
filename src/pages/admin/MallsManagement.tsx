@@ -452,17 +452,54 @@ const MallsManagement = () => {
   };
 
   const handleUpdateMall = async () => {
-    if (editingMall && newMall.name) {
-      setMalls(malls.map(mall => 
-        mall.id === editingMall.id 
-          ? { ...mall, ...newMall }
-          : mall
-      ));
+    if (!editingMall || !newMall.name) {
+      toast({
+        title: "خطأ",
+        description: "يرجى ملء الحقول المطلوبة",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Update mall in database
+      const { error: mallError } = await supabase
+        .from('malls')
+        .update({
+          name: newMall.name,
+          description: newMall.description,
+          address: newMall.address || '',
+          phone: newMall.phone || '',
+          website: newMall.website || '',
+          google_maps_url: newMall.googleMapsUrl || '',
+          is_open: newMall.isOpen || false,
+          closing_time: newMall.closingTime || '11:00 مساءً',
+          rating: newMall.rating || 0,
+          image_url: newMall.image || '/placeholder.svg',
+          logo_url: newMall.logo || '/placeholder.svg',
+          about: newMall.about || ''
+        })
+        .eq('id', editingMall.id);
+
+      if (mallError) throw mallError;
+
+      toast({
+        title: "نجح",
+        description: "تم تحديث المول بنجاح",
+      });
+
       setIsEditDialogOpen(false);
       setEditingMall(null);
       
-      // Reload malls to show updated images
+      // Reload malls to show updated data
       await loadMalls(true);
+    } catch (error) {
+      console.error('Error updating mall:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحديث المول",
+        variant: "destructive",
+      });
     }
   };
 

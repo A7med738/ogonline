@@ -123,7 +123,7 @@ const PropertyManagement = () => {
         })
       );
 
-      setProperties(propertiesWithOwners);
+      setProperties(propertiesWithOwners as Property[]);
     } catch (error: any) {
       toast({
         title: "خطأ في تحميل العقارات",

@@ -126,9 +126,11 @@ export const RealEstateCard: React.FC<RealEstateCardProps> = ({
   if (viewMode === 'list') {
     return (
       <motion.div
-        variants={cardVariants}
-        whileHover="hover"
+        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        whileHover={{ scale: 1.05, y: -10 }}
         whileTap={{ scale: 0.98 }}
+        transition={{ type: "spring", stiffness: 100, damping: 15 }}
         className="group"
       >
         <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 bg-white/80 backdrop-blur-sm">
@@ -301,9 +303,11 @@ export const RealEstateCard: React.FC<RealEstateCardProps> = ({
 
   return (
     <motion.div
-      variants={cardVariants}
-      whileHover="hover"
+      initial={{ opacity: 0, y: 50, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      whileHover={{ scale: 1.05, y: -10 }}
       whileTap={{ scale: 0.98 }}
+      transition={{ type: "spring", stiffness: 100, damping: 15 }}
       className="group"
     >
       <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 bg-white/80 backdrop-blur-sm">
