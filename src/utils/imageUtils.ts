@@ -63,6 +63,8 @@ export const handleImageError = (event: React.SyntheticEvent<HTMLImageElement, E
   const target = event.currentTarget;
   if (target.src !== fallbackSrc) {
     target.src = fallbackSrc;
+    // إضافة class للصورة الافتراضية
+    target.classList.add('opacity-100');
   }
 };
 
@@ -117,4 +119,59 @@ export const getOptimizedImageUrl = (
 
   // For other URLs, just add cache busting
   return getImageUrl(imageUrl, true);
+};
+
+/**
+ * Creates a retry mechanism for image loading
+ * @param src - Image source URL
+ * @param maxRetries - Maximum number of retries (default: 3)
+ * @param delay - Delay between retries in ms (default: 1000)
+ * @returns Promise that resolves to the image element
+ */
+export const loadImageWithRetry = (
+  src: string, 
+  maxRetries: number = 3, 
+  delay: number = 1000
+): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    let retries = 0;
+    
+    const attemptLoad = () => {
+      const img = new Image();
+      
+      img.onload = () => resolve(img);
+      img.onerror = () => {
+        retries++;
+        if (retries < maxRetries) {
+          setTimeout(attemptLoad, delay);
+        } else {
+          reject(new Error(`Failed to load image after ${maxRetries} attempts: ${src}`));
+        }
+      };
+      
+      img.src = src;
+    };
+    
+    attemptLoad();
+  });
+};
+
+/**
+ * Preloads multiple images with retry mechanism
+ * @param imageUrls - Array of image URLs to preload
+ * @param maxRetries - Maximum number of retries per image
+ * @returns Promise that resolves when all images are loaded or failed
+ */
+export const preloadImages = async (
+  imageUrls: string[], 
+  maxRetries: number = 2
+): Promise<void> => {
+  const loadPromises = imageUrls.map(url => 
+    loadImageWithRetry(url, maxRetries).catch(error => {
+      console.warn('Failed to preload image:', url, error);
+      return null;
+    })
+  );
+  
+  await Promise.allSettled(loadPromises);
 };
