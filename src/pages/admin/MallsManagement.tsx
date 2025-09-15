@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { getImageUrl, handleImageError } from "@/utils/imageUtils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import ImageUpload from "@/components/ImageUpload";
@@ -110,7 +111,7 @@ const MallsManagement = () => {
     loadMalls();
   }, []);
 
-  const loadMalls = async () => {
+  const loadMalls = async (forceRefresh: boolean = false) => {
     try {
       setLoading(true);
       
@@ -143,29 +144,54 @@ const MallsManagement = () => {
               .select('*')
               .eq('mall_id', mall.id);
 
-            // Load cinema
-            const { data: cinema } = await supabase
-              .from('mall_cinema')
-              .select('*')
-              .eq('mall_id', mall.id)
-              .single();
-
-            // Load movies if cinema exists
+            // Load cinema (with error handling)
+            let cinema = null;
             let movies = [];
-            if (cinema) {
-              const { data: moviesData } = await supabase
-                .from('mall_movies')
+            try {
+              const { data: cinemaData, error: cinemaError } = await supabase
+                .from('mall_cinema')
                 .select('*')
-                .eq('cinema_id', cinema.id);
-              movies = moviesData || [];
+                .eq('mall_id', mall.id)
+                .single();
+              
+              if (cinemaError && cinemaError.code !== 'PGRST116') {
+                console.log('Cinema query error:', cinemaError);
+              } else {
+                cinema = cinemaData;
+
+                // Load movies if cinema exists
+                if (cinema) {
+                  const { data: moviesData } = await supabase
+                    .from('mall_movies')
+                    .select('*')
+                    .eq('cinema_id', cinema.id);
+                  movies = moviesData || [];
+                }
+              }
+            } catch (error) {
+              console.log('Cinema data not available:', error);
+              cinema = null;
+              movies = [];
             }
 
-            // Load games
-            const { data: games } = await supabase
-              .from('mall_games')
-              .select('*')
-              .eq('mall_id', mall.id)
-              .single();
+            // Load games (with error handling)
+            let games = null;
+            try {
+              const { data: gamesData, error: gamesError } = await supabase
+                .from('mall_games')
+                .select('*')
+                .eq('mall_id', mall.id)
+                .single();
+              
+              if (gamesError && gamesError.code !== 'PGRST116') {
+                console.log('Games query error:', gamesError);
+              } else {
+                games = gamesData;
+              }
+            } catch (error) {
+              console.log('Games data not available:', error);
+              games = null;
+            }
 
             // Load events
             const { data: events } = await supabase
@@ -380,6 +406,9 @@ const MallsManagement = () => {
         description: "تم إضافة المول بنجاح",
       });
 
+      // Reload malls to show updated images
+      await loadMalls(true);
+
       // Reset form
       setNewMall({
         name: "",
@@ -422,7 +451,7 @@ const MallsManagement = () => {
     setIsEditDialogOpen(true);
   };
 
-  const handleUpdateMall = () => {
+  const handleUpdateMall = async () => {
     if (editingMall && newMall.name) {
       setMalls(malls.map(mall => 
         mall.id === editingMall.id 
@@ -431,6 +460,9 @@ const MallsManagement = () => {
       ));
       setIsEditDialogOpen(false);
       setEditingMall(null);
+      
+      // Reload malls to show updated images
+      await loadMalls(true);
     }
   };
 
@@ -510,6 +542,9 @@ const MallsManagement = () => {
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>إضافة مول جديد</DialogTitle>
+                <DialogDescription>
+                  أضف مول جديد مع جميع التفاصيل والمحلات والخدمات
+                </DialogDescription>
               </DialogHeader>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-5">
@@ -1267,9 +1302,10 @@ const MallsManagement = () => {
             <Card key={mall.id} className="hover:shadow-lg transition-shadow">
               <div className="relative">
                 <img 
-                  src={mall.image} 
+                  src={getImageUrl(mall.image)} 
                   alt={mall.name}
                   className="w-full h-48 object-cover rounded-t-lg"
+                  onError={(e) => handleImageError(e)}
                 />
                 <div className="absolute top-3 right-3">
                   <Badge variant={mall.isOpen ? "default" : "secondary"}>
@@ -1337,6 +1373,9 @@ const MallsManagement = () => {
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>تعديل المول</DialogTitle>
+              <DialogDescription>
+                عدّل تفاصيل المول والمحلات والخدمات
+              </DialogDescription>
             </DialogHeader>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-5">

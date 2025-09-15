@@ -5,6 +5,7 @@ import { ShoppingBag, MapPin, Clock, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getImageUrl, handleImageError } from "@/utils/imageUtils";
 import { supabase } from "@/integrations/supabase/client";
 const CityMalls = () => {
   const navigate = useNavigate();
@@ -60,7 +61,12 @@ const CityMalls = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {malls.map(mall => <Card key={mall.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate(`/mall/${mall.id}`)}>
               <div className="relative">
-                <img src={mall.image} alt={mall.name} className="w-full h-40 sm:h-48 object-cover rounded-t-lg" />
+                <img 
+                  src={getImageUrl(mall.image)} 
+                  alt={mall.name} 
+                  className="w-full h-40 sm:h-48 object-cover rounded-t-lg"
+                  onError={(e) => handleImageError(e)}
+                />
                 
               </div>
               

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { getImageUrl, handleImageError } from "@/utils/imageUtils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +43,20 @@ const MallDetails = () => {
     }
   }, [id]);
 
+  // Reload data when page becomes visible (for image updates)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && id) {
+        loadMallData(id);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [id]);
+
   const loadMallData = async (mallId: string) => {
     try {
       setLoading(true);
@@ -73,29 +88,54 @@ const MallDetails = () => {
         .select('*')
         .eq('mall_id', mallId);
 
-      // Load cinema
-      const { data: cinema } = await supabase
-        .from('mall_cinema')
-        .select('*')
-        .eq('mall_id', mallId)
-        .single();
-
-      // Load movies if cinema exists
+      // Load cinema (with error handling)
+      let cinema = null;
       let movies = [];
-      if (cinema) {
-        const { data: moviesData } = await supabase
-          .from('mall_movies')
+      try {
+        const { data: cinemaData, error: cinemaError } = await supabase
+          .from('mall_cinema')
           .select('*')
-          .eq('cinema_id', cinema.id);
-        movies = moviesData || [];
+          .eq('mall_id', mallId)
+          .single();
+        
+        if (cinemaError && cinemaError.code !== 'PGRST116') {
+          console.log('Cinema query error:', cinemaError);
+        } else {
+          cinema = cinemaData;
+
+          // Load movies if cinema exists
+          if (cinema) {
+            const { data: moviesData } = await supabase
+              .from('mall_movies')
+              .select('*')
+              .eq('cinema_id', cinema.id);
+            movies = moviesData || [];
+          }
+        }
+      } catch (error) {
+        console.log('Cinema data not available:', error);
+        cinema = null;
+        movies = [];
       }
 
-      // Load games
-      const { data: games } = await supabase
-        .from('mall_games')
-        .select('*')
-        .eq('mall_id', mallId)
-        .single();
+      // Load games (with error handling)
+      let games = null;
+      try {
+        const { data: gamesData, error: gamesError } = await supabase
+          .from('mall_games')
+          .select('*')
+          .eq('mall_id', mallId)
+          .single();
+        
+        if (gamesError && gamesError.code !== 'PGRST116') {
+          console.log('Games query error:', gamesError);
+        } else {
+          games = gamesData;
+        }
+      } catch (error) {
+        console.log('Games data not available:', error);
+        games = null;
+      }
 
       // Load events
       const { data: events } = await supabase
@@ -127,12 +167,14 @@ const MallDetails = () => {
           name: s.name,
           category: s.category || '',
           floor: s.floor || '',
-          logo: s.logo_url || '/placeholder.svg'
+          logo: s.logo_url || '/placeholder.svg',
+          phone: (s as any).phone || ''
         })),
         restaurants: (restaurants || []).map(r => ({
           name: r.name,
           cuisine: r.cuisine || '',
-          logo: r.logo_url || '/placeholder.svg'
+          logo: r.logo_url || '/placeholder.svg',
+          phone: (r as any).phone || ''
         })),
         entertainment: {
           cinema: {
@@ -234,12 +276,10 @@ const MallDetails = () => {
                 <CarouselItem key={index}>
                   <div className="relative">
                     <img 
-                      src={image.startsWith('data:') ? image : image} 
+                      src={getImageUrl(image)} 
                       alt={`${mallData.name} - صورة ${index + 1}`}
                       className="w-full h-48 sm:h-64 md:h-80 object-cover rounded-lg"
-                      onError={(e) => {
-                        e.currentTarget.src = '/placeholder.svg';
-                      }}
+                      onError={(e) => handleImageError(e)}
                     />
                   </div>
                 </CarouselItem>
@@ -253,12 +293,10 @@ const MallDetails = () => {
           <div className="text-center mb-4 w-full">
             <div className="flex flex-col sm:flex-row items-center justify-center mb-4 gap-2 w-full">
               <img 
-                src={mallData.logo} 
+                src={getImageUrl(mallData.logo)} 
                 alt={`شعار ${mallData.name}`}
                 className="w-12 h-12 sm:w-16 sm:h-16 rounded-full"
-                onError={(e) => {
-                  e.currentTarget.src = '/placeholder.svg';
-                }}
+                onError={(e) => handleImageError(e)}
               />
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">{mallData.name}</h1>
             </div>
@@ -361,11 +399,9 @@ const MallDetails = () => {
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
                       <img 
-                        src={shop.logo} 
+                        src={getImageUrl(shop.logo)} 
                         alt={`شعار ${shop.name}`}
-                        onError={(e) => {
-                          e.currentTarget.src = '/placeholder.svg';
-                        }}
+                        onError={(e) => handleImageError(e)}
                         className="w-12 h-12 rounded-lg object-cover"
                       />
                       <div className="flex-1">
@@ -374,6 +410,12 @@ const MallDetails = () => {
                           <Badge variant="secondary" className="text-xs">{shop.category}</Badge>
                           <span className="text-xs text-muted-foreground">{shop.floor}</span>
                         </div>
+                        {shop.phone && (
+                          <div className="flex items-center gap-1 mt-2">
+                            <Phone className="w-3 h-3 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">{shop.phone}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -390,19 +432,22 @@ const MallDetails = () => {
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
                       <img 
-                        src={restaurant.logo} 
+                        src={getImageUrl(restaurant.logo)} 
                         alt={`شعار ${restaurant.name}`}
                         className="w-12 h-12 rounded-lg object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = '/placeholder.svg';
-                        }}
+                        onError={(e) => handleImageError(e)}
                       />
                       <div className="flex-1">
                         <h4 className="font-semibold">{restaurant.name}</h4>
                         <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className="text-xs">{restaurant.type}</Badge>
-                          <span className="text-xs text-muted-foreground">{restaurant.cuisine}</span>
+                          <Badge variant="outline" className="text-xs">{restaurant.cuisine}</Badge>
                         </div>
+                        {restaurant.phone && (
+                          <div className="flex items-center gap-1 mt-2">
+                            <Phone className="w-3 h-3 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">{restaurant.phone}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -470,12 +515,10 @@ const MallDetails = () => {
                     {mallData.entertainment.events.map((event, index) => (
                       <div key={index} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 border rounded-lg">
                         <img 
-                          src={event.image} 
+                          src={getImageUrl(event.image)} 
                           alt={event.title}
                           className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded"
-                          onError={(e) => {
-                            e.currentTarget.src = '/placeholder.svg';
-                          }}
+                          onError={(e) => handleImageError(e)}
                         />
                         <div>
                           <h5 className="text-sm sm:text-base font-medium">{event.title}</h5>
