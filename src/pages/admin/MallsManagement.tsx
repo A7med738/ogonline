@@ -584,12 +584,13 @@ const MallsManagement = () => {
                 </DialogDescription>
               </DialogHeader>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-5">
+                <TabsList className="grid w-full grid-cols-6">
                   <TabsTrigger value="overview">نظرة عامة</TabsTrigger>
                   <TabsTrigger value="services">الخدمات</TabsTrigger>
                   <TabsTrigger value="shops">المحلات</TabsTrigger>
                   <TabsTrigger value="restaurants">المطاعم</TabsTrigger>
                   <TabsTrigger value="entertainment">الترفيه</TabsTrigger>
+                  <TabsTrigger value="analytics">إحصائيات المحلات</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-4">

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getImageUrl, handleImageError } from "@/utils/imageUtils";
+import ShopLogo from "@/components/ShopLogo";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import ShopRating from "@/components/ShopRating";
-import { getShopRatingStats } from "@/utils/shopRatingsStorage";
+import { getShopRatingStatsFromDB } from "@/utils/shopRatingsDatabase";
+import { trackShopView, generateSessionId, getUserAgent } from "@/utils/shopViewTracking";
 import { 
   MapPin, 
   Clock, 
@@ -29,7 +31,8 @@ import {
   ShoppingBag,
   Building2,
   Utensils,
-  Camera
+  Camera,
+  Eye
 } from "lucide-react";
 
 const MallDetails = () => {
@@ -40,7 +43,7 @@ const MallDetails = () => {
   const [loading, setLoading] = useState(true);
   const [selectedShop, setSelectedShop] = useState<any>(null);
 
-  const handleRatingUpdate = (shopId: string, averageRating: number, totalRatings: number) => {
+  const handleRatingUpdate = async (shopId: string, averageRating: number, totalRatings: number) => {
     setMallData(prev => ({
       ...prev,
       shops: prev.shops.map(shop => 
@@ -49,6 +52,32 @@ const MallDetails = () => {
           : shop
       )
     }));
+  };
+
+  const handleShopView = async (shopId: string) => {
+    try {
+      const sessionId = generateSessionId();
+      const userAgent = getUserAgent();
+      
+      const newViewCount = await trackShopView(shopId, {
+        sessionId,
+        userAgent,
+      });
+
+      if (newViewCount !== null) {
+        // Update the local state with the new view count
+        setMallData(prev => ({
+          ...prev,
+          shops: prev.shops.map(shop => 
+            shop.id === shopId 
+              ? { ...shop, view_count: newViewCount }
+              : shop
+          )
+        }));
+      }
+    } catch (error) {
+      console.error('Error tracking shop view:', error);
+    }
   };
 
   useEffect(() => {
@@ -177,8 +206,8 @@ const MallDetails = () => {
           name: s.name,
           icon: iconMap[s.icon] || Wifi
         })),
-        shops: (shops || []).map(s => {
-          const ratingStats = getShopRatingStats(s.id);
+        shops: await Promise.all((shops || []).map(async s => {
+          const ratingStats = await getShopRatingStatsFromDB(s.id);
           return {
             id: s.id,
             name: s.name,
@@ -187,9 +216,10 @@ const MallDetails = () => {
             logo: s.logo_url || '/placeholder.svg',
             phone: (s as any).phone || '',
             average_rating: ratingStats.averageRating,
-            total_ratings: ratingStats.totalRatings
+            total_ratings: ratingStats.totalRatings,
+            view_count: s.view_count || 0
           };
-        }),
+        })),
         restaurants: (restaurants || []).map(r => ({
           name: r.name,
           cuisine: r.cuisine || '',
@@ -220,10 +250,48 @@ const MallDetails = () => {
       };
 
       setMallData(mallData);
+      
+      // Track views for all shops when mall data is loaded
+      if (shops && shops.length > 0) {
+        trackAllShopViews(shops.map(s => s.id));
+      }
     } catch (error) {
       console.error('Error loading mall data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const trackAllShopViews = async (shopIds: string[]) => {
+    try {
+      const sessionId = generateSessionId();
+      const userAgent = getUserAgent();
+      
+      // Track views for all shops
+      const promises = shopIds.map(shopId => 
+        trackShopView(shopId, { sessionId, userAgent })
+      );
+      
+      const results = await Promise.allSettled(promises);
+      
+      // Update local state with new view counts
+      results.forEach((result, index) => {
+        if (result.status === 'fulfilled' && result.value !== null) {
+          const shopId = shopIds[index];
+          const newViewCount = result.value;
+          
+          setMallData(prev => ({
+            ...prev,
+            shops: prev.shops.map(shop => 
+              shop.id === shopId 
+                ? { ...shop, view_count: newViewCount }
+                : shop
+            )
+          }));
+        }
+      });
+    } catch (error) {
+      console.error('Error tracking shop views:', error);
     }
   };
 
@@ -418,11 +486,12 @@ const MallDetails = () => {
                 <Card key={index} className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
-                      <img 
-                        src={getImageUrl(shop.logo)} 
-                        alt={`شعار ${shop.name}`}
-                        onError={(e) => handleImageError(e)}
-                        className="w-12 h-12 rounded-lg object-cover"
+                      <ShopLogo 
+                        logo={shop.logo} 
+                        name={shop.name} 
+                        category={shop.category}
+                        variant="shop" 
+                        size="md"
                       />
                       <div className="flex-1">
                         <h4 className="font-semibold">{shop.name}</h4>
@@ -440,6 +509,12 @@ const MallDetails = () => {
                           <Star className="w-3 h-3 text-yellow-500" />
                           <span className="text-xs text-muted-foreground">
                             {shop.average_rating ? `${shop.average_rating.toFixed(1)} (${shop.total_ratings} تقييم)` : 'لا توجد تقييمات'}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Eye className="w-3 h-3 text-blue-500" />
+                          <span className="text-xs text-muted-foreground">
+                            {shop.view_count || 0} مشاهدة
                           </span>
                         </div>
                       </div>
@@ -465,11 +540,12 @@ const MallDetails = () => {
                 <Card key={index} className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
-                      <img 
-                        src={getImageUrl(restaurant.logo)} 
-                        alt={`شعار ${restaurant.name}`}
-                        className="w-12 h-12 rounded-lg object-cover"
-                        onError={(e) => handleImageError(e)}
+                      <ShopLogo 
+                        logo={restaurant.logo} 
+                        name={restaurant.name} 
+                        category={restaurant.cuisine}
+                        variant="restaurant" 
+                        size="md"
                       />
                       <div className="flex-1">
                         <h4 className="font-semibold">{restaurant.name}</h4>

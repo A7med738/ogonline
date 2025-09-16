@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { ModernServiceCard } from '@/components/ModernServiceCard';
-import { CreditCard, MapPin, Phone, Clock, DollarSign, Accessibility, Languages, CheckCircle, ExternalLink } from 'lucide-react';
+import { CreditCard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface ATM {
@@ -95,20 +95,7 @@ const CityServicesATMs = () => {
                 address={atm.address}
                 phone={atm.phone}
                 icon={<CreditCard className="h-6 w-6 text-blue-600" />}
-                features={[
-                  {
-                    label: "خدمات متعددة",
-                    available: !!(atm.services && atm.services.length > 0)
-                  },
-                  {
-                    label: "إمكانية وصول",
-                    available: !!(atm.accessibility_features && atm.accessibility_features.length > 0)
-                  },
-                  {
-                    label: "لغات متعددة",
-                    available: !!(atm.languages && atm.languages.length > 0)
-                  }
-                ]}
+                features={[]}
                 onViewLocation={atm.google_maps_url ? () => window.open(atm.google_maps_url, '_blank') : undefined}
               />
             ))}

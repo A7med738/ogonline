@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Star, MessageSquare, User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { getShopRatings, addShopRating, getShopRatingStats } from '@/utils/shopRatingsStorage';
+import { getShopRatingsFromDB, addShopRatingToDB, getShopRatingStatsFromDB } from '@/utils/shopRatingsDatabase';
 
 interface ShopRating {
   id: string;
@@ -48,26 +48,11 @@ const ShopRating: React.FC<ShopRatingProps> = ({
 
   const loadRatings = async () => {
     try {
-      // محاولة تحميل التقييمات من قاعدة البيانات أولاً
-      const { data, error } = await supabase
-        .from('shop_ratings')
-        .select('*')
-        .eq('shop_id', shopId)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.log('Shop ratings table not found, using local storage');
-        // استخدام التخزين المحلي
-        const localRatings = getShopRatings(shopId);
-        setRatings(localRatings);
-        return;
-      }
-      setRatings(data || []);
+      const ratings = await getShopRatingsFromDB(shopId);
+      setRatings(ratings);
     } catch (error) {
-      console.log('Error loading ratings, using local storage:', error);
-      // استخدام التخزين المحلي
-      const localRatings = getShopRatings(shopId);
-      setRatings(localRatings);
+      console.error('Error loading ratings:', error);
+      setRatings([]);
     }
   };
 
@@ -84,46 +69,30 @@ const ShopRating: React.FC<ShopRatingProps> = ({
     try {
       setLoading(true);
       
-      // محاولة إرسال التقييم إلى قاعدة البيانات
-      const { error } = await supabase
-        .from('shop_ratings')
-        .insert({
-          shop_id: shopId,
-          user_name: userName.trim(),
-          rating: newRating,
-          comment: newComment.trim()
-        });
+      // إرسال التقييم إلى قاعدة البيانات
+      const newRatingData = await addShopRatingToDB({
+        shop_id: shopId,
+        user_name: userName.trim(),
+        rating: newRating,
+        comment: newComment.trim()
+      });
 
-      if (error) {
-        console.log('Shop ratings table not found, storing locally');
-        // تخزين محلي مؤقت
-        const newRatingData = addShopRating({
-          shop_id: shopId,
-          user_name: userName.trim(),
-          rating: newRating,
-          comment: newComment.trim()
-        });
-        
-        setRatings(prev => [newRatingData, ...prev]);
+      if (newRatingData) {
+        // إعادة تحميل التقييمات من قاعدة البيانات
+        await loadRatings();
         
         // تحديث البيانات في الصفحة الرئيسية
         if (onRatingUpdate) {
-          const stats = getShopRatingStats(shopId);
+          const stats = await getShopRatingStatsFromDB(shopId);
           onRatingUpdate(shopId, stats.averageRating, stats.totalRatings);
         }
-        
+
         toast({
           title: "تم بنجاح",
           description: "تم إضافة تقييمك بنجاح"
         });
       } else {
-        toast({
-          title: "تم بنجاح",
-          description: "تم إضافة تقييمك بنجاح"
-        });
-        
-        // Reload ratings
-        await loadRatings();
+        throw new Error('Failed to save rating');
       }
 
       // Reset form

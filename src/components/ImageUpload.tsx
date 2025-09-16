@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Upload, X, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { uploadImageToStorage, fileToBase64, validateImageFile, deleteImageFromStorage } from "@/utils/imageUpload";
+import { useToast } from "@/hooks/use-toast";
+import ImageViewer from "./ImageViewer";
 
 interface ImageUploadProps {
   value?: string;
@@ -10,6 +13,8 @@ interface ImageUploadProps {
   placeholder?: string;
   className?: string;
   aspectRatio?: "square" | "video" | "auto";
+  folder?: string; // Folder in Supabase Storage
+  onError?: (error: string) => void;
 }
 
 const ImageUpload = ({ 
@@ -17,56 +22,87 @@ const ImageUpload = ({
   onChange, 
   placeholder = "اضغط لرفع صورة",
   className,
-  aspectRatio = "auto"
+  aspectRatio = "auto",
+  folder = "images",
+  onError
 }: ImageUploadProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(value || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      alert('يرجى اختيار ملف صورة صالح');
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('حجم الملف يجب أن يكون أقل من 5 ميجابايت');
+    // Validate file
+    const validation = validateImageFile(file);
+    if (!validation.valid) {
+      const errorMessage = validation.error || 'خطأ في الملف';
+      toast({
+        title: "خطأ",
+        description: errorMessage,
+        variant: "destructive"
+      });
+      if (onError) onError(errorMessage);
       return;
     }
 
     setIsUploading(true);
 
     try {
-      // Create preview and convert to base64
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const base64String = e.target?.result as string;
-        setPreview(base64String);
-        onChange(base64String);
-      };
-      reader.readAsDataURL(file);
+      // Create preview
+      const base64Preview = await fileToBase64(file);
+      setPreview(base64Preview);
+
+      // Upload to Supabase Storage
+      const uploadResult = await uploadImageToStorage(file, folder);
       
-      // Simulate upload delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (uploadResult.success && uploadResult.url) {
+        onChange(uploadResult.url);
+        toast({
+          title: "تم بنجاح",
+          description: "تم رفع الصورة بنجاح"
+        });
+      } else {
+        throw new Error(uploadResult.error || 'فشل في رفع الصورة');
+      }
     } catch (error) {
       console.error('Error uploading image:', error);
-      alert('حدث خطأ أثناء رفع الصورة');
+      const errorMessage = error instanceof Error ? error.message : 'حدث خطأ أثناء رفع الصورة';
+      toast({
+        title: "خطأ",
+        description: errorMessage,
+        variant: "destructive"
+      });
+      if (onError) onError(errorMessage);
+      setPreview(null);
     } finally {
       setIsUploading(false);
     }
   };
 
-  const handleRemove = () => {
+  const handleRemove = async () => {
+    try {
+      // If there's a stored image, try to delete it from storage
+      if (value && value.startsWith('http')) {
+        await deleteImageFromStorage(value);
+      }
+    } catch (error) {
+      console.error('Error deleting image from storage:', error);
+      // Continue with removal even if storage deletion fails
+    }
+
     setPreview(null);
     onChange('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+
+    toast({
+      title: "تم الحذف",
+      description: "تم حذف الصورة بنجاح"
+    });
   };
 
   const getAspectRatioClass = () => {
@@ -94,11 +130,17 @@ const ImageUpload = ({
         <Card className="relative group">
           <CardContent className="p-0">
             <div className={cn("relative overflow-hidden rounded-lg", getAspectRatioClass())}>
-              <img
+              <ImageViewer
                 src={preview}
                 alt="Preview"
                 className="w-full h-full object-cover"
-              />
+              >
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+              </ImageViewer>
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <div className="flex gap-2">
                   <Button
@@ -145,7 +187,7 @@ const ImageUpload = ({
                   {placeholder}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  PNG, JPG, GIF حتى 5 ميجابايت
+                  PNG, JPG, GIF, WebP حتى 10 ميجابايت
                 </p>
               </div>
             )}

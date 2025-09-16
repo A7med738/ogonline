@@ -22,6 +22,7 @@ interface CityDepartment {
   longitude: number;
   show_location: boolean;
   order_priority: number;
+  google_maps_url: string;
 }
 
 export const CityDepartmentsManagement = () => {
@@ -40,7 +41,8 @@ export const CityDepartmentsManagement = () => {
     latitude: '',
     longitude: '',
     show_location: true,
-    order_priority: 0
+    order_priority: 0,
+    google_maps_url: ''
   });
 
   useEffect(() => {
@@ -103,7 +105,8 @@ export const CityDepartmentsManagement = () => {
         latitude: '',
         longitude: '',
         show_location: true,
-        order_priority: 0
+        order_priority: 0,
+        google_maps_url: ''
       });
       loadDepartments();
       
@@ -133,7 +136,8 @@ export const CityDepartmentsManagement = () => {
       latitude: dept.latitude?.toString() || '',
       longitude: dept.longitude?.toString() || '',
       show_location: dept.show_location,
-      order_priority: dept.order_priority
+      order_priority: dept.order_priority,
+      google_maps_url: dept.google_maps_url || ''
     });
     setEditingId(dept.id);
     setIsAdding(true);
@@ -177,7 +181,8 @@ export const CityDepartmentsManagement = () => {
       latitude: '',
       longitude: '',
       show_location: true,
-      order_priority: 0
+      order_priority: 0,
+      google_maps_url: ''
     });
   };
 
@@ -318,6 +323,19 @@ export const CityDepartmentsManagement = () => {
               />
             </div>
 
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-2">رابط خرائط جوجل</label>
+              <Input
+                value={formData.google_maps_url}
+                onChange={(e) => setFormData({ ...formData, google_maps_url: e.target.value })}
+                placeholder="https://maps.google.com/..."
+                type="url"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                انسخ رابط خرائط جوجل من المتصفح ولصقه هنا
+              </p>
+            </div>
+
             <div className="md:col-span-2 flex items-center gap-2">
               <Switch
                 checked={formData.show_location}
@@ -361,6 +379,19 @@ export const CityDepartmentsManagement = () => {
                       <div className="flex items-center gap-1">
                         <MapPin className="h-3 w-3" />
                         موقع محدد على الخريطة
+                      </div>
+                    )}
+                    {dept.google_maps_url && (
+                      <div className="mt-2">
+                        <a 
+                          href={dept.google_maps_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                        >
+                          <MapPin className="h-4 w-4" />
+                          عرض على خرائط جوجل
+                        </a>
                       </div>
                     )}
                   </div>

@@ -615,6 +615,7 @@ export type Database = {
           logo_url: string | null
           mall_id: string | null
           name: string
+          view_count: number | null
         }
         Insert: {
           category?: string | null
@@ -624,6 +625,7 @@ export type Database = {
           logo_url?: string | null
           mall_id?: string | null
           name: string
+          view_count?: number | null
         }
         Update: {
           category?: string | null
@@ -633,6 +635,7 @@ export type Database = {
           logo_url?: string | null
           mall_id?: string | null
           name?: string
+          view_count?: number | null
         }
         Relationships: [
           {
@@ -640,6 +643,41 @@ export type Database = {
             columns: ["mall_id"]
             isOneToOne: false
             referencedRelation: "malls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shop_views: {
+        Row: {
+          id: string
+          shop_id: string | null
+          user_ip: string | null
+          user_agent: string | null
+          viewed_at: string | null
+          session_id: string | null
+        }
+        Insert: {
+          id?: string
+          shop_id?: string | null
+          user_ip?: string | null
+          user_agent?: string | null
+          viewed_at?: string | null
+          session_id?: string | null
+        }
+        Update: {
+          id?: string
+          shop_id?: string | null
+          user_ip?: string | null
+          user_agent?: string | null
+          viewed_at?: string | null
+          session_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_views_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "mall_shops"
             referencedColumns: ["id"]
           },
         ]

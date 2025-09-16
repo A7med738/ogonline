@@ -201,7 +201,65 @@ const CityServicesManagement = () => {
 
   const handleAddNew = () => {
     setEditingItem(null);
-    setFormData({});
+    
+    // قيم افتراضية حسب نوع التبويب
+    const defaultData = {
+      atms: { 
+        name: '', 
+        bank_name: '', 
+        address: '', 
+        phone: '', 
+        services: [], 
+        operating_hours: '', 
+        accessibility_features: [], 
+        languages: [], 
+        fees: '', 
+        is_active: true 
+      },
+      banks: { 
+        name: '', 
+        type: '', 
+        address: '', 
+        phone: '', 
+        email: '', 
+        website: '', 
+        services: [], 
+        operating_hours: '', 
+        is_active: true 
+      },
+      'youth-clubs': { 
+        name: '', 
+        type: '', 
+        address: '', 
+        phone: '', 
+        email: '', 
+        activities: [], 
+        age_groups: [], 
+        membership_fee: '', 
+        is_active: true 
+      },
+      events: { 
+        title: '', 
+        description: '', 
+        event_date: '', 
+        event_time: '', 
+        location: '', 
+        organizer: '', 
+        ticket_price: '', 
+        is_active: true 
+      },
+      'post-offices': { 
+        name: '', 
+        address: '', 
+        phone: '', 
+        email: '', 
+        services: [], 
+        operating_hours: '', 
+        is_active: true 
+      }
+    };
+    
+    setFormData(defaultData[activeTab as keyof typeof defaultData] || {});
     setIsDialogOpen(true);
   };
 
@@ -253,10 +311,10 @@ const CityServicesManagement = () => {
         return;
       }
 
-      if (activeTab === 'atms' && (!data.name || !data.location)) {
+      if (activeTab === 'atms' && (!data.name || !data.address)) {
         toast({
           title: 'خطأ',
-          description: 'يرجى ملء جميع الحقول المطلوبة (اسم البنك والموقع)',
+          description: 'يرجى ملء جميع الحقول المطلوبة (اسم الصراف والعنوان)',
           variant: 'destructive',
         });
         return;
@@ -389,11 +447,11 @@ const CityServicesManagement = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="location">الموقع *</Label>
+                    <Label htmlFor="address">العنوان *</Label>
                     <Input
-                      id="location"
-                      value={formData.location || ''}
-                      onChange={(e) => setFormData({...formData, location: e.target.value})}
+                      id="address"
+                      value={formData.address || ''}
+                      onChange={(e) => setFormData({...formData, address: e.target.value})}
                       placeholder="مثل: شارع النيل، حدائق أكتوبر"
                     />
                   </div>

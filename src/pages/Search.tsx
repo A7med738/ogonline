@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ArrowRight, Clock, X, Filter, Star, MapPin, Phone, Mail, Globe, Calendar, User, Building2, GraduationCap, Heart, ShoppingBag, Home } from 'lucide-react';
+import { Search, ArrowRight, Clock, X, Filter, Star, MapPin, Phone, Mail, Globe, Calendar, User, Building2, GraduationCap, Heart, ShoppingBag, Home, Shield, Banknote, CreditCard, Users, FileText, Briefcase, AlertTriangle, Building, Car, BookOpen, Stethoscope, Utensils, Camera, Music, Gamepad2, Calendar as CalendarIcon, Package, Truck, Mail as MailIcon, Wifi, Car as CarIcon, CreditCard as CreditCardIcon, Heart as HeartIcon, CreditCard as CreditCardIcon2, Search as SearchIcon, Star as StarIcon, ExternalLink, Calendar as CalendarIcon2, Film, Gamepad2 as Gamepad2Icon, Music as MusicIcon, ShoppingBag as ShoppingBagIcon, Building2 as Building2Icon, Utensils as UtensilsIcon, Camera as CameraIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -53,70 +53,203 @@ const SearchPage = () => {
     try {
       const searchTerm = `%${query}%`;
       
-      // البحث في الأخبار
-      const { data: newsData } = await supabase
-        .from('news')
-        .select('id, title, summary as description, category, published_at as created_at, image_url')
-        .or(`title.ilike.${searchTerm},summary.ilike.${searchTerm},content.ilike.${searchTerm}`)
-        .order('published_at', { ascending: false })
-        .limit(10);
+      // البحث في جميع الجداول المتاحة
+      const searchPromises = [
+        // الأخبار
+        supabase
+          .from('news')
+          .select('id, title, summary as description, category, published_at as created_at, image_url')
+          .or(`title.ilike.${searchTerm},summary.ilike.${searchTerm},content.ilike.${searchTerm}`)
+          .order('published_at', { ascending: false })
+          .limit(5),
 
-      // البحث في أقسام الشرطة
-      const { data: policeData } = await supabase
-        .from('police_stations')
-        .select('id, name as title, description, area as category, address, phone, rating')
-        .or(`name.ilike.${searchTerm},area.ilike.${searchTerm},address.ilike.${searchTerm},description.ilike.${searchTerm}`)
-        .limit(10);
+        // أقسام الشرطة
+        supabase
+          .from('police_stations')
+          .select('id, name as title, description, area as category, address, phone, rating')
+          .or(`name.ilike.${searchTerm},area.ilike.${searchTerm},address.ilike.${searchTerm},description.ilike.${searchTerm}`)
+          .limit(5),
 
-      // البحث في إدارات المدينة
-      const { data: departmentsData } = await supabase
-        .from('city_departments')
-        .select('id, title, description, phone, email, hours as category')
-        .or(`title.ilike.${searchTerm},description.ilike.${searchTerm},phone.ilike.${searchTerm},email.ilike.${searchTerm}`)
-        .limit(10);
+        // إدارات المدينة
+        supabase
+          .from('city_departments')
+          .select('id, title, description, phone, email, hours as category')
+          .or(`title.ilike.${searchTerm},description.ilike.${searchTerm},phone.ilike.${searchTerm},email.ilike.${searchTerm}`)
+          .limit(5),
 
-      // البحث في المدارس
-      const { data: schoolsData } = await supabase
-        .from('schools')
-        .select('id, name as title, description, type as category, address, phone, rating, image_url')
-        .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
-        .eq('is_active', true)
-        .limit(10);
+        // المدارس
+        supabase
+          .from('schools')
+          .select('id, name as title, description, type as category, address, phone, rating, image_url')
+          .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
 
-      // البحث في الجامعات
-      const { data: universitiesData } = await supabase
-        .from('universities')
-        .select('id, name as title, description, type as category, address, phone, rating, image_url')
-        .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
-        .eq('is_active', true)
-        .limit(10);
+        // الجامعات
+        supabase
+          .from('universities')
+          .select('id, name as title, description, type as category, address, phone, rating, image_url')
+          .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
 
-      // البحث في المستشفيات
-      const { data: hospitalsData } = await supabase
-        .from('hospitals')
-        .select('id, name as title, description, type as category, address, phone, rating, image_url')
-        .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
-        .eq('is_active', true)
-        .limit(10);
+        // المستشفيات
+        supabase
+          .from('hospitals')
+          .select('id, name as title, description, type as category, address, phone, rating, image_url')
+          .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
 
-      // البحث في المولات
-      const { data: mallsData } = await supabase
-        .from('malls')
-        .select('id, name as title, description, address, phone, rating, image_url')
-        .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
-        .eq('is_active', true)
-        .limit(10);
+        // العيادات
+        supabase
+          .from('clinics')
+          .select('id, name as title, description, type as category, address, phone, rating, image_url')
+          .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
 
-      // دمج النتائج
-      const allResults: SearchResult[] = [
-        ...(newsData || []).map(item => ({ ...item, type: 'news' })),
-        ...(policeData || []).map(item => ({ ...item, type: 'police' })),
-        ...(departmentsData || []).map(item => ({ ...item, type: 'department' })),
-        ...(schoolsData || []).map(item => ({ ...item, type: 'school' })),
-        ...(universitiesData || []).map(item => ({ ...item, type: 'university' })),
-        ...(hospitalsData || []).map(item => ({ ...item, type: 'hospital' })),
-        ...(mallsData || []).map(item => ({ ...item, type: 'mall' }))
+        // المولات
+        supabase
+          .from('malls')
+          .select('id, name as title, description, address, phone, rating, image_url')
+          .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
+
+        // العقارات
+        supabase
+          .from('properties')
+          .select('id, title, description, property_type as category, address, price, area, image_url')
+          .or(`title.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
+
+        // البنوك
+        supabase
+          .from('banks')
+          .select('id, name as title, description, type as category, address, phone, rating, image_url')
+          .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
+
+        // أجهزة الصراف الآلي
+        supabase
+          .from('atms')
+          .select('id, name as title, bank_name as category, address, phone, services')
+          .or(`name.ilike.${searchTerm},bank_name.ilike.${searchTerm},address.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
+
+        // الأحداث
+        supabase
+          .from('events')
+          .select('id, title, description, event_type as category, venue as address, organizer, start_date as created_at, image_url')
+          .or(`title.ilike.${searchTerm},description.ilike.${searchTerm},venue.ilike.${searchTerm},organizer.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
+
+        // الوظائف
+        supabase
+          .from('jobs')
+          .select('id, title, description, company as category, location as address, salary, created_at, image_url')
+          .or(`title.ilike.${searchTerm},description.ilike.${searchTerm},company.ilike.${searchTerm},location.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
+
+        // الإعلانات
+        supabase
+          .from('announcements')
+          .select('id, title, description, category, created_at, image_url')
+          .or(`title.ilike.${searchTerm},description.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
+
+        // المكاتب البريدية
+        supabase
+          .from('post_offices')
+          .select('id, name as title, description, address, phone, rating, image_url')
+          .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
+
+        // الأندية الشبابية
+        supabase
+          .from('youth_clubs')
+          .select('id, name as title, description, type as category, address, phone, rating, image_url')
+          .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
+
+        // دور الحضانة
+        supabase
+          .from('nurseries')
+          .select('id, name as title, description, type as category, address, phone, rating, image_url')
+          .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
+
+        // المراكز التعليمية
+        supabase
+          .from('educational_centers')
+          .select('id, name as title, description, type as category, address, phone, rating, image_url')
+          .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
+
+        // وحدات الصحة
+        supabase
+          .from('health_units')
+          .select('id, name as title, description, type as category, address, phone, rating, image_url')
+          .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
+
+        // المراكز الطبية
+        supabase
+          .from('medical_centers')
+          .select('id, name as title, description, type as category, address, phone, rating, image_url')
+          .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
+
+        // الأماكن المقدسة
+        supabase
+          .from('worship_places')
+          .select('id, name as title, description, type as category, address, phone, rating, image_url')
+          .or(`name.ilike.${searchTerm},description.ilike.${searchTerm},address.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5),
+
+        // المفقودات
+        supabase
+          .from('lost_and_found_items')
+          .select('id, title, description, category, location as address, contact_phone as phone, created_at, image_url')
+          .or(`title.ilike.${searchTerm},description.ilike.${searchTerm},location.ilike.${searchTerm}`)
+          .eq('is_active', true)
+          .limit(5)
       ];
+
+      // تنفيذ جميع عمليات البحث
+      const results = await Promise.allSettled(searchPromises);
+      
+      // استخراج البيانات الناجحة
+      const allResults: SearchResult[] = [];
+      
+      const tableTypes = [
+        'news', 'police', 'department', 'school', 'university', 'hospital', 
+        'clinic', 'mall', 'property', 'bank', 'atm', 'event', 'job', 
+        'announcement', 'post_office', 'youth_club', 'nursery', 'educational_center',
+        'health_unit', 'medical_center', 'worship_place', 'lost_item'
+      ];
+
+      results.forEach((result, index) => {
+        if (result.status === 'fulfilled' && result.value.data) {
+          const type = tableTypes[index] || 'unknown';
+          const items = result.value.data.map(item => ({ ...item, type }));
+          allResults.push(...items);
+        }
+      });
 
       setSearchResults(allResults);
       
@@ -160,8 +293,22 @@ const SearchPage = () => {
       school: GraduationCap,
       university: Building2,
       hospital: Heart,
+      clinic: Stethoscope,
       mall: ShoppingBag,
-      property: Home
+      property: Home,
+      bank: Banknote,
+      atm: CreditCard,
+      event: Calendar,
+      job: Briefcase,
+      announcement: FileText,
+      post_office: Mail,
+      youth_club: Users,
+      nursery: BookOpen,
+      educational_center: GraduationCap,
+      health_unit: Heart,
+      medical_center: Stethoscope,
+      worship_place: Building,
+      lost_item: AlertTriangle
     };
     return icons[type] || Search;
   };
@@ -174,8 +321,22 @@ const SearchPage = () => {
       school: 'مدرسة',
       university: 'جامعة',
       hospital: 'مستشفى',
+      clinic: 'عيادة',
       mall: 'مول',
-      property: 'عقار'
+      property: 'عقار',
+      bank: 'بنك',
+      atm: 'صراف آلي',
+      event: 'حدث',
+      job: 'وظيفة',
+      announcement: 'إعلان',
+      post_office: 'مكتب بريد',
+      youth_club: 'نادي شباب',
+      nursery: 'حضانة',
+      educational_center: 'مركز تعليمي',
+      health_unit: 'وحدة صحية',
+      medical_center: 'مركز طبي',
+      worship_place: 'مكان عبادة',
+      lost_item: 'مفقودات'
     };
     return labels[type] || type;
   };
@@ -188,8 +349,22 @@ const SearchPage = () => {
       school: 'text-indigo-600',
       university: 'text-purple-600',
       hospital: 'text-red-600',
+      clinic: 'text-red-500',
       mall: 'text-yellow-600',
-      property: 'text-green-600'
+      property: 'text-green-600',
+      bank: 'text-green-700',
+      atm: 'text-green-500',
+      event: 'text-purple-500',
+      job: 'text-orange-600',
+      announcement: 'text-gray-600',
+      post_office: 'text-blue-700',
+      youth_club: 'text-pink-600',
+      nursery: 'text-pink-500',
+      educational_center: 'text-indigo-500',
+      health_unit: 'text-red-400',
+      medical_center: 'text-red-500',
+      worship_place: 'text-yellow-700',
+      lost_item: 'text-orange-500'
     };
     return colors[type] || 'text-gray-600';
   };
@@ -220,10 +395,45 @@ const SearchPage = () => {
         navigate('/educational-services/universities');
         break;
       case 'hospital':
+      case 'clinic':
+      case 'health_unit':
+      case 'medical_center':
         navigate('/medical-services/hospitals');
         break;
       case 'mall':
         navigate('/city-malls');
+        break;
+      case 'property':
+        navigate('/real-estate');
+        break;
+      case 'bank':
+      case 'atm':
+        navigate('/city-services/atms');
+        break;
+      case 'event':
+        navigate('/city-services/events');
+        break;
+      case 'job':
+        navigate('/jobs');
+        break;
+      case 'announcement':
+        navigate('/announcements');
+        break;
+      case 'post_office':
+        navigate('/city-services/post-offices');
+        break;
+      case 'youth_club':
+        navigate('/city-services/youth-clubs');
+        break;
+      case 'nursery':
+      case 'educational_center':
+        navigate('/educational-services/schools');
+        break;
+      case 'worship_place':
+        navigate('/worship-places');
+        break;
+      case 'lost_item':
+        navigate('/lost-and-found');
         break;
       default:
         navigate('/');
@@ -237,7 +447,18 @@ const SearchPage = () => {
 
   const filteredResults = activeTab === 'all' 
     ? searchResults 
-    : searchResults.filter(result => result.type === activeTab);
+    : searchResults.filter(result => {
+      switch (activeTab) {
+        case 'school':
+          return ['school', 'university', 'nursery', 'educational_center'].includes(result.type);
+        case 'hospital':
+          return ['hospital', 'clinic', 'health_unit', 'medical_center'].includes(result.type);
+        case 'bank':
+          return ['bank', 'atm'].includes(result.type);
+        default:
+          return result.type === activeTab;
+      }
+    });
 
   return (
     <div className="min-h-screen bg-background">
@@ -275,15 +496,19 @@ const SearchPage = () => {
           <div>
             {/* Filter Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-              <TabsList className="grid w-full grid-cols-8">
-                <TabsTrigger value="all">الكل</TabsTrigger>
-                <TabsTrigger value="news">أخبار</TabsTrigger>
-                <TabsTrigger value="police">شرطة</TabsTrigger>
-                <TabsTrigger value="department">إدارات</TabsTrigger>
-                <TabsTrigger value="school">مدارس</TabsTrigger>
-                <TabsTrigger value="university">جامعات</TabsTrigger>
-                <TabsTrigger value="hospital">مستشفيات</TabsTrigger>
-                <TabsTrigger value="mall">مولات</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-6 gap-1 overflow-x-auto">
+                <TabsTrigger value="all" className="text-xs">الكل</TabsTrigger>
+                <TabsTrigger value="news" className="text-xs">أخبار</TabsTrigger>
+                <TabsTrigger value="police" className="text-xs">شرطة</TabsTrigger>
+                <TabsTrigger value="department" className="text-xs">إدارات</TabsTrigger>
+                <TabsTrigger value="school" className="text-xs">تعليم</TabsTrigger>
+                <TabsTrigger value="hospital" className="text-xs">صحة</TabsTrigger>
+                <TabsTrigger value="mall" className="text-xs">مولات</TabsTrigger>
+                <TabsTrigger value="property" className="text-xs">عقارات</TabsTrigger>
+                <TabsTrigger value="bank" className="text-xs">بنوك</TabsTrigger>
+                <TabsTrigger value="event" className="text-xs">أحداث</TabsTrigger>
+                <TabsTrigger value="job" className="text-xs">وظائف</TabsTrigger>
+                <TabsTrigger value="announcement" className="text-xs">إعلانات</TabsTrigger>
               </TabsList>
             </Tabs>
 
@@ -322,11 +547,11 @@ const SearchPage = () => {
                                 {result.description}
                               </p>
                             )}
-                            <div className="flex items-center gap-4 text-xs text-gray-500">
+                            <div className="flex items-center gap-4 text-xs text-gray-500 flex-wrap">
                               {result.address && (
                                 <div className="flex items-center gap-1">
                                   <MapPin className="h-3 w-3" />
-                                  <span className="truncate">{result.address}</span>
+                                  <span className="truncate max-w-32">{result.address}</span>
                                 </div>
                               )}
                               {result.phone && (
@@ -339,6 +564,33 @@ const SearchPage = () => {
                                 <div className="flex items-center gap-1">
                                   <Star className="h-3 w-3 text-yellow-500" />
                                   <span>{result.rating}</span>
+                                </div>
+                              )}
+                              {result.email && (
+                                <div className="flex items-center gap-1">
+                                  <Mail className="h-3 w-3" />
+                                  <span className="truncate max-w-24">{result.email}</span>
+                                </div>
+                              )}
+                              {result.website && (
+                                <div className="flex items-center gap-1">
+                                  <Globe className="h-3 w-3" />
+                                  <span className="truncate max-w-24">{result.website}</span>
+                                </div>
+                              )}
+                              {result.price && (
+                                <div className="flex items-center gap-1">
+                                  <span className="font-medium text-green-600">{result.price} جنيه</span>
+                                </div>
+                              )}
+                              {result.area && (
+                                <div className="flex items-center gap-1">
+                                  <span className="text-gray-600">{result.area} م²</span>
+                                </div>
+                              )}
+                              {result.salary && (
+                                <div className="flex items-center gap-1">
+                                  <span className="font-medium text-orange-600">{result.salary}</span>
                                 </div>
                               )}
                             </div>
