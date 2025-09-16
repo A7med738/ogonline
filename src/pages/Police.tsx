@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Phone, MapPin, Clock, ArrowRight, Shield, LogIn, Navigation, Search, MoreHorizontal } from "lucide-react";
+import { Phone, MapPin, Clock, ArrowRight, Shield, LogIn, Navigation, MoreHorizontal } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -28,6 +27,7 @@ interface PoliceStation {
   latitude?: number;
   longitude?: number;
   show_location?: boolean;
+  google_maps_url?: string;
 }
 const Police = () => {
   const navigate = useNavigate();
@@ -38,7 +38,6 @@ const Police = () => {
   const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
   const [policeStations, setPoliceStations] = useState<PoliceStation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   useEffect(() => {
     fetchData();
@@ -124,6 +123,7 @@ const Police = () => {
         latitude: station.latitude,
         longitude: station.longitude,
         show_location: station.show_location,
+        google_maps_url: station.google_maps_url,
         contacts: stationContacts
       };
     });
@@ -147,17 +147,6 @@ const Police = () => {
     return [...stationCards, ...generalCards];
   }, [policeStations, emergencyContacts]);
 
-  // Filter departments based on search query
-  const filteredDepartments = useMemo(() => {
-    if (!searchQuery.trim()) return allDepartments;
-    
-    return allDepartments.filter(dept => 
-      dept.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      dept.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      dept.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      dept.address.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [allDepartments, searchQuery]);
 
   const handleCall = (number: string) => {
     window.open(`tel:${number}`, '_self');
@@ -223,21 +212,6 @@ const Police = () => {
             </div>
           </GlassCard>}
 
-        {/* Search Bar */}
-        {user && !loading && (
-          <div className="max-w-2xl mx-auto mb-8">
-            <div className="relative">
-              <Search className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="البحث في الإدارات والأقسام..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pr-10 text-right bg-card/50 border-primary/20 focus:border-primary/40"
-              />
-            </div>
-          </div>
-        )}
 
         {/* Authentication Check */}
         {authLoading ? (
@@ -264,17 +238,17 @@ const Police = () => {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
             <p className="mt-2 text-muted-foreground">جاري تحميل أرقام الطوارئ...</p>
           </div>
-        ) : filteredDepartments.length === 0 ? (
+        ) : allDepartments.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-muted-foreground">
-              {searchQuery ? 'لا توجد نتائج للبحث المطلوب' : 'لا توجد أقسام متاحة حالياً'}
+              لا توجد أقسام متاحة حالياً
             </p>
           </div>
         ) : (
           <div className="max-w-6xl mx-auto">
             {/* Unified Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredDepartments.map((dept, index) => (
+              {allDepartments.map((dept, index) => (
                 <GlassCard 
                   key={dept.id} 
                   className="p-6 hover:scale-[1.02] transition-all duration-300 hover:shadow-elegant h-full"
@@ -343,6 +317,19 @@ const Police = () => {
                       >
                         <Navigation className="ml-1 h-3 w-3" />
                         خريطة
+                      </Button>
+                    )}
+
+                    {/* Google Maps Link Button */}
+                    {dept.type === 'station' && dept.google_maps_url && (
+                      <Button
+                        onClick={() => window.open(dept.google_maps_url, '_blank')}
+                        size="sm"
+                        variant="outline"
+                        className="flex-1 border-green-500/20 hover:bg-green-500/10"
+                      >
+                        <MapPin className="ml-1 h-3 w-3" />
+                        الموقع
                       </Button>
                     )}
 

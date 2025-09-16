@@ -135,8 +135,7 @@ const Index = () => {
   ];
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-cyan-50 to-blue-50">
-
-      <div className="px-4 py-6">
+      <div className="px-4">
         {/* Hero Section - Mobile Optimized */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.8 }}

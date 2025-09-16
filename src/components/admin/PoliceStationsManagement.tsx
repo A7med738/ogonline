@@ -17,6 +17,7 @@ interface PoliceStation {
   latitude: number;
   longitude: number;
   show_location: boolean;
+  google_maps_url: string;
 }
 
 interface EmergencyContact {
@@ -44,7 +45,8 @@ export const PoliceStationsManagement = () => {
     description: '',
     latitude: '',
     longitude: '',
-    show_location: true
+    show_location: true,
+    google_maps_url: ''
   });
 
   const [contactData, setContactData] = useState({
@@ -126,7 +128,8 @@ export const PoliceStationsManagement = () => {
         description: '',
         latitude: '',
         longitude: '',
-        show_location: true
+        show_location: true,
+        google_maps_url: ''
       });
       loadStations();
       
@@ -152,7 +155,8 @@ export const PoliceStationsManagement = () => {
       description: station.description || '',
       latitude: station.latitude?.toString() || '',
       longitude: station.longitude?.toString() || '',
-      show_location: station.show_location
+      show_location: station.show_location,
+      google_maps_url: station.google_maps_url || ''
     });
     setEditingId(station.id);
     setIsAdding(true);
@@ -227,7 +231,8 @@ export const PoliceStationsManagement = () => {
       description: '',
       latitude: '',
       longitude: '',
-      show_location: true
+      show_location: true,
+      google_maps_url: ''
     });
   };
 
@@ -309,6 +314,19 @@ export const PoliceStationsManagement = () => {
               />
             </div>
 
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-2">رابط خرائط جوجل</label>
+              <Input
+                value={formData.google_maps_url}
+                onChange={(e) => setFormData({ ...formData, google_maps_url: e.target.value })}
+                placeholder="https://maps.google.com/..."
+                type="url"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                انسخ رابط خرائط جوجل من المتصفح ولصقه هنا
+              </p>
+            </div>
+
             <div className="md:col-span-2 flex items-center gap-2">
               <Switch
                 checked={formData.show_location}
@@ -346,6 +364,19 @@ export const PoliceStationsManagement = () => {
                 )}
                 {station.description && (
                   <p className="text-sm mt-2 p-2 bg-muted rounded">{station.description}</p>
+                )}
+                {station.google_maps_url && (
+                  <div className="mt-2">
+                    <a 
+                      href={station.google_maps_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                    >
+                      <MapPin className="h-4 w-4" />
+                      عرض على خرائط جوجل
+                    </a>
+                  </div>
                 )}
               </div>
               <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">

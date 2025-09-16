@@ -96,7 +96,7 @@ const AppContent = () => {
     <>
       <OneSignalHandler />
       <TopNavigation isAdmin={isAdmin} />
-      <div className="pt-28">
+      <div className="pt-20">
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/search" element={<Search />} />

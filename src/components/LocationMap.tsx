@@ -11,14 +11,9 @@ interface LocationMapProps {
 }
 
 export const LocationMap: React.FC<LocationMapProps> = ({ showNearbyStations = true }) => {
-  const { location, loading: locationLoading, getCurrentLocation } = useLocation();
+  const { location } = useLocation();
   const [nearbyStations, setNearbyStations] = useState<SerpMapResult[]>([]);
   const [loadingStations, setLoadingStations] = useState(false);
-  const [currentAddress, setCurrentAddress] = useState<string>('');
-
-  const handleGetLocation = () => {
-    getCurrentLocation();
-  };
 
   const handleCall = (number: string) => {
     window.open(`tel:${number}`, '_self');
@@ -55,43 +50,6 @@ export const LocationMap: React.FC<LocationMapProps> = ({ showNearbyStations = t
 
   return (
     <div className="space-y-6">
-      {/* Current Location Section */}
-      <GlassCard className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-foreground">موقعك الحالي</h3>
-          <Button
-            onClick={handleGetLocation}
-            disabled={locationLoading}
-            variant="outline"
-            size="sm"
-          >
-            <Navigation className="w-4 h-4 ml-2" />
-            {locationLoading ? 'جاري التحديد...' : 'تحديد الموقع'}
-          </Button>
-        </div>
-
-        {location ? (
-          <div className="space-y-2">
-            <div className="flex items-center text-sm text-muted-foreground">
-              <MapPin className="w-4 h-4 ml-2" />
-              <span>خط العرض: {location.latitude.toFixed(6)}</span>
-            </div>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <MapPin className="w-4 h-4 ml-2" />
-              <span>خط الطول: {location.longitude.toFixed(6)}</span>
-            </div>
-            {currentAddress && (
-              <div className="text-sm text-foreground mt-2">
-                <strong>العنوان:</strong> {currentAddress}
-              </div>
-            )}
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            اضغط على "تحديد الموقع" للحصول على موقعك الحالي
-          </p>
-        )}
-      </GlassCard>
 
       {/* Nearby Police Stations */}
       {showNearbyStations && location && (
