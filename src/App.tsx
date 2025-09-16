@@ -24,7 +24,6 @@ import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import EmailConfirmation from "./pages/EmailConfirmation";
 import FloatingChat from "@/components/FloatingChat";
-import CityServices from "./pages/CityServices";
 import LostAndFound from "./pages/LostAndFound";
 import LostAndFoundView from "./pages/LostAndFoundView";
 import ReportLost from "./pages/ReportLost";
@@ -50,6 +49,13 @@ import MedicalServicesHospitals from "./pages/MedicalServicesHospitals";
 import MedicalServicesClinics from "./pages/MedicalServicesClinics";
 import MedicalServicesHealthUnits from "./pages/MedicalServicesHealthUnits";
 import MedicalServicesMedicalCenters from "./pages/MedicalServicesMedicalCenters";
+import CityServicesManagement from "./pages/admin/CityServicesManagement";
+import CityServices from "./pages/CityServices";
+import CityServicesATMs from "./pages/CityServicesATMs";
+import CityServicesBanks from "./pages/CityServicesBanks";
+import CityServicesYouthClubs from "./pages/CityServicesYouthClubs";
+import CityServicesEvents from "./pages/CityServicesEvents";
+import CityServicesPostOffices from "./pages/CityServicesPostOffices";
 
 const queryClient = new QueryClient();
 
@@ -118,6 +124,12 @@ const AppContent = () => {
           <Route path="/medical-services/clinics" element={<MedicalServicesClinics />} />
           <Route path="/medical-services/health-units" element={<MedicalServicesHealthUnits />} />
           <Route path="/medical-services/medical-centers" element={<MedicalServicesMedicalCenters />} />
+          <Route path="/city-services" element={<CityServices />} />
+          <Route path="/city-services/atms" element={<CityServicesATMs />} />
+          <Route path="/city-services/banks" element={<CityServicesBanks />} />
+          <Route path="/city-services/youth-clubs" element={<CityServicesYouthClubs />} />
+          <Route path="/city-services/events" element={<CityServicesEvents />} />
+          <Route path="/city-services/post-offices" element={<CityServicesPostOffices />} />
           <Route path="/business" element={<Business />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/my-jobs" element={<MyJobs />} />
@@ -125,6 +137,7 @@ const AppContent = () => {
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/educational-services" element={<EducationalServicesManagement />} />
           <Route path="/admin/medical-services" element={<MedicalServicesManagement />} />
+          <Route path="/admin/city-services" element={<CityServicesManagement />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/email-confirmation" element={<EmailConfirmation />} />
           <Route path="*" element={<NotFound />} />
@@ -142,7 +155,12 @@ const App = () => (
         <Toaster />
         <Sonner />
         <SidebarProvider>
-          <BrowserRouter>
+          <BrowserRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true
+            }}
+          >
             <AppContent />
           </BrowserRouter>
         </SidebarProvider>

@@ -47,6 +47,7 @@ import MallsManagement from "@/pages/admin/MallsManagement";
 import WorshipPlacesManagement from "@/pages/admin/WorshipPlacesManagement";
 import EducationalServicesManagement from "@/pages/admin/EducationalServicesManagement";
 import MedicalServicesManagement from "@/pages/admin/MedicalServicesManagement";
+import CityServicesManagement from "@/pages/admin/CityServicesManagement";
 
 interface ContentItem {
   id: string;
@@ -520,6 +521,16 @@ const Admin = () => {
               <span className="text-sm font-medium">الخدمات الطبية</span>
             </div>
           </Card>
+
+          <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'city-services' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('city-services')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <Building className="h-8 w-8 text-blue-600" />
+              <span className="text-sm font-medium">خدمات المدينة</span>
+            </div>
+          </Card>
         </div>
 
         <div>
@@ -720,6 +731,7 @@ const Admin = () => {
           {activeTab === 'worship' && <WorshipPlacesManagement />}
           {activeTab === 'educational' && <EducationalServicesManagement />}
           {activeTab === 'medical' && <MedicalServicesManagement />}
+          {activeTab === 'city-services' && <CityServicesManagement />}
         </div>
       </div>
     </div>

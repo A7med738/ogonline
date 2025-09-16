@@ -1,8 +1,7 @@
 import { ArrowRight, Calendar, Clock, X, ChevronLeft, Newspaper, Eye, Heart, Share2, MessageCircle } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { ModernNewsCard } from "@/components/ModernNewsCard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import { NewsInteractions } from "@/components/NewsInteractions";
 import { NewsMediaDisplay } from "@/components/NewsMediaDisplay";
 import { useNavigate } from "react-router-dom";
@@ -134,14 +133,14 @@ const News = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ staggerChildren: 0.1, delayChildren: 0.2 }}
-          className="space-y-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         >
           {loading ? (
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: "spring", stiffness: 100, damping: 15 }}
-              className="text-center py-16"
+              className="col-span-full text-center py-16"
             >
               <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-emerald-200 to-cyan-200 rounded-full flex items-center justify-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
@@ -153,7 +152,7 @@ const News = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: "spring", stiffness: 100, damping: 15 }}
-              className="text-center py-16"
+              className="col-span-full text-center py-16"
             >
               <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full flex items-center justify-center">
                 <Newspaper className="w-12 h-12 text-gray-400" />
@@ -172,73 +171,42 @@ const News = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ type: "spring", stiffness: 100, damping: 15, delay: index * 0.1 }}
-                  whileHover={{ scale: 1.02 }}
-                  className="w-full"
                 >
-                  <Card className="overflow-hidden border-0 shadow-xl bg-white/90 backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                    <CardContent className="p-0">
-                      {/* News Image */}
-                      {mediaItems.length > 0 ? (
-                        <div className="h-48 sm:h-56 overflow-hidden relative">
-                          <img 
-                            src={mediaItems[0].media_url} 
-                            alt={news.title} 
-                            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" 
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                          
-                          {/* Category Badge */}
-                          <div className="absolute top-4 right-4">
-                            <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white border-0 shadow-lg backdrop-blur-sm">
-                              {news.category}
-                            </Badge>
-                          </div>
-                        </div>
-                      ) : hasFallbackImage ? (
-                        <div className="h-48 sm:h-56 overflow-hidden relative">
-                          <img 
-                            src={news.image_url} 
-                            alt={news.title} 
-                            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" 
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                          
-                          {/* Category Badge */}
-                          <div className="absolute top-4 right-4">
-                            <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white border-0 shadow-lg backdrop-blur-sm">
-                              {news.category}
-                            </Badge>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="h-48 sm:h-56 bg-gradient-to-br from-emerald-100 to-cyan-100 flex items-center justify-center relative">
-                          <div className="text-center">
-                            <Newspaper className="w-16 h-16 text-emerald-500 mx-auto mb-3" />
-                            <p className="text-emerald-600 font-medium">أخبار المدينة</p>
-                          </div>
-                          
-                          {/* Category Badge */}
-                          <div className="absolute top-4 right-4">
-                            <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white border-0 shadow-lg backdrop-blur-sm">
-                              {news.category}
-                            </Badge>
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* News Content */}
-                      <div className="p-4 sm:p-6">
-                        <h2 className="text-lg sm:text-xl font-bold text-gray-800 line-clamp-2 leading-tight mb-3 hover:text-emerald-600 transition-colors">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <div>
+                        <ModernNewsCard
+                          id={news.id}
+                          title={news.title}
+                          summary={news.summary}
+                          content={news.content || undefined}
+                          category={news.category}
+                          publishedAt={news.published_at}
+                          imageUrl={mediaItems.length > 0 ? mediaItems[0].media_url : news.image_url}
+                          likesCount={news.likes_count || 0}
+                          viewsCount={0}
+                          commentsCount={0}
+                          onReadMore={() => {}}
+                          onLike={() => {}}
+                          onShare={() => {}}
+                          onComment={() => {}}
+                        />
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle className="text-xl sm:text-2xl font-bold text-right mb-4">
                           {news.title}
-                        </h2>
-                        
-                        <p className="text-gray-600 text-sm sm:text-base line-clamp-3 leading-relaxed mb-4">
-                          {news.summary}
-                        </p>
-                        
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center text-gray-500 text-xs sm:text-sm">
-                            <Calendar className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-6 mt-4">
+                        {/* Category and Date */}
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                          <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white border-0 shadow-lg w-fit">
+                            {news.category}
+                          </Badge>
+                          <div className="flex items-center space-x-2 rtl:space-x-reverse text-gray-500 text-sm">
+                            <Calendar className="h-4 w-4" />
                             <span>
                               {formatDistanceToNow(new Date(news.published_at), {
                                 addSuffix: true,
@@ -246,81 +214,29 @@ const News = () => {
                               })}
                             </span>
                           </div>
-                          
-                          <div className="flex items-center space-x-4 rtl:space-x-reverse text-gray-400">
-                            <div className="flex items-center space-x-1 rtl:space-x-reverse">
-                              <Heart className="h-3 w-3 sm:h-4 sm:w-4" />
-                              <span className="text-xs sm:text-sm">{news.likes_count || 0}</span>
-                            </div>
-                            <div className="flex items-center space-x-1 rtl:space-x-reverse">
-                              <Share2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                            </div>
-                          </div>
                         </div>
 
-                        {/* Read More Button */}
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <motion.div
-                              whileHover={{ x: 5 }}
-                              className="flex items-center justify-center w-full"
-                            >
-                              <Button 
-                                variant="outline" 
-                                className="w-full bg-gradient-to-r from-emerald-50 to-cyan-50 border-emerald-200 hover:from-emerald-100 hover:to-cyan-100 text-emerald-700 hover:text-emerald-800"
-                              >
-                                <span className="text-sm sm:text-base">اقرأ المزيد</span>
-                                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                              </Button>
-                            </motion.div>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                            <DialogHeader>
-                              <DialogTitle className="text-xl sm:text-2xl font-bold text-right mb-4">
-                                {news.title}
-                              </DialogTitle>
-                            </DialogHeader>
-                            <div className="space-y-6 mt-4">
-                              {/* Category and Date */}
-                              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                                <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white border-0 shadow-lg w-fit">
-                                  {news.category}
-                                </Badge>
-                                <div className="flex items-center space-x-2 rtl:space-x-reverse text-gray-500 text-sm">
-                                  <Calendar className="h-4 w-4" />
-                                  <span>
-                                    {formatDistanceToNow(new Date(news.published_at), {
-                                      addSuffix: true,
-                                      locale: ar
-                                    })}
-                                  </span>
-                                </div>
-                              </div>
+                        {/* Media Display in Modal */}
+                        {mediaItems.length > 0 && (
+                          <div className="rounded-lg overflow-hidden">
+                            <NewsMediaDisplay media={mediaItems} />
+                          </div>
+                        )}
 
-                              {/* Media Display in Modal */}
-                              {mediaItems.length > 0 && (
-                                <div className="rounded-lg overflow-hidden">
-                                  <NewsMediaDisplay media={mediaItems} />
-                                </div>
-                              )}
+                        {/* Full Content */}
+                        <div className="prose prose-lg max-w-none text-right">
+                          <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-sm sm:text-base">
+                            {news.content || news.summary}
+                          </p>
+                        </div>
 
-                              {/* Full Content */}
-                              <div className="prose prose-lg max-w-none text-right">
-                                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-sm sm:text-base">
-                                  {news.content || news.summary}
-                                </p>
-                              </div>
-
-                              {/* News Interactions in Modal */}
-                              <div className="border-t pt-4">
-                                <NewsInteractions newsId={news.id} />
-                              </div>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
+                        {/* News Interactions in Modal */}
+                        <div className="border-t pt-4">
+                          <NewsInteractions newsId={news.id} />
+                        </div>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </DialogContent>
+                  </Dialog>
                 </motion.div>
               );
             })

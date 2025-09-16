@@ -5,8 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { ModernNewsCard } from '@/components/ModernNewsCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 interface NewsItem {
@@ -171,7 +170,7 @@ export const LatestNewsSection = () => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.4 }}
-        className="max-w-sm sm:max-w-md md:max-w-lg mx-auto relative overflow-hidden"
+        className="max-w-xs sm:max-w-sm mx-auto relative overflow-hidden"
       >
         <AnimatePresence mode="wait">
           <motion.div
@@ -182,74 +181,53 @@ export const LatestNewsSection = () => {
             transition={{ duration: 0.15, ease: "easeOut" }}
             className="relative w-full"
           >
-            <Card className="overflow-hidden border-0 shadow-xl bg-white/90 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 cursor-pointer group min-h-[250px] sm:min-h-[300px]"
-                  onClick={() => navigate('/news')}>
-              {/* News Image */}
-              {(latestNews[currentIndex]?.image_url || (newsMedia[latestNews[currentIndex]?.id] && newsMedia[latestNews[currentIndex]?.id].length > 0)) ? (
-                <div className="h-48 sm:h-56 overflow-hidden relative">
-                  <img 
-                    src={latestNews[currentIndex]?.image_url || (newsMedia[latestNews[currentIndex]?.id] && newsMedia[latestNews[currentIndex]?.id][0]?.media_url)} 
-                    alt={latestNews[currentIndex]?.title} 
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div onClick={() => navigate('/news')} className="cursor-pointer">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className="relative w-full max-w-sm mx-auto"
+              >
+                <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-0">
+                  {/* News Image */}
+                  {(latestNews[currentIndex]?.image_url || (newsMedia[latestNews[currentIndex]?.id] && newsMedia[latestNews[currentIndex]?.id].length > 0)) ? (
+                    <div className="h-32 overflow-hidden relative">
+                      <img 
+                        src={latestNews[currentIndex]?.image_url || (newsMedia[latestNews[currentIndex]?.id] && newsMedia[latestNews[currentIndex]?.id][0]?.media_url)} 
+                        alt={latestNews[currentIndex]?.title} 
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                      
+                      {/* Category Badge */}
+                      <div className="absolute top-2 right-2">
+                        <span className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white text-xs px-2 py-1 rounded-full font-medium shadow-lg">
+                          {latestNews[currentIndex]?.category}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="h-32 bg-gradient-to-br from-emerald-100 to-cyan-100 flex items-center justify-center relative">
+                      <div className="text-center">
+                        <Newspaper className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
+                        <p className="text-emerald-600 font-medium text-xs">أخبار المدينة</p>
+                      </div>
+                      {/* Category Badge */}
+                      <div className="absolute top-2 right-2">
+                        <span className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white text-xs px-2 py-1 rounded-full font-medium shadow-lg">
+                          {latestNews[currentIndex]?.category}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                   
-                  {/* Category Badge */}
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white border-0 shadow-lg backdrop-blur-sm text-xs sm:text-sm px-2 py-1">
-                      {latestNews[currentIndex]?.category}
-                    </Badge>
-                  </div>
-                  
-                  {/* News Title Overlay */}
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <h3 className="text-white font-bold text-sm sm:text-base line-clamp-2 drop-shadow-lg">
+                  {/* News Title */}
+                  <div className="p-3">
+                    <h3 className="text-sm font-bold text-gray-900 line-clamp-2 leading-tight hover:text-emerald-600 transition-colors">
                       {latestNews[currentIndex]?.title}
                     </h3>
                   </div>
                 </div>
-              ) : (
-                <div className="h-48 sm:h-56 bg-gradient-to-br from-emerald-100 to-cyan-100 flex items-center justify-center relative">
-                  <div className="text-center">
-                    <Newspaper className="w-16 h-16 text-emerald-500 mx-auto mb-3" />
-                    <p className="text-emerald-600 font-medium text-sm sm:text-base">أخبار المدينة</p>
-                  </div>
-                  {/* Category Badge */}
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-gradient-to-r from-emerald-500 to-cyan-500 text-white border-0 shadow-lg backdrop-blur-sm text-xs sm:text-sm px-2 py-1">
-                      {latestNews[currentIndex]?.category}
-                    </Badge>
-                  </div>
-                </div>
-              )}
-              
-              {/* News Content */}
-              <CardContent className="p-4 sm:p-6">
-                <p className="text-gray-600 text-sm sm:text-base line-clamp-3 leading-relaxed mb-4">
-                  {latestNews[currentIndex]?.summary}
-                </p>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center text-gray-500 text-xs sm:text-sm">
-                    <Calendar className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
-                    <span>
-                      {formatDistanceToNow(new Date(latestNews[currentIndex]?.published_at), {
-                        addSuffix: true,
-                        locale: ar
-                      })}
-                    </span>
-                  </div>
-                  
-                  <motion.div
-                    whileHover={{ x: 5 }}
-                    className="flex items-center text-emerald-600 text-sm font-medium"
-                  >
-                    <span className="text-xs sm:text-sm">اقرأ المزيد</span>
-                    <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                  </motion.div>
-                </div>
-              </CardContent>
-            </Card>
+              </motion.div>
+            </div>
           </motion.div>
         </AnimatePresence>
 
@@ -257,32 +235,34 @@ export const LatestNewsSection = () => {
         {latestNews.length > 1 && (
           <>
             <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.05, x: -2 }}
+              whileTap={{ scale: 0.95 }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-10"
             >
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={handlePrev} 
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 bg-white/90 backdrop-blur-sm hover:bg-white text-gray-700 border-0 shadow-lg hover:shadow-xl transition-all duration-200" 
+                className="h-10 w-10 p-0 bg-gradient-to-r from-emerald-500/90 to-cyan-500/90 backdrop-blur-md hover:from-emerald-600 hover:to-cyan-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 rounded-full hover:scale-105" 
                 disabled={isAnimating}
               >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-5 w-5" />
               </Button>
             </motion.div>
             
             <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.05, x: 2 }}
+              whileTap={{ scale: 0.95 }}
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-10"
             >
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={handleNext} 
-                className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 bg-white/90 backdrop-blur-sm hover:bg-white text-gray-700 border-0 shadow-lg hover:shadow-xl transition-all duration-200" 
+                className="h-10 w-10 p-0 bg-gradient-to-r from-emerald-500/90 to-cyan-500/90 backdrop-blur-md hover:from-emerald-600 hover:to-cyan-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 rounded-full hover:scale-105" 
                 disabled={isAnimating}
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="h-5 w-5" />
               </Button>
             </motion.div>
           </>
@@ -290,7 +270,7 @@ export const LatestNewsSection = () => {
 
         {/* Indicators */}
         {latestNews.length > 1 && (
-          <div className="flex justify-center space-x-2 rtl:space-x-reverse mt-4">
+          <div className="flex justify-center space-x-3 rtl:space-x-reverse mt-6">
             {latestNews.map((_, index) => (
               <motion.button
                 key={index}
@@ -303,13 +283,13 @@ export const LatestNewsSection = () => {
                     }, 200);
                   }
                 }}
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.8 }}
+                whileHover={{ scale: 1.3, y: -2 }}
+                whileTap={{ scale: 0.9 }}
                 className={cn(
-                  "h-2 rounded-full transition-all duration-300 shadow-sm",
+                  "h-3 rounded-full transition-all duration-300 shadow-md hover:shadow-lg",
                   index === currentIndex 
-                    ? "bg-gradient-to-r from-emerald-500 to-cyan-500 w-8 shadow-lg" 
-                    : "bg-gray-300 hover:bg-gray-400 w-2"
+                    ? "bg-gradient-to-r from-emerald-500 to-cyan-500 w-10 shadow-xl ring-2 ring-emerald-200" 
+                    : "bg-gray-300 hover:bg-gradient-to-r hover:from-emerald-300 hover:to-cyan-300 w-3 hover:w-6"
                 )}
               />
             ))}
@@ -322,18 +302,25 @@ export const LatestNewsSection = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
-        className="text-center mt-6"
+        className="text-center mt-8"
       >
         <motion.div
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.05, y: -2 }}
           whileTap={{ scale: 0.95 }}
         >
           <Button
             onClick={() => navigate('/news')}
-            className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white shadow-lg hover:shadow-xl px-6 py-2 rounded-xl transition-all duration-200"
+            className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white shadow-xl hover:shadow-2xl px-8 py-3 rounded-2xl transition-all duration-300 font-semibold text-sm hover:scale-105 ring-2 ring-emerald-200/50 hover:ring-emerald-300/50"
           >
-            عرض جميع الأخبار
-            <ArrowRight className="w-4 h-4 mr-2" />
+            <span className="flex items-center gap-2">
+              عرض جميع الأخبار
+              <motion.div
+                animate={{ x: [0, 4, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <ArrowRight className="w-4 h-4" />
+              </motion.div>
+            </span>
           </Button>
         </motion.div>
       </motion.div>
