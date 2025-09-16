@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Phone, MapPin, ArrowRight, Building, Users, Wrench, Banknote } from "lucide-react";
+import octoberGardensLogo from "@/assets/october-gardens-logo.jpg";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { supabase } from '@/integrations/supabase/client';
@@ -105,8 +106,8 @@ const City = () => {
       <div className="container mx-auto px-2 py-4 md:px-4 md:py-8">
         {/* Header */}
         <div className="text-center mb-6 md:mb-8 animate-fade-in">
-          <div className="bg-white/10 backdrop-blur-sm rounded-full p-3 w-16 h-16 mx-auto mb-3 md:mb-4 flex items-center justify-center">
-            <Building className="h-8 w-8 text-foreground" />
+          <div className="bg-white/10 backdrop-blur-sm rounded-full p-2 w-16 h-16 mx-auto mb-3 md:mb-4 flex items-center justify-center overflow-hidden">
+            <img src={octoberGardensLogo} alt="شعار حدائق أكتوبر" className="w-full h-full object-cover rounded-full" />
           </div>
           <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3 md:mb-4">جهاز المدينة</h3>
           
