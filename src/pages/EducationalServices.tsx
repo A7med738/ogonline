@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
-import { GraduationCap, Baby, BookOpen, Users } from "lucide-react";
+import { GraduationCap, Baby, BookOpen, Users, Building2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -10,7 +10,8 @@ const EducationalServices = () => {
     schools: 0,
     nurseries: 0,
     centers: 0,
-    teachers: 0
+    teachers: 0,
+    universities: 0
   });
 
   useEffect(() => {
@@ -19,18 +20,20 @@ const EducationalServices = () => {
 
   const loadCounts = async () => {
     try {
-      const [schoolsRes, nurseriesRes, centersRes, teachersRes] = await Promise.all([
+      const [schoolsRes, nurseriesRes, centersRes, teachersRes, universitiesRes] = await Promise.all([
         supabase.from('schools').select('id', { count: 'exact' }).eq('is_active', true),
         supabase.from('nurseries').select('id', { count: 'exact' }).eq('is_active', true),
         supabase.from('educational_centers').select('id', { count: 'exact' }).eq('is_active', true),
-        supabase.from('teachers').select('id', { count: 'exact' }).eq('is_active', true)
+        supabase.from('teachers').select('id', { count: 'exact' }).eq('is_active', true),
+        supabase.from('universities').select('id', { count: 'exact' }).eq('is_active', true)
       ]);
 
       setCounts({
         schools: schoolsRes.count || 0,
         nurseries: nurseriesRes.count || 0,
         centers: centersRes.count || 0,
-        teachers: teachersRes.count || 0
+        teachers: teachersRes.count || 0,
+        universities: universitiesRes.count || 0
       });
     } catch (error) {
       console.error('Error loading counts:', error);
@@ -64,6 +67,13 @@ const EducationalServices = () => {
       description: `${counts.teachers} مدرس ودروس خصوصية`,
       icon: Users,
       onClick: () => navigate("/educational-services/teachers"),
+      isActive: true
+    },
+    {
+      title: "جامعات",
+      description: `${counts.universities} جامعة ومعهد عالي في المدينة`,
+      icon: Building2,
+      onClick: () => navigate("/educational-services/universities"),
       isActive: true
     }
   ];

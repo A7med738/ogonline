@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Stethoscope, MapPin, Phone, Mail, Globe, Star, DollarSign, Clock, User, Calendar, CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import ClinicRating from '@/components/ClinicRating';
+import { getClinicRatingStats } from '@/utils/clinicRatingsStorage';
 
 interface Clinic {
   id: string;
@@ -38,11 +40,20 @@ interface Clinic {
 const MedicalServicesClinics = () => {
   const [clinics, setClinics] = useState<Clinic[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedClinic, setSelectedClinic] = useState<Clinic | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     loadClinics();
   }, []);
+
+  const handleRatingUpdate = (clinicId: string, averageRating: number, totalRatings: number) => {
+    setClinics(prev => prev.map(clinic => 
+      clinic.id === clinicId 
+        ? { ...clinic, rating: averageRating }
+        : clinic
+    ));
+  };
 
   const loadClinics = async () => {
     try {
@@ -53,7 +64,17 @@ const MedicalServicesClinics = () => {
         .order('rating', { ascending: false });
 
       if (error) throw error;
-      setClinics(data || []);
+      
+      // تحديث البيانات لتشمل التقييمات المحلية
+      const clinicsWithRatings = (data || []).map(clinic => {
+        const ratingStats = getClinicRatingStats(clinic.id);
+        return {
+          ...clinic,
+          rating: ratingStats.averageRating || clinic.rating
+        };
+      });
+      
+      setClinics(clinicsWithRatings);
     } catch (error) {
       console.error('Error loading clinics:', error);
       toast({
@@ -152,7 +173,9 @@ const MedicalServicesClinics = () => {
                     </div>
                     <div className="flex items-center space-x-1">
                       {renderStars(clinic.rating)}
-                      <span className="text-sm text-gray-500">({clinic.rating})</span>
+                      <span className="text-sm text-gray-500">
+                        {clinic.rating ? `${clinic.rating.toFixed(1)} (${getClinicRatingStats(clinic.id).totalRatings} تقييم)` : 'لا توجد تقييمات'}
+                      </span>
                     </div>
                   </div>
                 </CardHeader>
@@ -307,10 +330,50 @@ const MedicalServicesClinics = () => {
                         </Button>
                       )}
                     </div>
+                    
+                    {/* Rating Button */}
+                    <div className="mt-3">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => setSelectedClinic(clinic)}
+                      >
+                        <Star className="h-4 w-4 ml-1" />
+                        عرض التقييمات
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             ))}
+          </div>
+        )}
+
+        {/* Clinic Ratings Modal */}
+        {selectedClinic && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold">تقييمات {selectedClinic.name}</h2>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setSelectedClinic(null)}
+                  >
+                    إغلاق
+                  </Button>
+                </div>
+                <ClinicRating 
+                  clinicId={selectedClinic.id} 
+                  clinicName={selectedClinic.name}
+                  currentRating={selectedClinic.rating}
+                  totalRatings={getClinicRatingStats(selectedClinic.id).totalRatings}
+                  onRatingUpdate={handleRatingUpdate}
+                />
+              </div>
+            </div>
           </div>
         )}
       </div>

@@ -1,4 +1,4 @@
-import { Newspaper, Shield, Building, Briefcase, Handshake, Wrench, Home, Star, TrendingUp, GraduationCap, Heart, ShoppingBag, Moon } from "lucide-react";
+import { Newspaper, Shield, Building, Briefcase, Handshake, Wrench, Home, Star, TrendingUp, GraduationCap, Heart, ShoppingBag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
 import { Card, CardContent } from "@/components/ui/card";
@@ -102,7 +102,7 @@ const Index = () => {
     },
     {
       id: "real-estate",
-      title: "عقارات المدينة",
+      title: "عقار ماب",
       description: "ابحث عن العقارات المتاحة للبيع والإيجار",
       icon: Home,
       color: "from-emerald-500 to-teal-500",
@@ -132,14 +132,6 @@ const Index = () => {
       color: "from-amber-500 to-yellow-500",
       onClick: () => navigate("/city-malls")
     },
-    {
-      id: "places-of-worship",
-      title: "دور العبادة",
-      description: "مساجد وكنائس ودور العبادة في المدينة",
-      icon: Moon,
-      color: "from-slate-500 to-gray-600",
-      onClick: () => navigate("/worship-places")
-    }
   ];
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-cyan-50 to-blue-50">

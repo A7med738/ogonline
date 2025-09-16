@@ -11,6 +11,7 @@ import { SidebarProvider, useSidebar } from "@/contexts/SidebarContext";
 import { useDeepLink } from "@/hooks/useDeepLink";
 import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
+import Search from "./pages/Search";
 import News from "./pages/News";
 import Police from "./pages/Police";
 import PoliceStationDetails from "./pages/PoliceStationDetails";
@@ -44,6 +45,7 @@ import EducationalServicesSchools from "./pages/EducationalServicesSchools";
 import EducationalServicesNurseries from "./pages/EducationalServicesNurseries";
 import EducationalServicesCenters from "./pages/EducationalServicesCenters";
 import EducationalServicesTeachers from "./pages/EducationalServicesTeachers";
+import EducationalServicesUniversities from "./pages/EducationalServicesUniversities";
 import MedicalServicesManagement from "./pages/admin/MedicalServicesManagement";
 import MedicalServicesHospitals from "./pages/MedicalServicesHospitals";
 import MedicalServicesClinics from "./pages/MedicalServicesClinics";
@@ -56,6 +58,7 @@ import CityServicesBanks from "./pages/CityServicesBanks";
 import CityServicesYouthClubs from "./pages/CityServicesYouthClubs";
 import CityServicesEvents from "./pages/CityServicesEvents";
 import CityServicesPostOffices from "./pages/CityServicesPostOffices";
+import CityServicesCraftsmen from "./pages/CityServicesCraftsmen";
 
 const queryClient = new QueryClient();
 
@@ -96,6 +99,7 @@ const AppContent = () => {
       <div className="pt-28">
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/search" element={<Search />} />
           <Route path="/news" element={<News />} />
           <Route path="/police" element={<Police />} />
           <Route path="/police/station/:stationId" element={<PoliceStationDetails />} />
@@ -119,6 +123,7 @@ const AppContent = () => {
           <Route path="/educational-services/nurseries" element={<EducationalServicesNurseries />} />
           <Route path="/educational-services/centers" element={<EducationalServicesCenters />} />
           <Route path="/educational-services/teachers" element={<EducationalServicesTeachers />} />
+          <Route path="/educational-services/universities" element={<EducationalServicesUniversities />} />
           <Route path="/medical-services" element={<MedicalServices />} />
           <Route path="/medical-services/hospitals" element={<MedicalServicesHospitals />} />
           <Route path="/medical-services/clinics" element={<MedicalServicesClinics />} />
@@ -130,6 +135,7 @@ const AppContent = () => {
           <Route path="/city-services/youth-clubs" element={<CityServicesYouthClubs />} />
           <Route path="/city-services/events" element={<CityServicesEvents />} />
           <Route path="/city-services/post-offices" element={<CityServicesPostOffices />} />
+          <Route path="/city-services/craftsmen" element={<CityServicesCraftsmen />} />
           <Route path="/business" element={<Business />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/my-jobs" element={<MyJobs />} />

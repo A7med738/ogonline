@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import ShopRating from "@/components/ShopRating";
+import { getShopRatingStats } from "@/utils/shopRatingsStorage";
 import { 
   MapPin, 
   Clock, 
@@ -36,6 +38,18 @@ const MallDetails = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [mallData, setMallData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedShop, setSelectedShop] = useState<any>(null);
+
+  const handleRatingUpdate = (shopId: string, averageRating: number, totalRatings: number) => {
+    setMallData(prev => ({
+      ...prev,
+      shops: prev.shops.map(shop => 
+        shop.id === shopId 
+          ? { ...shop, average_rating: averageRating, total_ratings: totalRatings }
+          : shop
+      )
+    }));
+  };
 
   useEffect(() => {
     if (id) {
@@ -163,13 +177,19 @@ const MallDetails = () => {
           name: s.name,
           icon: iconMap[s.icon] || Wifi
         })),
-        shops: (shops || []).map(s => ({
-          name: s.name,
-          category: s.category || '',
-          floor: s.floor || '',
-          logo: s.logo_url || '/placeholder.svg',
-          phone: (s as any).phone || ''
-        })),
+        shops: (shops || []).map(s => {
+          const ratingStats = getShopRatingStats(s.id);
+          return {
+            id: s.id,
+            name: s.name,
+            category: s.category || '',
+            floor: s.floor || '',
+            logo: s.logo_url || '/placeholder.svg',
+            phone: (s as any).phone || '',
+            average_rating: ratingStats.averageRating,
+            total_ratings: ratingStats.totalRatings
+          };
+        }),
         restaurants: (restaurants || []).map(r => ({
           name: r.name,
           cuisine: r.cuisine || '',
@@ -416,8 +436,22 @@ const MallDetails = () => {
                             <span className="text-xs text-muted-foreground">{shop.phone}</span>
                           </div>
                         )}
+                        <div className="flex items-center gap-2 mt-2">
+                          <Star className="w-3 h-3 text-yellow-500" />
+                          <span className="text-xs text-muted-foreground">
+                            {shop.average_rating ? `${shop.average_rating.toFixed(1)} (${shop.total_ratings} تقييم)` : 'لا توجد تقييمات'}
+                          </span>
+                        </div>
                       </div>
                     </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full mt-3"
+                      onClick={() => setSelectedShop(shop)}
+                    >
+                      عرض التقييمات
+                    </Button>
                   </CardContent>
                 </Card>
               ))}
@@ -532,6 +566,33 @@ const MallDetails = () => {
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Shop Ratings Modal */}
+        {selectedShop && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold">تقييمات {selectedShop.name}</h2>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setSelectedShop(null)}
+                  >
+                    إغلاق
+                  </Button>
+                </div>
+                <ShopRating 
+                  shopId={selectedShop.id} 
+                  shopName={selectedShop.name}
+                  currentRating={selectedShop.average_rating}
+                  totalRatings={selectedShop.total_ratings}
+                  onRatingUpdate={handleRatingUpdate}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

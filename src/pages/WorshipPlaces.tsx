@@ -10,7 +10,6 @@ import {
   Phone, 
   Globe, 
   Users, 
-  Clock, 
   Heart, 
   Search,
   Filter,
@@ -18,7 +17,9 @@ import {
   BookOpen,
   GraduationCap,
   Utensils,
-  Building
+  Building,
+  Camera,
+  Navigation
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -32,7 +33,11 @@ interface WorshipPlace {
   description: string;
   image_url: string;
   logo_url: string;
-  prayer_times: any;
+  images: string[]; // صور متعددة
+  imam_name: string; // اسم الإمام
+  latitude: number; // خط العرض
+  longitude: number; // خط الطول
+  google_maps_url: string; // رابط خرائط جوجل
   services: any;
   capacity: number;
   is_accessible: boolean;
@@ -62,8 +67,7 @@ const WorshipPlaces = () => {
   const worshipTypes = [
     { value: 'all', label: 'جميع الأنواع' },
     { value: 'مسجد', label: 'مساجد' },
-    { value: 'كنيسة', label: 'كنائس' },
-    { value: 'معبد', label: 'معابد' }
+    { value: 'كنيسة', label: 'كنائس' }
   ];
 
   const getIconComponent = (iconName: string) => {
@@ -147,15 +151,6 @@ const WorshipPlaces = () => {
     setFilteredPlaces(filtered);
   };
 
-  const formatPrayerTimes = (prayerTimes: any) => {
-    if (!prayerTimes) return null;
-    return Object.entries(prayerTimes).map(([prayer, time]) => (
-      <div key={prayer} className="flex justify-between text-sm">
-        <span>{prayer}</span>
-        <span className="font-medium">{time as string}</span>
-      </div>
-    ));
-  };
 
   if (loading) {
     return (
@@ -216,14 +211,37 @@ const WorshipPlaces = () => {
           {filteredPlaces.map((place) => (
             <Card key={place.id} className="overflow-hidden hover:shadow-lg transition-shadow">
               <div className="aspect-video relative">
-                <img
-                  src={place.image_url?.startsWith('data:') ? place.image_url : (place.image_url || '/placeholder.svg')}
-                  alt={place.name}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = '/placeholder.svg';
-                  }}
-                />
+                {/* عرض الصور المتعددة */}
+                {place.images && place.images.length > 0 ? (
+                  <div className="relative w-full h-full">
+                    <img
+                      src={place.images[0]?.startsWith('data:') ? place.images[0] : (place.images[0] || '/placeholder.svg')}
+                      alt={place.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = '/placeholder.svg';
+                      }}
+                    />
+                    {place.images.length > 1 && (
+                      <div className="absolute bottom-3 right-3">
+                        <Badge variant="secondary" className="bg-white/90 text-gray-800">
+                          <Camera className="w-3 h-3 mr-1" />
+                          {place.images.length} صورة
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <img
+                    src={place.image_url?.startsWith('data:') ? place.image_url : (place.image_url || '/placeholder.svg')}
+                    alt={place.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder.svg';
+                    }}
+                  />
+                )}
+                
                 <div className="absolute top-3 right-3">
                   <Badge variant="secondary" className="bg-white/90 text-gray-800">
                     {place.type}
@@ -263,6 +281,12 @@ const WorshipPlaces = () => {
               <CardContent className="space-y-4">
                 {/* Contact Info */}
                 <div className="space-y-2 text-sm text-gray-600">
+                  {place.imam_name && (
+                    <div className="flex items-center space-x-2">
+                      <Users className="w-4 h-4 text-gray-400" />
+                      <span className="text-right">الإمام: {place.imam_name}</span>
+                    </div>
+                  )}
                   {place.address && (
                     <div className="flex items-center space-x-2">
                       <MapPin className="w-4 h-4 text-gray-400" />
@@ -283,18 +307,6 @@ const WorshipPlaces = () => {
                   )}
                 </div>
 
-                {/* Prayer Times */}
-                {place.prayer_times && (
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <h4 className="font-medium text-sm mb-2 flex items-center">
-                      <Clock className="w-4 h-4 mr-1" />
-                      أوقات الصلاة
-                    </h4>
-                    <div className="space-y-1">
-                      {formatPrayerTimes(place.prayer_times)}
-                    </div>
-                  </div>
-                )}
 
                 {/* Services */}
                 {place.worship_services && place.worship_services.length > 0 && (
@@ -339,6 +351,14 @@ const WorshipPlaces = () => {
 
                 {/* Action Buttons */}
                 <div className="flex space-x-2 pt-2">
+                  {place.google_maps_url && (
+                    <Button variant="outline" size="sm" className="flex-1" asChild>
+                      <a href={place.google_maps_url} target="_blank" rel="noopener noreferrer">
+                        <Navigation className="w-4 h-4 mr-1" />
+                        الموقع
+                      </a>
+                    </Button>
+                  )}
                   {place.website && (
                     <Button variant="outline" size="sm" className="flex-1" asChild>
                       <a href={place.website} target="_blank" rel="noopener noreferrer">

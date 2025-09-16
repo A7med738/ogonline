@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { GraduationCap, Baby, BookOpen, Users, Plus, Edit, Trash2, Eye, Star, MapPin, Phone, Mail, Globe, Clock, Users as UsersIcon, DollarSign } from 'lucide-react';
+import { GraduationCap, Baby, BookOpen, Users, Building2, Plus, Edit, Trash2, Eye, Star, MapPin, Phone, Mail, Globe, Clock, Users as UsersIcon, DollarSign } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 interface School {
@@ -118,12 +118,39 @@ interface Teacher {
   updated_at: string;
 }
 
+interface University {
+  id: string;
+  name: string;
+  type: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  description?: string;
+  image_url?: string;
+  logo_url?: string;
+  established_year?: number;
+  accreditation?: string;
+  faculties?: string[];
+  programs?: string[];
+  admission_requirements?: string[];
+  tuition_fees?: {
+    undergraduate?: number;
+    graduate?: number;
+  };
+  rating: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 const EducationalServicesManagement = () => {
   const [activeTab, setActiveTab] = useState('schools');
   const [schools, setSchools] = useState<School[]>([]);
   const [nurseries, setNurseries] = useState<Nursery[]>([]);
   const [centers, setCenters] = useState<EducationalCenter[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [universities, setUniversities] = useState<University[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
@@ -166,6 +193,13 @@ const EducationalServicesManagement = () => {
             .order('created_at', { ascending: false });
           setTeachers(teachersData || []);
           break;
+        case 'universities':
+          const { data: universitiesData } = await supabase
+            .from('universities')
+            .select('*')
+            .order('created_at', { ascending: false });
+          setUniversities(universitiesData || []);
+          break;
       }
     } catch (error) {
       console.error('Error loading data:', error);
@@ -181,7 +215,17 @@ const EducationalServicesManagement = () => {
 
   const handleAddNew = () => {
     setEditingItem(null);
-    setFormData({});
+    
+    // قيم افتراضية حسب نوع التبويب
+    const defaultData = {
+      schools: { type: 'public', level: 'primary', is_active: true, rating: 0 },
+      nurseries: { type: 'private', is_active: true, rating: 0 },
+      centers: { type: 'private', is_active: true, rating: 0 },
+      teachers: { is_active: true, is_verified: false, rating: 0 },
+      universities: { type: 'public', is_active: true, rating: 0, faculties: [], programs: [], admission_requirements: [], tuition_fees: {} }
+    };
+    
+    setFormData(defaultData[activeTab as keyof typeof defaultData] || {});
     setIsDialogOpen(true);
   };
 
@@ -223,6 +267,20 @@ const EducationalServicesManagement = () => {
       const table = getTableName();
       const data = { ...formData };
 
+      // تشخيص البيانات
+      console.log('Form data:', formData);
+      console.log('Active tab:', activeTab);
+
+      // تحقق من الحقول المطلوبة
+      if (activeTab === 'universities' && !data.type) {
+        toast({
+          title: 'خطأ',
+          description: 'نوع الجامعة مطلوب',
+          variant: 'destructive',
+        });
+        return;
+      }
+
       if (editingItem) {
         const { error } = await supabase
           .from(table)
@@ -262,6 +320,7 @@ const EducationalServicesManagement = () => {
       case 'nurseries': return 'nurseries';
       case 'centers': return 'educational_centers';
       case 'teachers': return 'teachers';
+      case 'universities': return 'universities';
       default: return 'schools';
     }
   };
@@ -534,6 +593,78 @@ const EducationalServicesManagement = () => {
                 <Edit className="h-4 w-4" />
               </Button>
               <Button variant="outline" size="sm" onClick={() => handleDelete(teacher.id, 'teachers')}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+
+  const renderUniversities = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {universities.map((university) => (
+        <Card key={university.id} className="relative">
+          <CardHeader>
+            <div className="flex items-start justify-between">
+              <div className="flex items-center space-x-2">
+                <Building2 className="h-6 w-6 text-blue-600" />
+                <div>
+                  <CardTitle className="text-lg">{university.name}</CardTitle>
+                  <CardDescription>
+                    <Badge variant="secondary" className="mr-2">{university.type}</Badge>
+                    {university.established_year && (
+                      <Badge variant="outline">تأسست {university.established_year}</Badge>
+                    )}
+                  </CardDescription>
+                </div>
+              </div>
+              <div className="flex items-center space-x-1">
+                {renderStars(university.rating)}
+                <span className="text-sm text-gray-500">({university.rating})</span>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {university.address && (
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <MapPin className="h-4 w-4" />
+                  <span className="truncate">{university.address}</span>
+                </div>
+              )}
+              {university.phone && (
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <Phone className="h-4 w-4" />
+                  <span>{university.phone}</span>
+                </div>
+              )}
+              {university.website && (
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <Globe className="h-4 w-4" />
+                  <span className="truncate">موقع إلكتروني</span>
+                </div>
+              )}
+              {university.faculties && university.faculties.length > 0 && (
+                <div className="text-sm text-gray-600">
+                  <span className="font-medium">الكليات: </span>
+                  <span>{university.faculties.slice(0, 2).join(', ')}</span>
+                  {university.faculties.length > 2 && <span> +{university.faculties.length - 2}</span>}
+                </div>
+              )}
+              <div className="flex items-center space-x-2 text-sm">
+                <Switch checked={university.is_active} disabled />
+                <span className={university.is_active ? 'text-green-600' : 'text-red-600'}>
+                  {university.is_active ? 'نشط' : 'غير نشط'}
+                </span>
+              </div>
+            </div>
+            <div className="flex justify-end space-x-2 mt-4">
+              <Button variant="outline" size="sm" onClick={() => handleEdit(university)}>
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => handleDelete(university.id, 'universities')}>
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>
@@ -940,6 +1071,121 @@ const EducationalServicesManagement = () => {
           </>
         );
 
+      case 'universities':
+        return (
+          <>
+            {commonFields}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="type">نوع الجامعة *</Label>
+                <Select value={formData.type || ''} onValueChange={(value) => setFormData({ ...formData, type: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="اختر نوع الجامعة" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="public">حكومية</SelectItem>
+                    <SelectItem value="private">خاصة</SelectItem>
+                    <SelectItem value="international">دولية</SelectItem>
+                    <SelectItem value="technical">تقنية</SelectItem>
+                    <SelectItem value="other">أخرى</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="established_year">سنة التأسيس</Label>
+                <Input
+                  id="established_year"
+                  type="number"
+                  value={formData.established_year || ''}
+                  onChange={(e) => setFormData({ ...formData, established_year: parseInt(e.target.value) || null })}
+                  placeholder="مثل: 1950"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="accreditation">الاعتماد</Label>
+                <Input
+                  id="accreditation"
+                  value={formData.accreditation || ''}
+                  onChange={(e) => setFormData({ ...formData, accreditation: e.target.value })}
+                  placeholder="مثل: وزارة التعليم العالي"
+                />
+              </div>
+              <div>
+                <Label htmlFor="faculties">الكليات (مفصولة بفاصلة)</Label>
+                <Input
+                  id="faculties"
+                  value={formData.faculties ? formData.faculties.join(', ') : ''}
+                  onChange={(e) => setFormData({ ...formData, faculties: e.target.value.split(',').map(f => f.trim()).filter(f => f) })}
+                  placeholder="مثل: الهندسة، الطب، التجارة"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="programs">البرامج (مفصولة بفاصلة)</Label>
+                <Input
+                  id="programs"
+                  value={formData.programs ? formData.programs.join(', ') : ''}
+                  onChange={(e) => setFormData({ ...formData, programs: e.target.value.split(',').map(p => p.trim()).filter(p => p) })}
+                  placeholder="مثل: بكالوريوس، ماجستير، دكتوراه"
+                />
+              </div>
+              <div>
+                <Label htmlFor="admission_requirements">متطلبات القبول (مفصولة بفاصلة)</Label>
+                <Input
+                  id="admission_requirements"
+                  value={formData.admission_requirements ? formData.admission_requirements.join(', ') : ''}
+                  onChange={(e) => setFormData({ ...formData, admission_requirements: e.target.value.split(',').map(r => r.trim()).filter(r => r) })}
+                  placeholder="مثل: شهادة الثانوية العامة، اختبار القبول"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="tuition_undergraduate">رسوم البكالوريوس</Label>
+                <Input
+                  id="tuition_undergraduate"
+                  type="number"
+                  value={formData.tuition_fees?.undergraduate || ''}
+                  onChange={(e) => setFormData({ 
+                    ...formData, 
+                    tuition_fees: { 
+                      ...formData.tuition_fees, 
+                      undergraduate: parseFloat(e.target.value) || null 
+                    } 
+                  })}
+                  placeholder="الرسوم بالجنيه المصري"
+                />
+              </div>
+              <div>
+                <Label htmlFor="tuition_graduate">رسوم الدراسات العليا</Label>
+                <Input
+                  id="tuition_graduate"
+                  type="number"
+                  value={formData.tuition_fees?.graduate || ''}
+                  onChange={(e) => setFormData({ 
+                    ...formData, 
+                    tuition_fees: { 
+                      ...formData.tuition_fees, 
+                      graduate: parseFloat(e.target.value) || null 
+                    } 
+                  })}
+                  placeholder="الرسوم بالجنيه المصري"
+                />
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                checked={formData.is_active || false}
+                onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
+              />
+              <Label>نشط</Label>
+            </div>
+          </>
+        );
+
       default:
         return commonFields;
     }
@@ -995,7 +1241,7 @@ const EducationalServicesManagement = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="schools" className="flex items-center space-x-2">
             <GraduationCap className="h-4 w-4" />
             <span>المدارس</span>
@@ -1011,6 +1257,10 @@ const EducationalServicesManagement = () => {
           <TabsTrigger value="teachers" className="flex items-center space-x-2">
             <Users className="h-4 w-4" />
             <span>المدرسين</span>
+          </TabsTrigger>
+          <TabsTrigger value="universities" className="flex items-center space-x-2">
+            <Building2 className="h-4 w-4" />
+            <span>الجامعات</span>
           </TabsTrigger>
         </TabsList>
 
@@ -1075,6 +1325,22 @@ const EducationalServicesManagement = () => {
             </div>
           ) : (
             renderTeachers()
+          )}
+        </TabsContent>
+
+        <TabsContent value="universities" className="mt-6">
+          {universities.length === 0 ? (
+            <div className="text-center py-12">
+              <Building2 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">لا توجد جامعات</h3>
+              <p className="text-gray-600 mb-4">ابدأ بإضافة جامعة جديدة</p>
+              <Button onClick={handleAddNew} className="bg-blue-600 hover:bg-blue-700">
+                <Plus className="h-4 w-4 mr-2" />
+                إضافة جامعة
+              </Button>
+            </div>
+          ) : (
+            renderUniversities()
           )}
         </TabsContent>
       </Tabs>

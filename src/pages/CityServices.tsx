@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
-import { CreditCard, Building2, Users, Calendar, Mail } from "lucide-react";
+import { CreditCard, Building2, Users, Calendar, Mail, Moon, Wrench } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -11,7 +11,9 @@ const CityServices = () => {
     banks: 0,
     youthClubs: 0,
     events: 0,
-    postOffices: 0
+    postOffices: 0,
+    worshipPlaces: 0,
+    craftsmen: 0
   });
 
   useEffect(() => {
@@ -20,12 +22,14 @@ const CityServices = () => {
 
   const loadCounts = async () => {
     try {
-      const [atmsRes, banksRes, youthClubsRes, eventsRes, postOfficesRes] = await Promise.all([
+      const [atmsRes, banksRes, youthClubsRes, eventsRes, postOfficesRes, worshipPlacesRes, craftsmenRes] = await Promise.all([
         supabase.from('atms').select('id', { count: 'exact' }).eq('is_active', true),
         supabase.from('banks').select('id', { count: 'exact' }).eq('is_active', true),
         supabase.from('youth_clubs').select('id', { count: 'exact' }).eq('is_active', true),
         supabase.from('events').select('id', { count: 'exact' }).eq('is_active', true),
-        supabase.from('post_offices').select('id', { count: 'exact' }).eq('is_active', true)
+        supabase.from('post_offices').select('id', { count: 'exact' }).eq('is_active', true),
+        supabase.from('worship_places').select('id', { count: 'exact' }),
+        supabase.from('craftsmen').select('id', { count: 'exact' }).eq('is_active', true)
       ]);
 
       setCounts({
@@ -33,7 +37,9 @@ const CityServices = () => {
         banks: banksRes.count || 0,
         youthClubs: youthClubsRes.count || 0,
         events: eventsRes.count || 0,
-        postOffices: postOfficesRes.count || 0
+        postOffices: postOfficesRes.count || 0,
+        worshipPlaces: worshipPlacesRes.count || 0,
+        craftsmen: craftsmenRes.count || 0
       });
     } catch (error) {
       console.error('Error loading counts:', error);
@@ -75,6 +81,20 @@ const CityServices = () => {
       icon: Mail,
       onClick: () => navigate("/city-services/post-offices"),
       isActive: true
+    },
+    {
+      title: "دور العبادة",
+      description: `${counts.worshipPlaces} مسجد وكنيسة ومعبد في المدينة`,
+      icon: Moon,
+      onClick: () => navigate("/worship-places"),
+      isActive: true
+    },
+    {
+      title: "الصنايعية",
+      description: `${counts.craftsmen} صانع وحرفي في المدينة`,
+      icon: Wrench,
+      onClick: () => navigate("/city-services/craftsmen"),
+      isActive: true
     }
   ];
 
@@ -82,7 +102,7 @@ const CityServices = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         {/* All Icons in One Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
+        <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-2 sm:gap-4 lg:gap-6">
           {cityServiceItems.map((item, itemIndex) => (
             <NavigationCard
               key={item.title}
