@@ -1,0 +1,164 @@
+[33mcommit 52ab9763647824005b32e08138cc41db3f7816bd[m
+Author: A7med738 <a7med738@gmail.com>
+Date:   Sun Sep 14 07:30:07 2025 +0300
+
+    Refactor Business and CityServices pages: remove unused items, consolidate item display into a single grid, and enhance navigation card layout for improved user experience. Update Index page to include new service categories and adjust layout for better responsiveness.
+
+[1mdiff --git a/src/pages/CityServices.tsx b/src/pages/CityServices.tsx[m
+[1mindex 8d9687c..a134ce9 100644[m
+[1m--- a/src/pages/CityServices.tsx[m
+[1m+++ b/src/pages/CityServices.tsx[m
+[36m@@ -1,6 +1,6 @@[m
+ import { useNavigate } from "react-router-dom";[m
+ import { NavigationCard } from "@/components/NavigationCard";[m
+[31m-import { Search, Users, Wrench, HandHeart, Siren, Building2, Calendar, Zap, Bus, MapPin, BarChart3, Construction, Trash2, Stethoscope, Laptop } from "lucide-react";[m
+[32m+[m[32mimport { Search, Users, Wrench, HandHeart, Siren, Building2, Calendar, Zap, Bus, MapPin, BarChart3, Construction, Trash2, Stethoscope, Laptop, CreditCard, Banknote, Mail, Trophy } from "lucide-react";[m
+ [m
+ const CityServices = () => {[m
+   const navigate = useNavigate();[m
+[36m@@ -10,73 +10,45 @@[m [mconst CityServices = () => {[m
+       title: "الأدلة والمعلومات الأساسية",[m
+       items: [[m
+         {[m
+[31m-          title: "دليل الأعمال والخدمات",[m
+[31m-          description: "دليل المحلات التجارية والمطاعم والورش الحرفية مع التقييمات",[m
+[31m-          icon: Building2,[m
+[31m-          onClick: () => {},[m
+[31m-          isActive: false[m
+[32m+[m[32m          title: "توصيلة",[m
+[32m+[m[32m          description: "دورات المدارس وخدمات النقل المدرسي",[m
+[32m+[m[32m          icon: Bus,[m
+[32m+[m[32m          onClick: () => navigate("/services/school-transport"),[m
+[32m+[m[32m          isActive: true[m
+         },[m
+         {[m
+[31m-          title: "دليل الصحة",[m
+[31m-          description: "خريطة الصيدليات المناوبة والعيادات والمستشفيات مع أرقام الطوارئ",[m
+[31m-          icon: Stethoscope,[m
+[31m-          onClick: () => {},[m
+[31m-          isActive: false[m
+[32m+[m[32m          title: "ATM",[m
+[32m+[m[32m          description: "مواقع أجهزة الصراف الآلي في المدينة",[m
+[32m+[m[32m          icon: CreditCard,[m
+[32m+[m[32m          onClick: () => navigate("/services/atm-locations"),[m
+[32m+[m[32m          isActive: true[m
+         },[m
+         {[m
+[31m-          title: "المرافق العامة",[m
+[31m-          description: "دليل الحدائق والمكتبات والملاعب والمراكز المجتمعية",[m
+[31m-          icon: MapPin,[m
+[31m-          onClick: () => {},[m
+[31m-          isActive: false[m
+[32m+[m[32m          title: "بنوك",[m
+[32m+[m[32m          description: "فروع البنوك وخدماتها في المدينة",[m
+[32m+[m[32m          icon: Banknote,[m
+[32m+[m[32m          onClick: () => navigate("/services/banks"),[m
+[32m+[m[32m          isActive: true[m
+         },[m
+         {[m
+[31m-          title: "دورات المدينة",[m
+[31m-          description: "دورات المدارس وخدمات النقل المدرسي",[m
+[31m-          icon: Bus,[m
+[31m-          onClick: () => navigate("/services/school-transport"),[m
+[32m+[m[32m          title: "مكاتب البريد",[m
+[32m+[m[32m          description: "مكاتب البريد وخدمات الشحن في المدينة",[m
+[32m+[m[32m          icon: Mail,[m
+[32m+[m[32m          onClick: () => navigate("/services/post-offices"),[m
+           isActive: true[m
+         },[m
+         {[m
+[31m-          title: "دليل الطوارئ",[m
+[31m-          description: "أرقام وعناوين الطوارئ المهمة",[m
+[31m-          icon: Siren,[m
+[31m-          onClick: () => navigate("/services/emergency-directory"),[m
+[31m-          isActive: false[m
+[32m+[m[32m          title: "نوادي ومراكز شباب",[m
+[32m+[m[32m          description: "نوادي رياضية ومراكز شباب في المدينة",[m
+[32m+[m[32m          icon: Trophy,[m
+[32m+[m[32m          onClick: () => navigate("/services/youth-clubs"),[m
+[32m+[m[32m          isActive: true[m
+         }[m
+       ][m
+     },[m
+     {[m
+       title: "التفاعل والمشاركة",[m
+       items: [[m
+[31m-        {[m
+[31m-          title: "بلاغات وتحسينات",[m
+[31m-          description: "الإبلاغ عن أعطال واقتراح تحسينات",[m
+[31m-          icon: Wrench,[m
+[31m-          onClick: () => navigate("/services/reports-improvements"),[m
+[31m-          isActive: false[m
+[31m-        },[m
+[31m-        {[m
+[31m-          title: "خدمات المرافق",[m
+[31m-          description: "الإبلاغ عن أعطال المياه والكهرباء والاستعلام عن الفواتير",[m
+[31m-          icon: Zap,[m
+[31m-          onClick: () => {},[m
+[31m-          isActive: false[m
+[31m-        },[m
+[31m-        {[m
+[31m-          title: "خدمات النظافة والبيئة",[m
+[31m-          description: "مواعيد جمع القمامة وأماكن إعادة التدوير والإبلاغ عن مشاكل النظافة",[m
+[31m-          icon: Trash2,[m
+[31m-          onClick: () => {},[m
+[31m-          isActive: false[m
+[31m-        },[m
+[31m-        {[m
+[31m-          title: "استطلاعات الرأي",[m
+[31m-          description: "استطلاعات رأي السكان حول القرارات والمشاريع الجديدة",[m
+[31m-          icon: BarChart3,[m
+[31m-          onClick: () => {},[m
+[31m-          isActive: false[m
+[31m-        },[m
+         {[m
+           title: "مفقودات وموجودات",[m
+           description: "الإبلاغ أو البحث عن مفقودات",[m
+[36m@@ -96,77 +68,33 @@[m [mconst CityServices = () => {[m
+           onClick: () => {},[m
+           isActive: false[m
+         },[m
+[31m-        {[m
+[31m-          title: "مبادرات الحي",[m
+[31m-          description: "مبادرات مجتمعية ونشاطات الحي",[m
+[31m-          icon: Users,[m
+[31m-          onClick: () => navigate("/services/neighborhood-initiatives"),[m
+[31m-          isActive: false[m
+[31m-        },[m
+[31m-        {[m
+[31m-          title: "تبرعات ومساعدات",[m
+[31m-          description: "مبادرات تبرع ودعم المحتاجين",[m
+[31m-          icon: HandHeart,[m
+[31m-          onClick: () => navigate("/services/donations-aid"),[m
+[31m-          isActive: false[m
+[31m-        }[m
+       ][m
+     },[m
+     {[m
+       title: "الشفافية والمشاريع",[m
+       items: [[m
+[31m-        {[m
+[31m-          title: "مشاريع تحت التنفيذ",[m
+[31m-          description: "عرض مشاريع البلدية مع الجدول الزمني ونسبة الإنجاز",[m
+[31m-          icon: Construction,[m
+[31m-          onClick: () => {},[m
+[31m-          isActive: false[m
+[31m-        }[m
+       ][m
+     }[m
+   ];[m
+ [m
+[32m+[m[32m  // Flatten all items from all groups into a single array[m
+[32m+[m[32m  const allItems = serviceGroups.flatMap(group => group.items);[m
+[32m+[m
+   return ([m
+     <div className="min-h-screen bg-background">[m
+       <div className="container mx-auto px-4 py-8">[m
+[31m-        <div className="text-center mb-8 animate-fade-in">[m
+[31m-          <h3 className="md:text-2xl text-xl font-bold text-foreground">خدمات المدينة</h3>[m
+[31m-        </div>[m
+[31m-[m
+[31m-        {/* Service Groups */}[m
+[31m-        <div className="space-y-8 sm:space-y-12">[m
+[31m-          {serviceGroups.map((group, groupIndex) => ([m
+[31m-       

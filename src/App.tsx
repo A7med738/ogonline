@@ -33,6 +33,10 @@ import SchoolTransport from "./pages/SchoolTransport";
 import SchoolTransportRequest from "./pages/SchoolTransportRequest";
 import SchoolTransportOffer from "./pages/SchoolTransportOffer";
 import MySchoolTransports from "./pages/MySchoolTransports";
+import TripService from "./pages/TripService";
+import CreateTrip from "./pages/CreateTrip";
+import MyTrips from "./pages/MyTrips";
+import JoinTrip from "./pages/JoinTrip";
 import RealEstate from "./pages/RealEstate";
 import RealEstateDetails from "./pages/RealEstateDetails";
 import EducationalServices from "./pages/EducationalServices";
@@ -113,6 +117,10 @@ const AppContent = () => {
           <Route path="/services/school-transport/request" element={<SchoolTransportRequest />} />
           <Route path="/services/school-transport/offer" element={<SchoolTransportOffer />} />
           <Route path="/services/school-transport/my-transports" element={<MySchoolTransports />} />
+          <Route path="/trip-service" element={<TripService />} />
+          <Route path="/trip-service/create" element={<CreateTrip />} />
+          <Route path="/trip-service/my-trips" element={<MyTrips />} />
+          <Route path="/trip-service/join/:tripId" element={<JoinTrip />} />
           <Route path="/real-estate" element={<RealEstate />} />
           <Route path="/real-estate/:id" element={<RealEstateDetails />} />
           <Route path="/city-malls" element={<CityMalls />} />

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
-import { CreditCard, Building2, Users, Calendar, Mail, Moon, Wrench } from "lucide-react";
+import { CreditCard, Building2, Users, Calendar, Mail, Moon, Wrench, Bus } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -13,7 +13,8 @@ const CityServices = () => {
     events: 0,
     postOffices: 0,
     worshipPlaces: 0,
-    craftsmen: 0
+    craftsmen: 0,
+    trips: 0
   });
 
   useEffect(() => {
@@ -22,14 +23,15 @@ const CityServices = () => {
 
   const loadCounts = async () => {
     try {
-      const [atmsRes, banksRes, youthClubsRes, eventsRes, postOfficesRes, worshipPlacesRes, craftsmenRes] = await Promise.all([
+      const [atmsRes, banksRes, youthClubsRes, eventsRes, postOfficesRes, worshipPlacesRes, craftsmenRes, tripsRes] = await Promise.all([
         supabase.from('atms').select('id', { count: 'exact' }).eq('is_active', true),
         supabase.from('banks').select('id', { count: 'exact' }).eq('is_active', true),
         supabase.from('youth_clubs').select('id', { count: 'exact' }).eq('is_active', true),
         supabase.from('events').select('id', { count: 'exact' }).eq('is_active', true),
         supabase.from('post_offices').select('id', { count: 'exact' }).eq('is_active', true),
         supabase.from('worship_places').select('id', { count: 'exact' }),
-        supabase.from('craftsmen').select('id', { count: 'exact' }).eq('is_active', true)
+        supabase.from('craftsmen').select('id', { count: 'exact' }).eq('is_active', true).then(res => ({ count: 0, ...res })),
+        supabase.from('trips').select('id', { count: 'exact' }).eq('status', 'active').then(res => ({ count: 0, ...res }))
       ]);
 
       setCounts({
@@ -39,7 +41,8 @@ const CityServices = () => {
         events: eventsRes.count || 0,
         postOffices: postOfficesRes.count || 0,
         worshipPlaces: worshipPlacesRes.count || 0,
-        craftsmen: craftsmenRes.count || 0
+        craftsmen: craftsmenRes.count || 0,
+        trips: tripsRes.count || 0
       });
     } catch (error) {
       console.error('Error loading counts:', error);
@@ -94,6 +97,13 @@ const CityServices = () => {
       description: `${counts.craftsmen} صانع وحرفي في المدينة`,
       icon: Wrench,
       onClick: () => navigate("/city-services/craftsmen"),
+      isActive: true
+    },
+    {
+      title: "توصيلة",
+      description: `${counts.trips} رحلة مشتركة متاحة`,
+      icon: Bus,
+      onClick: () => navigate("/trip-service"),
       isActive: true
     }
   ];
