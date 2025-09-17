@@ -6,11 +6,14 @@ import { useNewsNotifications } from "@/hooks/useNewsNotifications";
 import { NewsNotificationBadge } from "@/components/NewsNotificationBadge";
 import { LatestNewsSection } from "@/components/LatestNewsSection";
 import VisitorStats from "@/components/VisitorStats";
+import ProtectedNavItem from "@/components/ProtectedNavItem";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 const Index = () => {
   const navigate = useNavigate();
   const { unreadCount } = useNewsNotifications();
+  const { user } = useAuth();
 
   // Animation variants
   const containerVariants = {
@@ -68,7 +71,8 @@ const Index = () => {
       icon: Newspaper,
       color: "from-white to-white",
       onClick: () => navigate("/news"),
-      badge: unreadCount > 0 ? <NewsNotificationBadge count={unreadCount} /> : undefined
+      badge: unreadCount > 0 ? <NewsNotificationBadge count={unreadCount} /> : undefined,
+      requiresAuth: false
     },
     {
       id: "city",
@@ -76,7 +80,8 @@ const Index = () => {
       description: "تواصل مع إدارات المدينة المختلفة",
       icon: Building,
       color: "from-white to-white",
-      onClick: () => navigate("/city")
+      onClick: () => navigate("/city"),
+      requiresAuth: true
     },
     {
       id: "police",
@@ -84,7 +89,8 @@ const Index = () => {
       description: "أرقام التواصل مع مركز الشرطة للطوارئ والخدمات",
       icon: Shield,
       color: "from-white to-white",
-      onClick: () => navigate("/police")
+      onClick: () => navigate("/police"),
+      requiresAuth: false
     },
     // الصف الثاني
     {
@@ -93,7 +99,8 @@ const Index = () => {
       description: "مولات ومراكز تسوق في المدينة",
       icon: ShoppingBag,
       color: "from-white to-white",
-      onClick: () => navigate("/city-malls")
+      onClick: () => navigate("/city-malls"),
+      requiresAuth: true
     },
     {
       id: "services",
@@ -101,7 +108,8 @@ const Index = () => {
       description: "خدمات ومرافق البلدية للمواطنين",
       icon: Wrench,
       color: "from-white to-white",
-      onClick: () => navigate("/city-services")
+      onClick: () => navigate("/city-services"),
+      requiresAuth: true
     },
     {
       id: "educational-services",
@@ -109,7 +117,8 @@ const Index = () => {
       description: "خدمات تعليمية ومدارس في المدينة",
       icon: GraduationCap,
       color: "from-white to-white",
-      onClick: () => navigate("/educational-services")
+      onClick: () => navigate("/educational-services"),
+      requiresAuth: true
     },
     // الصف الثالث
     {
@@ -118,7 +127,8 @@ const Index = () => {
       description: "مستشفيات ومراكز طبية في المدينة",
       icon: Heart,
       color: "from-white to-white",
-      onClick: () => navigate("/medical-services")
+      onClick: () => navigate("/medical-services"),
+      requiresAuth: true
     },
     {
       id: "real-estate",
@@ -126,7 +136,8 @@ const Index = () => {
       description: "ابحث عن العقارات المتاحة للبيع والإيجار",
       icon: Home,
       color: "from-white to-white",
-      onClick: () => navigate("/real-estate")
+      onClick: () => navigate("/real-estate"),
+      requiresAuth: true
     },
     {
       id: "business",
@@ -134,7 +145,8 @@ const Index = () => {
       description: "استكشف الفرص التجارية في المدينة",
       icon: Handshake,
       color: "from-white to-white",
-      onClick: () => navigate("/business")
+      onClick: () => navigate("/business"),
+      requiresAuth: true
     },
   ];
   return (
@@ -215,16 +227,19 @@ const Index = () => {
             {navigationItems.map((item, index) => {
               const IconComponent = item.icon;
               return (
-                <motion.div
+                <ProtectedNavItem
                   key={item.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, ease: "easeOut", delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="cursor-pointer"
                   onClick={item.onClick}
+                  showLockIcon={item.requiresAuth}
                 >
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, ease: "easeOut", delay: index * 0.1 }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="cursor-pointer"
+                  >
                   <Card className={cn(
                     "relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 group",
                     `bg-gradient-to-br ${item.color}`
@@ -267,7 +282,8 @@ const Index = () => {
                       </motion.div>
                     </CardContent>
                   </Card>
-                </motion.div>
+                  </motion.div>
+                </ProtectedNavItem>
               );
             })}
           </motion.div>

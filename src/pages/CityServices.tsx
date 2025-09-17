@@ -3,6 +3,7 @@ import { NavigationCard } from "@/components/NavigationCard";
 import { CreditCard, Building2, Users, Calendar, Mail, Moon, Wrench, Bus, Car, FileText, ShoppingCart, Phone, Scale, Home, Hotel, Fuel, Zap, Flame } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import AuthGuard from "@/components/AuthGuard";
 
 const CityServices = () => {
   const navigate = useNavigate();
@@ -197,25 +198,27 @@ const CityServices = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        {/* All Icons in One Grid */}
-        <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-2 sm:gap-4 lg:gap-6">
-          {cityServiceItems.map((item, itemIndex) => (
-            <NavigationCard
-              key={item.title}
-              title={item.title}
-              description={item.description}
-              icon={item.icon}
-              onClick={item.onClick}
-              isActive={item.isActive}
-              className="h-full"
-              style={{ animationDelay: `${0.1 + itemIndex * 0.1}s` }}
-            />
-          ))}
+    <AuthGuard>
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8">
+          {/* All Icons in One Grid */}
+          <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-2 sm:gap-4 lg:gap-6">
+            {cityServiceItems.map((item, itemIndex) => (
+              <NavigationCard
+                key={item.title}
+                title={item.title}
+                description={item.description}
+                icon={item.icon}
+                onClick={item.onClick}
+                isActive={item.isActive}
+                className="h-full"
+                style={{ animationDelay: `${0.1 + itemIndex * 0.1}s` }}
+              />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </AuthGuard>
   );
 };
 
