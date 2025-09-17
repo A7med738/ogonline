@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ArrowRight, Clock, X, Filter, Star, MapPin, Phone, Mail, Globe, Calendar, User, Building2, GraduationCap, Heart, ShoppingBag, Home, Shield, Banknote, CreditCard, Users, FileText, Briefcase, AlertTriangle, Building, Car, BookOpen, Stethoscope, Utensils, Camera, Music, Gamepad2, Calendar as CalendarIcon, Package, Truck, Mail as MailIcon, Wifi, Car as CarIcon, CreditCard as CreditCardIcon, Heart as HeartIcon, CreditCard as CreditCardIcon2, Search as SearchIcon, Star as StarIcon, ExternalLink, Calendar as CalendarIcon2, Film, Gamepad2 as Gamepad2Icon, Music as MusicIcon, ShoppingBag as ShoppingBagIcon, Building2 as Building2Icon, Utensils as UtensilsIcon, Camera as CameraIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLocation } from 'react-router-dom';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useQuery } from '@tanstack/react-query';
+import OptimizedImage from '@/components/OptimizedImage';
 
 interface SearchResult {
   id: string;
@@ -29,10 +32,11 @@ const SearchPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('all');
+
+  // Debounce search query
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   // تحميل البحثات الحديثة من localStorage
   useEffect(() => {
@@ -42,16 +46,15 @@ const SearchPage = () => {
     }
   }, []);
 
-  // البحث في جميع الجداول
-  const performSearch = async (query: string) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
-    }
+  // البحث باستخدام React Query
+  const { data: searchResults = [], isLoading: isSearching, error } = useQuery({
+    queryKey: ['search', debouncedSearchQuery],
+    queryFn: async () => {
+      if (!debouncedSearchQuery.trim()) {
+        return [];
+      }
 
-    setIsSearching(true);
-    try {
-      const searchTerm = `%${query}%`;
+      const searchTerm = `%${debouncedSearchQuery}%`;
       
       // البحث في جميع الجداول المتاحة
       const searchPromises = [
@@ -251,30 +254,20 @@ const SearchPage = () => {
         }
       });
 
-      setSearchResults(allResults);
-      
-      // حفظ البحث في البحثات الحديثة
-      if (query.trim() && !recentSearches.includes(query.trim())) {
-        const newRecentSearches = [query.trim(), ...recentSearches.slice(0, 4)];
-        setRecentSearches(newRecentSearches);
-        localStorage.setItem('recentSearches', JSON.stringify(newRecentSearches));
-      }
-    } catch (error) {
-      console.error('Error searching:', error);
-      setSearchResults([]);
-    } finally {
-      setIsSearching(false);
-    }
-  };
+      return allResults;
+    },
+    enabled: !!debouncedSearchQuery.trim(),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  });
 
-  // البحث عند تغيير النص
+  // حفظ البحث في البحثات الحديثة
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      performSearch(searchQuery);
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
+    if (debouncedSearchQuery.trim() && !recentSearches.includes(debouncedSearchQuery.trim())) {
+      const newRecentSearches = [debouncedSearchQuery.trim(), ...recentSearches.slice(0, 4)];
+      setRecentSearches(newRecentSearches);
+      localStorage.setItem('recentSearches', JSON.stringify(newRecentSearches));
+    }
+  }, [debouncedSearchQuery, recentSearches]);
 
   // البحث عند تحميل الصفحة مع query parameter
   useEffect(() => {
@@ -531,9 +524,20 @@ const SearchPage = () => {
                       <CardContent className="p-4">
                         <div className="flex items-start gap-3">
                           <div className="flex-shrink-0">
-                            <div className={`w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center ${getTypeColor(result.type)}`}>
-                              <IconComponent className="h-5 w-5" />
-                            </div>
+                            {result.image_url ? (
+                              <OptimizedImage
+                                src={result.image_url}
+                                alt={result.title}
+                                width={40}
+                                height={40}
+                                className="w-10 h-10 rounded-full object-cover"
+                                quality={70}
+                              />
+                            ) : (
+                              <div className={`w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center ${getTypeColor(result.type)}`}>
+                                <IconComponent className="h-5 w-5" />
+                              </div>
+                            )}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">

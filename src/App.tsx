@@ -10,6 +10,8 @@ import { OneSignalHandler } from "@/components/OneSignalHandler";
 import { SidebarProvider, useSidebar } from "@/contexts/SidebarContext";
 import { useDeepLink } from "@/hooks/useDeepLink";
 import { supabase } from "@/integrations/supabase/client";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { useCriticalPreload, useNextPagePreload } from "@/hooks/usePreload";
 import Index from "./pages/Index";
 import Search from "./pages/Search";
 import News from "./pages/News";
@@ -82,7 +84,20 @@ import CityServicesEvents from "./pages/CityServicesEvents";
 import CityServicesPostOffices from "./pages/CityServicesPostOffices";
 import CityServicesCraftsmen from "./pages/CityServicesCraftsmen";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+      retry: 2,
+      refetchOnWindowFocus: false,
+      refetchOnMount: true,
+    },
+    mutations: {
+      retry: 1,
+    },
+  },
+});
 
 const AppContent = () => {
   const { user } = useAuth();
@@ -91,6 +106,10 @@ const AppContent = () => {
   
   // Enable deep link handling
   useDeepLink();
+  
+  // Preload critical resources
+  useCriticalPreload();
+  useNextPagePreload();
 
   useEffect(() => {
     if (user) {
@@ -199,24 +218,26 @@ const AppContent = () => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <SidebarProvider>
-          <BrowserRouter
-            future={{
-              v7_startTransition: true,
-              v7_relativeSplatPath: true
-            }}
-          >
-            <AppContent />
-          </BrowserRouter>
-        </SidebarProvider>
-      </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <SidebarProvider>
+            <BrowserRouter
+              future={{
+                v7_startTransition: true,
+                v7_relativeSplatPath: true
+              }}
+            >
+              <AppContent />
+            </BrowserRouter>
+          </SidebarProvider>
+        </AuthProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

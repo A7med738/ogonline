@@ -7,6 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getOptimizedImageUrl, handleImageError } from "@/utils/imageUtils";
 import { supabase } from "@/integrations/supabase/client";
+import { useMalls } from "@/hooks/useOptimizedQuery";
+import OptimizedImage from "@/components/OptimizedImage";
+import VirtualList from "@/components/VirtualList";
+import { SkeletonGrid } from "@/components/SkeletonLoader";
 
 // Cache للبيانات
 const CACHE_KEY = 'malls_data';
@@ -18,117 +22,31 @@ interface CacheData {
 }
 const CityMalls = () => {
   const navigate = useNavigate();
-  const [malls, setMalls] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const isInitialLoad = useRef(true);
-
-  // دالة للحصول على البيانات من Cache
-  const getCachedData = (): any[] | null => {
-    try {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        const { data, timestamp }: CacheData = JSON.parse(cached);
-        const now = Date.now();
-        if (now - timestamp < CACHE_DURATION) {
-          return data;
-        }
-      }
-    } catch (error) {
-      console.warn('Error reading cache:', error);
-    }
-    return null;
-  };
-
-  // دالة لحفظ البيانات في Cache
-  const setCachedData = (data: any[]) => {
-    try {
-      const cacheData: CacheData = {
-        data,
-        timestamp: Date.now()
-      };
-      localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
-    } catch (error) {
-      console.warn('Error saving cache:', error);
-    }
-  };
-
-  useEffect(() => {
-    loadMalls();
-  }, []);
-
-  const loadMalls = async (forceRefresh: boolean = false) => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      // محاولة جلب البيانات من Cache أولاً
-      if (!forceRefresh && isInitialLoad.current) {
-        const cachedData = getCachedData();
-        if (cachedData) {
-          setMalls(cachedData);
-          setLoading(false);
-          isInitialLoad.current = false;
-          return;
-        }
-      }
-      
-      // جلب البيانات من قاعدة البيانات
-      const { data, error } = await supabase
-        .from('malls')
-        .select(`
-          id, 
-          name, 
-          description, 
-          image_url, 
-          rating, 
-          is_open, 
-          closing_time, 
-          address, 
-          created_at
-        `)
-        .order('created_at', { ascending: false })
-        .limit(50);
-        
-      if (error) throw error;
-      
-      // تحسين معالجة البيانات
-      const mallsData = (data || []).map(mall => ({
-        id: mall.id,
-        name: mall.name,
-        description: mall.description || '',
-        image: mall.image_url || '/placeholder.svg',
-        rating: mall.rating || 0,
-        isOpen: mall.is_open,
-        closingTime: mall.closing_time || '11:00 مساءً',
-        shops: 0,
-        location: mall.address || ''
-      }));
-      
-      setMalls(mallsData);
-      setCachedData(mallsData); // حفظ البيانات في Cache
-      isInitialLoad.current = false;
-    } catch (error) {
-      console.error('Error loading malls:', error);
-      setError('حدث خطأ في تحميل المولات. يرجى المحاولة مرة أخرى.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: malls = [], isLoading: loading, error } = useMalls(50);
 
   // تحسين الأداء باستخدام useMemo للبيانات المحسنة
   const optimizedMalls = useMemo(() => {
     return malls.map(mall => ({
-      ...mall,
-      optimizedImage: getOptimizedImageUrl(mall.image, 400, 300, 80)
+      id: mall.id,
+      name: mall.name,
+      description: mall.description || '',
+      image: mall.image_url || '/placeholder.svg',
+      rating: mall.rating || 0,
+      isOpen: mall.is_open,
+      closingTime: mall.closing_time || '11:00 مساءً',
+      shops: 0,
+      location: mall.address || ''
     }));
   }, [malls]);
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">جاري تحميل المولات...</p>
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-6">
+          <div className="mb-6">
+            <div className="h-8 w-48 bg-gray-200 animate-pulse rounded mb-4"></div>
+            <div className="h-4 w-96 bg-gray-200 animate-pulse rounded"></div>
+          </div>
+          <SkeletonGrid items={6} />
         </div>
       </div>
     );
@@ -188,23 +106,14 @@ const CityMalls = () => {
                 onClick={() => navigate(`/mall/${mall.id}`)}
               >
                 <div className="relative overflow-hidden">
-                  {/* Placeholder أثناء التحميل */}
-                  <div className="w-full h-40 sm:h-48 bg-gray-200 animate-pulse rounded-t-lg flex items-center justify-center">
-                    <ShoppingBag className="w-8 h-8 text-gray-400" />
-                  </div>
-                  
-                  <img 
-                    src={mall.optimizedImage} 
-                    alt={mall.name} 
-                    className="absolute inset-0 w-full h-40 sm:h-48 object-cover rounded-t-lg transition-all duration-500 opacity-0"
-                    onLoad={(e) => {
-                      e.currentTarget.style.opacity = '1';
-                    }}
-                    onError={(e) => {
-                      handleImageError(e);
-                      e.currentTarget.style.opacity = '1';
-                    }}
-                    loading="lazy"
+                  <OptimizedImage
+                    src={mall.image}
+                    alt={mall.name}
+                    width={400}
+                    height={300}
+                    className="w-full h-40 sm:h-48 object-cover rounded-t-lg"
+                    quality={80}
+                    lazy={true}
                   />
                   
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
