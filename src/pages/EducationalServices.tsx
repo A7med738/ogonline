@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
-import { GraduationCap, Baby, BookOpen, Users, Building2 } from "lucide-react";
+import { GraduationCap, Baby, BookOpen, Users, Building2, Settings } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -11,7 +11,8 @@ const EducationalServices = () => {
     nurseries: 0,
     centers: 0,
     teachers: 0,
-    universities: 0
+    universities: 0,
+    educationDepartment: 1
   });
 
   useEffect(() => {
@@ -33,7 +34,8 @@ const EducationalServices = () => {
         nurseries: nurseriesRes.count || 0,
         centers: centersRes.count || 0,
         teachers: teachersRes.count || 0,
-        universities: universitiesRes.count || 0
+        universities: universitiesRes.count || 0,
+        educationDepartment: 1 // خدمة ثابتة
       });
     } catch (error) {
       console.error('Error loading counts:', error);
@@ -74,6 +76,13 @@ const EducationalServices = () => {
       description: `${counts.universities} جامعة ومعهد عالي في المدينة`,
       icon: Building2,
       onClick: () => navigate("/educational-services/universities"),
+      isActive: true
+    },
+    {
+      title: "الإدارة التعليمية",
+      description: "إدارة التعليم والتعليم العالي في المدينة",
+      icon: Settings,
+      onClick: () => navigate("/educational-services/education-department"),
       isActive: true
     }
   ];

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
-import { Heart, Stethoscope, Building2, Hospital } from "lucide-react";
+import { Heart, Stethoscope, Building2, Hospital, Pill } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -10,7 +10,8 @@ const MedicalServices = () => {
     hospitals: 0,
     clinics: 0,
     healthUnits: 0,
-    medicalCenters: 0
+    medicalCenters: 0,
+    pharmacies: 0
   });
 
   useEffect(() => {
@@ -19,18 +20,20 @@ const MedicalServices = () => {
 
   const loadCounts = async () => {
     try {
-      const [hospitalsRes, clinicsRes, healthUnitsRes, medicalCentersRes] = await Promise.all([
+      const [hospitalsRes, clinicsRes, healthUnitsRes, medicalCentersRes, pharmaciesRes] = await Promise.all([
         supabase.from('hospitals').select('id', { count: 'exact' }).eq('is_active', true),
         supabase.from('clinics').select('id', { count: 'exact' }).eq('is_active', true),
         supabase.from('health_units').select('id', { count: 'exact' }).eq('is_active', true),
-        supabase.from('medical_centers').select('id', { count: 'exact' }).eq('is_active', true)
+        supabase.from('medical_centers').select('id', { count: 'exact' }).eq('is_active', true),
+        supabase.from('pharmacies').select('id', { count: 'exact' }).eq('is_active', true).then(res => ({ count: 0, ...res }))
       ]);
 
       setCounts({
         hospitals: hospitalsRes.count || 0,
         clinics: clinicsRes.count || 0,
         healthUnits: healthUnitsRes.count || 0,
-        medicalCenters: medicalCentersRes.count || 0
+        medicalCenters: medicalCentersRes.count || 0,
+        pharmacies: pharmaciesRes.count || 0
       });
     } catch (error) {
       console.error('Error loading counts:', error);
@@ -64,6 +67,13 @@ const MedicalServices = () => {
       description: `${counts.medicalCenters} مركز طبي متخصص ومرافق صحية`,
       icon: Building2,
       onClick: () => navigate("/medical-services/medical-centers"),
+      isActive: true
+    },
+    {
+      title: "صيدليات",
+      description: `${counts.pharmacies} صيدلية ومركز دواء في المدينة`,
+      icon: Pill,
+      onClick: () => navigate("/medical-services/pharmacies"),
       isActive: true
     }
   ];

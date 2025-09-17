@@ -28,7 +28,11 @@ import {
   Newspaper,
   ShoppingBag,
   GraduationCap,
-  Heart
+  Heart,
+  Hotel,
+  Fuel,
+  Flame,
+  Zap
 } from "lucide-react";
 import {
   Select,
@@ -48,6 +52,12 @@ import WorshipPlacesManagement from "@/pages/admin/WorshipPlacesManagement";
 import EducationalServicesManagement from "@/pages/admin/EducationalServicesManagement";
 import MedicalServicesManagement from "@/pages/admin/MedicalServicesManagement";
 import CityServicesManagement from "@/pages/admin/CityServicesManagement";
+import CityServicesNewManagement from "@/pages/admin/CityServicesNewManagement";
+import PharmaciesManagement from "@/pages/admin/PharmaciesManagement";
+import HotelsManagement from "@/pages/admin/HotelsManagement";
+import GasStationsManagement from "@/pages/admin/GasStationsManagement";
+import GasCompanyManagement from "@/pages/admin/GasCompanyManagement";
+import ElectricityCompanyManagement from "@/pages/admin/ElectricityCompanyManagement";
 
 interface ContentItem {
   id: string;
@@ -531,6 +541,66 @@ const Admin = () => {
               <span className="text-sm font-medium">خدمات المدينة</span>
             </div>
           </Card>
+
+          <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'city-services-new' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('city-services-new')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <Building className="h-8 w-8 text-purple-600" />
+              <span className="text-sm font-medium">الخدمات الجديدة</span>
+            </div>
+          </Card>
+
+          <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'pharmacies' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('pharmacies')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <Heart className="h-8 w-8 text-pink-600" />
+              <span className="text-sm font-medium">الصيدليات</span>
+            </div>
+          </Card>
+
+          <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'hotels' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('hotels')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <Hotel className="h-8 w-8 text-indigo-600" />
+              <span className="text-sm font-medium">الفنادق</span>
+            </div>
+          </Card>
+
+          <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'gas-stations' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('gas-stations')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <Fuel className="h-8 w-8 text-orange-600" />
+              <span className="text-sm font-medium">محطات الوقود</span>
+            </div>
+          </Card>
+
+          <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'gas-company' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('gas-company')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <Flame className="h-8 w-8 text-red-600" />
+              <span className="text-sm font-medium">شركة الغاز</span>
+            </div>
+          </Card>
+
+          <Card 
+            className={`p-4 cursor-pointer transition-all hover:shadow-md ${activeTab === 'electricity-company' ? 'ring-2 ring-primary' : ''}`}
+            onClick={() => setActiveTab('electricity-company')}
+          >
+            <div className="flex flex-col items-center text-center gap-2">
+              <Zap className="h-8 w-8 text-yellow-600" />
+              <span className="text-sm font-medium">شركة الكهرباء</span>
+            </div>
+          </Card>
         </div>
 
         <div>
@@ -732,6 +802,12 @@ const Admin = () => {
           {activeTab === 'educational' && <EducationalServicesManagement />}
           {activeTab === 'medical' && <MedicalServicesManagement />}
           {activeTab === 'city-services' && <CityServicesManagement />}
+          {activeTab === 'city-services-new' && <CityServicesNewManagement />}
+          {activeTab === 'pharmacies' && <PharmaciesManagement />}
+          {activeTab === 'hotels' && <HotelsManagement />}
+          {activeTab === 'gas-stations' && <GasStationsManagement />}
+          {activeTab === 'gas-company' && <GasCompanyManagement />}
+          {activeTab === 'electricity-company' && <ElectricityCompanyManagement />}
         </div>
       </div>
     </div>

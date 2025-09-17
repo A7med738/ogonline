@@ -37,6 +37,16 @@ import TripService from "./pages/TripService";
 import CreateTrip from "./pages/CreateTrip";
 import MyTrips from "./pages/MyTrips";
 import JoinTrip from "./pages/JoinTrip";
+import CityServicesTraffic from "./pages/CityServicesTraffic";
+import CityServicesCivilRegistry from "./pages/CityServicesCivilRegistry";
+import CityServicesWholesaleMarket from "./pages/CityServicesWholesaleMarket";
+import CityServicesCityCenter from "./pages/CityServicesCityCenter";
+import CityServicesFamilyCourt from "./pages/CityServicesFamilyCourt";
+import CityServicesCourts from "./pages/CityServicesCourts";
+import CityServicesHotels from "./pages/CityServicesHotels";
+import CityServicesGasStations from "./pages/CityServicesGasStations";
+import CityServicesGasCompany from "./pages/CityServicesGasCompany";
+import CityServicesElectricityCompany from "./pages/CityServicesElectricityCompany";
 import RealEstate from "./pages/RealEstate";
 import RealEstateDetails from "./pages/RealEstateDetails";
 import EducationalServices from "./pages/EducationalServices";
@@ -50,12 +60,20 @@ import EducationalServicesNurseries from "./pages/EducationalServicesNurseries";
 import EducationalServicesCenters from "./pages/EducationalServicesCenters";
 import EducationalServicesTeachers from "./pages/EducationalServicesTeachers";
 import EducationalServicesUniversities from "./pages/EducationalServicesUniversities";
+import EducationalServicesEducationDepartment from "./pages/EducationalServicesEducationDepartment";
 import MedicalServicesManagement from "./pages/admin/MedicalServicesManagement";
 import MedicalServicesHospitals from "./pages/MedicalServicesHospitals";
 import MedicalServicesClinics from "./pages/MedicalServicesClinics";
 import MedicalServicesHealthUnits from "./pages/MedicalServicesHealthUnits";
 import MedicalServicesMedicalCenters from "./pages/MedicalServicesMedicalCenters";
+import MedicalServicesPharmacies from "./pages/MedicalServicesPharmacies";
 import CityServicesManagement from "./pages/admin/CityServicesManagement";
+import CityServicesNewManagement from "./pages/admin/CityServicesNewManagement";
+import PharmaciesManagement from "./pages/admin/PharmaciesManagement";
+import HotelsManagement from "./pages/admin/HotelsManagement";
+import GasStationsManagement from "./pages/admin/GasStationsManagement";
+import GasCompanyManagement from "./pages/admin/GasCompanyManagement";
+import ElectricityCompanyManagement from "./pages/admin/ElectricityCompanyManagement";
 import CityServices from "./pages/CityServices";
 import CityServicesATMs from "./pages/CityServicesATMs";
 import CityServicesBanks from "./pages/CityServicesBanks";
@@ -132,11 +150,13 @@ const AppContent = () => {
           <Route path="/educational-services/centers" element={<EducationalServicesCenters />} />
           <Route path="/educational-services/teachers" element={<EducationalServicesTeachers />} />
           <Route path="/educational-services/universities" element={<EducationalServicesUniversities />} />
+          <Route path="/educational-services/education-department" element={<EducationalServicesEducationDepartment />} />
           <Route path="/medical-services" element={<MedicalServices />} />
           <Route path="/medical-services/hospitals" element={<MedicalServicesHospitals />} />
           <Route path="/medical-services/clinics" element={<MedicalServicesClinics />} />
           <Route path="/medical-services/health-units" element={<MedicalServicesHealthUnits />} />
           <Route path="/medical-services/medical-centers" element={<MedicalServicesMedicalCenters />} />
+          <Route path="/medical-services/pharmacies" element={<MedicalServicesPharmacies />} />
           <Route path="/city-services" element={<CityServices />} />
           <Route path="/city-services/atms" element={<CityServicesATMs />} />
           <Route path="/city-services/banks" element={<CityServicesBanks />} />
@@ -144,6 +164,16 @@ const AppContent = () => {
           <Route path="/city-services/events" element={<CityServicesEvents />} />
           <Route path="/city-services/post-offices" element={<CityServicesPostOffices />} />
           <Route path="/city-services/craftsmen" element={<CityServicesCraftsmen />} />
+          <Route path="/city-services/traffic" element={<CityServicesTraffic />} />
+          <Route path="/city-services/civil-registry" element={<CityServicesCivilRegistry />} />
+          <Route path="/city-services/wholesale-market" element={<CityServicesWholesaleMarket />} />
+          <Route path="/city-services/city-center" element={<CityServicesCityCenter />} />
+          <Route path="/city-services/family-court" element={<CityServicesFamilyCourt />} />
+          <Route path="/city-services/courts" element={<CityServicesCourts />} />
+          <Route path="/city-services/hotels" element={<CityServicesHotels />} />
+          <Route path="/city-services/gas-stations" element={<CityServicesGasStations />} />
+          <Route path="/city-services/gas-company" element={<CityServicesGasCompany />} />
+          <Route path="/city-services/electricity-company" element={<CityServicesElectricityCompany />} />
           <Route path="/business" element={<Business />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/my-jobs" element={<MyJobs />} />
@@ -152,6 +182,12 @@ const AppContent = () => {
           <Route path="/admin/educational-services" element={<EducationalServicesManagement />} />
           <Route path="/admin/medical-services" element={<MedicalServicesManagement />} />
           <Route path="/admin/city-services" element={<CityServicesManagement />} />
+          <Route path="/admin/city-services-new" element={<CityServicesNewManagement />} />
+          <Route path="/admin/pharmacies" element={<PharmaciesManagement />} />
+          <Route path="/admin/hotels" element={<HotelsManagement />} />
+          <Route path="/admin/gas-stations" element={<GasStationsManagement />} />
+          <Route path="/admin/gas-company" element={<GasCompanyManagement />} />
+          <Route path="/admin/electricity-company" element={<ElectricityCompanyManagement />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/email-confirmation" element={<EmailConfirmation />} />
           <Route path="*" element={<NotFound />} />

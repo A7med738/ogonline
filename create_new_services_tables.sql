@@ -1,0 +1,119 @@
+-- =============================================
+-- إنشاء جداول الخدمات الجديدة
+-- =============================================
+
+-- 1. جدول محطات الوقود (لوكيشن فقط)
+CREATE TABLE IF NOT EXISTS public.gas_stations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  description TEXT,
+  address TEXT NOT NULL,
+  latitude DECIMAL(10, 8),
+  longitude DECIMAL(11, 8),
+  google_maps_url TEXT,
+  operating_hours TEXT,
+  services TEXT[],
+  image_url TEXT,
+  logo_url TEXT,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 2. جدول شركة الغاز (عنوان، لوكيشن، رقم وحجز موعد)
+CREATE TABLE IF NOT EXISTS public.gas_company (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  description TEXT,
+  phone TEXT NOT NULL,
+  address TEXT NOT NULL,
+  latitude DECIMAL(10, 8),
+  longitude DECIMAL(11, 8),
+  google_maps_url TEXT,
+  operating_hours TEXT,
+  services TEXT[],
+  booking_url TEXT,
+  image_url TEXT,
+  logo_url TEXT,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 3. جدول شركة الكهرباء (عنوان ولوكيشن)
+CREATE TABLE IF NOT EXISTS public.electricity_company (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  description TEXT,
+  phone TEXT,
+  address TEXT NOT NULL,
+  latitude DECIMAL(10, 8),
+  longitude DECIMAL(11, 8),
+  google_maps_url TEXT,
+  operating_hours TEXT,
+  services TEXT[],
+  image_url TEXT,
+  logo_url TEXT,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 4. إنشاء فهارس لتحسين الأداء
+CREATE INDEX IF NOT EXISTS idx_gas_stations_active ON public.gas_stations(is_active);
+CREATE INDEX IF NOT EXISTS idx_gas_stations_location ON public.gas_stations(latitude, longitude);
+
+CREATE INDEX IF NOT EXISTS idx_gas_company_active ON public.gas_company(is_active);
+CREATE INDEX IF NOT EXISTS idx_gas_company_location ON public.gas_company(latitude, longitude);
+
+CREATE INDEX IF NOT EXISTS idx_electricity_company_active ON public.electricity_company(is_active);
+CREATE INDEX IF NOT EXISTS idx_electricity_company_location ON public.electricity_company(latitude, longitude);
+
+-- 5. تمكين RLS
+ALTER TABLE public.gas_stations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.gas_company ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.electricity_company ENABLE ROW LEVEL SECURITY;
+
+-- 6. إنشاء سياسات RLS
+-- محطات الوقود
+CREATE POLICY "Anyone can view active gas stations" ON public.gas_stations 
+  FOR SELECT USING (is_active = true);
+
+CREATE POLICY "Admins can manage all gas stations" ON public.gas_stations 
+  FOR ALL USING (has_role(auth.uid(), 'admin'::app_role)) 
+  WITH CHECK (has_role(auth.uid(), 'admin'::app_role));
+
+-- شركة الغاز
+CREATE POLICY "Anyone can view active gas company branches" ON public.gas_company 
+  FOR SELECT USING (is_active = true);
+
+CREATE POLICY "Admins can manage all gas company branches" ON public.gas_company 
+  FOR ALL USING (has_role(auth.uid(), 'admin'::app_role)) 
+  WITH CHECK (has_role(auth.uid(), 'admin'::app_role));
+
+-- شركة الكهرباء
+CREATE POLICY "Anyone can view active electricity company branches" ON public.electricity_company 
+  FOR SELECT USING (is_active = true);
+
+CREATE POLICY "Admins can manage all electricity company branches" ON public.electricity_company 
+  FOR ALL USING (has_role(auth.uid(), 'admin'::app_role)) 
+  WITH CHECK (has_role(auth.uid(), 'admin'::app_role));
+
+-- 7. إدراج بيانات تجريبية
+-- محطات الوقود
+INSERT INTO public.gas_stations (name, description, address, latitude, longitude, operating_hours, services) VALUES
+('محطة وقود النهضة', 'محطة وقود حديثة مع جميع الخدمات', 'شارع النهضة، حدائق أكتوبر', 30.0444, 31.2357, '24/7', ARRAY['بنزين 92', 'بنزين 95', 'ديزل', 'غاز طبيعي', 'خدمة السيارات', 'مطعم', 'صيدلية']),
+('محطة وقود الشفاء', 'محطة وقود متكاملة', 'شارع الشفاء، حدائق أكتوبر', 30.0454, 31.2367, '24/7', ARRAY['بنزين 92', 'بنزين 95', 'ديزل', 'خدمة السيارات', 'سوبر ماركت']),
+('محطة وقود الحياة', 'محطة وقود اقتصادية', 'شارع الحياة، حدائق أكتوبر', 30.0464, 31.2377, 'السبت - الخميس: 6:00 - 24:00', ARRAY['بنزين 92', 'بنزين 95', 'ديزل']);
+
+-- شركة الغاز
+INSERT INTO public.gas_company (name, description, phone, address, latitude, longitude, operating_hours, services, booking_url) VALUES
+('فرع شركة الغاز الرئيسي', 'الفرع الرئيسي لشركة الغاز في المدينة', '01234567890', 'شارع الغاز، حدائق أكتوبر', 30.0444, 31.2357, 'السبت - الخميس: 8:00 - 16:00', ARRAY['تركيب الغاز', 'صيانة الغاز', 'تسجيل عداد جديد', 'تغيير العداد', 'خدمات الطوارئ'], 'https://gas-company-booking.com'),
+('فرع شركة الغاز - المنطقة الشمالية', 'فرع متخصص في المنطقة الشمالية', '01234567891', 'شارع الشمال، حدائق أكتوبر', 30.0454, 31.2367, 'السبت - الخميس: 8:00 - 15:00', ARRAY['تركيب الغاز', 'صيانة الغاز', 'تسجيل عداد جديد'], 'https://gas-company-booking.com'),
+('فرع شركة الغاز - المنطقة الجنوبية', 'فرع متخصص في المنطقة الجنوبية', '01234567892', 'شارع الجنوب، حدائق أكتوبر', 30.0464, 31.2377, 'السبت - الخميس: 8:00 - 15:00', ARRAY['تركيب الغاز', 'صيانة الغاز', 'تغيير العداد', 'خدمات الطوارئ'], 'https://gas-company-booking.com');
+
+-- شركة الكهرباء
+INSERT INTO public.electricity_company (name, description, phone, address, latitude, longitude, operating_hours, services) VALUES
+('فرع شركة الكهرباء الرئيسي', 'الفرع الرئيسي لشركة الكهرباء في المدينة', '01234567890', 'شارع الكهرباء، حدائق أكتوبر', 30.0444, 31.2357, 'السبت - الخميس: 8:00 - 16:00', ARRAY['تركيب الكهرباء', 'صيانة الكهرباء', 'تسجيل عداد جديد', 'تغيير العداد', 'خدمات الطوارئ', 'فواتير الكهرباء']),
+('فرع شركة الكهرباء - المنطقة الشرقية', 'فرع متخصص في المنطقة الشرقية', '01234567891', 'شارع الشرق، حدائق أكتوبر', 30.0454, 31.2367, 'السبت - الخميس: 8:00 - 15:00', ARRAY['تركيب الكهرباء', 'صيانة الكهرباء', 'تسجيل عداد جديد', 'فواتير الكهرباء']),
+('فرع شركة الكهرباء - المنطقة الغربية', 'فرع متخصص في المنطقة الغربية', '01234567892', 'شارع الغرب، حدائق أكتوبر', 30.0464, 31.2377, 'السبت - الخميس: 8:00 - 15:00', ARRAY['تركيب الكهرباء', 'صيانة الكهرباء', 'تغيير العداد', 'خدمات الطوارئ', 'فواتير الكهرباء']);

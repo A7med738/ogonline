@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
-import { CreditCard, Building2, Users, Calendar, Mail, Moon, Wrench, Bus } from "lucide-react";
+import { CreditCard, Building2, Users, Calendar, Mail, Moon, Wrench, Bus, Car, FileText, ShoppingCart, Phone, Scale, Home, Hotel, Fuel, Zap, Flame } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -14,7 +14,17 @@ const CityServices = () => {
     postOffices: 0,
     worshipPlaces: 0,
     craftsmen: 0,
-    trips: 0
+    trips: 0,
+    traffic: 0,
+    civilRegistry: 0,
+    wholesaleMarket: 0,
+    cityCenter: 0,
+    familyCourt: 0,
+    courts: 0,
+    hotels: 0,
+    gasStations: 0,
+    gasCompany: 0,
+    electricityCompany: 0
   });
 
   useEffect(() => {
@@ -23,7 +33,7 @@ const CityServices = () => {
 
   const loadCounts = async () => {
     try {
-      const [atmsRes, banksRes, youthClubsRes, eventsRes, postOfficesRes, worshipPlacesRes, craftsmenRes, tripsRes] = await Promise.all([
+      const [atmsRes, banksRes, youthClubsRes, eventsRes, postOfficesRes, worshipPlacesRes, craftsmenRes, tripsRes, hotelsRes] = await Promise.all([
         supabase.from('atms').select('id', { count: 'exact' }).eq('is_active', true),
         supabase.from('banks').select('id', { count: 'exact' }).eq('is_active', true),
         supabase.from('youth_clubs').select('id', { count: 'exact' }).eq('is_active', true),
@@ -31,7 +41,8 @@ const CityServices = () => {
         supabase.from('post_offices').select('id', { count: 'exact' }).eq('is_active', true),
         supabase.from('worship_places').select('id', { count: 'exact' }),
         supabase.from('craftsmen').select('id', { count: 'exact' }).eq('is_active', true).then(res => ({ count: 0, ...res })),
-        supabase.from('trips').select('id', { count: 'exact' }).eq('status', 'active').then(res => ({ count: 0, ...res }))
+        supabase.from('trips').select('id', { count: 'exact' }).eq('status', 'active').then(res => ({ count: 0, ...res })),
+        supabase.from('hotels').select('id', { count: 'exact' }).eq('is_active', true).then(res => ({ count: 0, ...res }))
       ]);
 
       setCounts({
@@ -42,7 +53,14 @@ const CityServices = () => {
         postOffices: postOfficesRes.count || 0,
         worshipPlaces: worshipPlacesRes.count || 0,
         craftsmen: craftsmenRes.count || 0,
-        trips: tripsRes.count || 0
+        trips: tripsRes.count || 0,
+        traffic: 1, // مرور - خدمة ثابتة
+        civilRegistry: 1, // سجل مدني - خدمة ثابتة
+        wholesaleMarket: 1, // سوق الجمله - خدمة ثابتة
+        cityCenter: 1, // سنترال المدينه - خدمة ثابتة
+        familyCourt: 1, // نيابة الاسره - خدمة ثابتة
+        courts: 1, // مجمع المحاكم - خدمة ثابتة
+        hotels: hotelsRes.count || 0 // فنادق المدينة - من قاعدة البيانات
       });
     } catch (error) {
       console.error('Error loading counts:', error);
@@ -104,6 +122,76 @@ const CityServices = () => {
       description: `${counts.trips} رحلة مشتركة متاحة`,
       icon: Bus,
       onClick: () => navigate("/trip-service"),
+      isActive: true
+    },
+    {
+      title: "مرور",
+      description: "خدمات المرور والتراخيص",
+      icon: Car,
+      onClick: () => navigate("/city-services/traffic"),
+      isActive: true
+    },
+    {
+      title: "سجل مدني",
+      description: "خدمات السجل المدني والهوية",
+      icon: FileText,
+      onClick: () => navigate("/city-services/civil-registry"),
+      isActive: true
+    },
+    {
+      title: "سوق الجمله",
+      description: "سوق الجملة والمواد الغذائية",
+      icon: ShoppingCart,
+      onClick: () => navigate("/city-services/wholesale-market"),
+      isActive: true
+    },
+    {
+      title: "سنترال المدينه",
+      description: "السنترال الرئيسي للمدينة",
+      icon: Phone,
+      onClick: () => navigate("/city-services/city-center"),
+      isActive: true
+    },
+    {
+      title: "نيابة الاسره",
+      description: "نيابة الأسرة والمحاكم الشرعية",
+      icon: Scale,
+      onClick: () => navigate("/city-services/family-court"),
+      isActive: true
+    },
+    {
+      title: "مجمع المحاكم",
+      description: "مجمع المحاكم والخدمات القضائية",
+      icon: Home,
+      onClick: () => navigate("/city-services/courts"),
+      isActive: true
+    },
+    {
+      title: "فنادق المدينة",
+      description: `${counts.hotels} فندق ومنتجع في المدينة`,
+      icon: Hotel,
+      onClick: () => navigate("/city-services/hotels"),
+      isActive: true
+    },
+    {
+      title: "محطات الوقود",
+      description: `${counts.gasStations} محطة وقود في المدينة`,
+      icon: Fuel,
+      onClick: () => navigate("/city-services/gas-stations"),
+      isActive: true
+    },
+    {
+      title: "شركة الغاز",
+      description: `${counts.gasCompany} فرع لشركة الغاز`,
+      icon: Flame,
+      onClick: () => navigate("/city-services/gas-company"),
+      isActive: true
+    },
+    {
+      title: "شركة الكهرباء",
+      description: `${counts.electricityCompany} فرع لشركة الكهرباء`,
+      icon: Zap,
+      onClick: () => navigate("/city-services/electricity-company"),
       isActive: true
     }
   ];
