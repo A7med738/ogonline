@@ -64,20 +64,8 @@ const CityServicesCourts = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/city-services')}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            العودة
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">مجمع المحاكم</h1>
-            <p className="text-muted-foreground">مجمع المحاكم والخدمات القضائية</p>
-          </div>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-foreground">مجمع المحاكم</h1>
         </div>
 
         {/* Services Grid */}

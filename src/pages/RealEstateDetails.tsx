@@ -211,14 +211,6 @@ const RealEstateDetails = () => {
       >
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              onClick={() => navigate(-1)}
-              className="flex items-center space-x-2 rtl:space-x-reverse"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              <span>العودة</span>
-            </Button>
             
             <div className="flex items-center space-x-2 rtl:space-x-reverse">
               <Button

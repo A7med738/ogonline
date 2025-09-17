@@ -173,18 +173,8 @@ const TripService = () => {
       <div className="container mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/city-services')}
-            className="flex items-center gap-2 shrink-0"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">العودة</span>
-          </Button>
           <div className="min-w-0 flex-1">
             <h1 className="text-xl sm:text-2xl font-bold text-foreground">توصيلة</h1>
-            <p className="text-muted-foreground text-sm">رحلات مشتركة في المدينة</p>
           </div>
         </div>
 

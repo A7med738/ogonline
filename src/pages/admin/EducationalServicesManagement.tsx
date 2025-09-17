@@ -13,10 +13,9 @@ import UniversitiesManagement from './UniversitiesManagement';
 const EducationalServicesManagement = () => {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">إدارة الخدمات التعليمية</h1>
-        <p className="text-muted-foreground">إدارة المدارس والخدمات التعليمية في المدينة</p>
-      </div>
+          <div>
+            <h1 className="text-3xl font-bold">إدارة الخدمات التعليمية</h1>
+          </div>
 
       <Tabs defaultValue="categories" className="space-y-6">
         <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">

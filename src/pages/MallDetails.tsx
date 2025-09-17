@@ -317,7 +317,6 @@ const MallDetails = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">المول غير موجود</h1>
-          <Button onClick={() => navigate(-1)}>العودة</Button>
         </div>
       </div>
     );
@@ -349,13 +348,6 @@ const MallDetails = () => {
       <div className="w-full px-3 py-4 max-w-full">
         {/* Header Section */}
         <div className="mb-6">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate(-1)}
-            className="mb-4"
-          >
-            ← العودة
-          </Button>
           
           {/* Image Carousel */}
           <Carousel className="w-full mb-4">

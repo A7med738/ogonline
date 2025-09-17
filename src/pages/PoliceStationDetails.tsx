@@ -79,9 +79,6 @@ const PoliceStationDetails = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center py-8">
             <p className="text-muted-foreground">لم يتم العثور على المركز</p>
-            <Button onClick={() => navigate('/police')} className="mt-4 bg-gradient-primary hover:shadow-elegant transition-all duration-300">
-              العودة لصفحة الشرطة
-            </Button>
           </div>
         </div>
       </div>;

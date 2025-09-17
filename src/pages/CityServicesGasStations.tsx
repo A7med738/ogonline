@@ -62,36 +62,10 @@ const CityServicesGasStations = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/city-services')}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            العودة
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">محطات الوقود</h1>
-            <p className="text-muted-foreground">محطات الوقود في المدينة</p>
-          </div>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-foreground">محطات الوقود</h1>
         </div>
 
-        {/* Info Card */}
-        <Card className="mb-6 border-orange-200 bg-orange-50">
-          <CardContent className="pt-4">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5" />
-              <div>
-                <h3 className="font-semibold text-orange-800">معلومات مهمة</h3>
-                <p className="text-orange-700 text-sm mt-1">
-                  اضغط على "الموقع" للانتقال إلى محطة الوقود على خرائط جوجل
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Stations Grid */}
         {loading ? (

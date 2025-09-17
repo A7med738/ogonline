@@ -145,14 +145,6 @@ const Jobs = () => {
     return (
       <div className="min-h-screen bg-background pt-8">
         <div className="container mx-auto px-4">
-          <Button
-            onClick={() => navigate(-1)}
-            variant="ghost"
-            className="mb-6 p-0 h-auto"
-          >
-            <ArrowLeft className="h-5 w-5 ml-2" />
-            العودة
-          </Button>
 
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-4">الوظائف والفرص</h1>

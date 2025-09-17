@@ -67,36 +67,10 @@ const CityServicesElectricityCompany = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/city-services')}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            العودة
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">شركة الكهرباء</h1>
-            <p className="text-muted-foreground">فروع شركة الكهرباء وخدماتها</p>
-          </div>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-foreground">شركة الكهرباء</h1>
         </div>
 
-        {/* Info Card */}
-        <Card className="mb-6 border-yellow-200 bg-yellow-50">
-          <CardContent className="pt-4">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
-              <div>
-                <h3 className="font-semibold text-yellow-800">معلومات مهمة</h3>
-                <p className="text-yellow-700 text-sm mt-1">
-                  يمكنك زيارة أقرب فرع لشركة الكهرباء أو الاتصال للاستفسار عن الخدمات.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Branches Grid */}
         {loading ? (

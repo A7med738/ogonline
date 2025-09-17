@@ -76,15 +76,6 @@ const SchoolTransportOffer = () => {
       <div className="container mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/services/school-transport')}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            العودة
-          </Button>
           <div>
             <h1 className="text-2xl font-bold text-foreground">عرض دورة متاحة</h1>
             <p className="text-muted-foreground">أضف دورة مدرسية متاحة للآخرين</p>
