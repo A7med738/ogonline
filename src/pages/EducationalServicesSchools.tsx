@@ -3,7 +3,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { GraduationCap, MapPin, Phone, Mail, Globe, Star, Users, DollarSign, Bus, Home, Heart } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { GraduationCap, MapPin, Phone, Mail, Globe, Star, Users, DollarSign, Bus, Home, Heart, Search, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface School {
@@ -29,24 +31,60 @@ interface School {
   special_needs: boolean;
   rating: number;
   is_active: boolean;
+  category_id?: string;
   created_at: string;
   updated_at: string;
+  school_categories?: {
+    id: string;
+    name_ar: string;
+    name_en: string;
+    color: string;
+    icon?: string;
+  };
+}
+
+interface SchoolCategory {
+  id: string;
+  name_ar: string;
+  name_en: string;
+  color: string;
+  icon?: string;
+  is_active: boolean;
 }
 
 const EducationalServicesSchools = () => {
   const [schools, setSchools] = useState<School[]>([]);
+  const [filteredSchools, setFilteredSchools] = useState<School[]>([]);
+  const [categories, setCategories] = useState<SchoolCategory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<string>('rating');
   const { toast } = useToast();
 
   useEffect(() => {
     loadSchools();
+    loadCategories();
   }, []);
+
+  useEffect(() => {
+    filterAndSortSchools();
+  }, [schools, searchTerm, selectedCategory, sortBy]);
 
   const loadSchools = async () => {
     try {
       const { data, error } = await supabase
         .from('schools')
-        .select('*')
+        .select(`
+          *,
+          school_categories (
+            id,
+            name_ar,
+            name_en,
+            color,
+            icon
+          )
+        `)
         .eq('is_active', true)
         .order('rating', { ascending: false });
 
@@ -62,6 +100,55 @@ const EducationalServicesSchools = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('school_categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+      setCategories(data || []);
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    }
+  };
+
+  const filterAndSortSchools = () => {
+    let filtered = [...schools];
+
+    // فلترة حسب البحث
+    if (searchTerm) {
+      filtered = filtered.filter(school =>
+        school.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        school.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        school.address?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // فلترة حسب الفئة
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(school => school.category_id === selectedCategory);
+    }
+
+    // ترتيب النتائج
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'rating':
+          return b.rating - a.rating;
+        case 'capacity':
+          return (b.capacity || 0) - (a.capacity || 0);
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredSchools(filtered);
   };
 
   const getTypeLabel = (type: string) => {
@@ -117,17 +204,93 @@ const EducationalServicesSchools = () => {
           <p className="text-gray-600 text-lg">اكتشف أفضل المدارس في المدينة</p>
         </div>
 
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
+          <div className="flex items-center mb-4">
+            <Filter className="h-5 w-5 text-gray-500 ml-2" />
+            <h3 className="text-lg font-semibold text-gray-900">فلترة وترتيب المدارس</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* البحث */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">البحث</label>
+              <div className="relative">
+                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="ابحث عن مدرسة..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pr-10"
+                />
+              </div>
+            </div>
+
+            {/* فلترة حسب الفئة */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">نوع المدرسة</label>
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger>
+                  <SelectValue placeholder="اختر نوع المدرسة" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">جميع الأنواع</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      <div className="flex items-center space-x-2">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: category.color }}
+                        ></div>
+                        <span>{category.name_ar}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* ترتيب النتائج */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">ترتيب حسب</label>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger>
+                  <SelectValue placeholder="اختر الترتيب" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="rating">التقييم</SelectItem>
+                  <SelectItem value="name">الاسم</SelectItem>
+                  <SelectItem value="capacity">السعة</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* إحصائيات */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">النتائج</label>
+              <div className="bg-gray-50 rounded-md p-3 text-center">
+                <div className="text-2xl font-bold text-blue-600">{filteredSchools.length}</div>
+                <div className="text-sm text-gray-600">مدرسة</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         {/* Schools Grid */}
-        {schools.length === 0 ? (
+        {filteredSchools.length === 0 ? (
           <div className="text-center py-12">
             <GraduationCap className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">لا توجد مدارس</h3>
-            <p className="text-gray-600">لا توجد مدارس متاحة حالياً</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {schools.length === 0 ? 'لا توجد مدارس' : 'لا توجد نتائج'}
+            </h3>
+            <p className="text-gray-600">
+              {schools.length === 0 ? 'لا توجد مدارس متاحة حالياً' : 'جرب تغيير معايير البحث'}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {schools.map((school) => (
+            {filteredSchools.map((school) => (
               <Card key={school.id} className="hover:shadow-lg transition-shadow duration-300">
                 <CardHeader>
                   <div className="flex items-start justify-between">
@@ -146,12 +309,24 @@ const EducationalServicesSchools = () => {
                       <div>
                         <CardTitle className="text-lg">{school.name}</CardTitle>
                         <CardDescription>
-                          <Badge variant="secondary" className="mr-2">
-                            {getTypeLabel(school.type)}
-                          </Badge>
-                          <Badge variant="outline">
-                            {getLevelLabel(school.level)}
-                          </Badge>
+                          <div className="flex flex-wrap gap-2">
+                            {school.school_categories && (
+                              <Badge 
+                                variant="secondary" 
+                                className="mr-2"
+                                style={{ 
+                                  backgroundColor: school.school_categories.color + '20',
+                                  color: school.school_categories.color,
+                                  borderColor: school.school_categories.color
+                                }}
+                              >
+                                {school.school_categories.name_ar}
+                              </Badge>
+                            )}
+                            <Badge variant="outline">
+                              {getLevelLabel(school.level)}
+                            </Badge>
+                          </div>
                         </CardDescription>
                       </div>
                     </div>
