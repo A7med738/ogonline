@@ -1,25 +1,43 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
 
 const VisitorStats = () => {
   const [visitorCount, setVisitorCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // تحميل عدد الزوار من localStorage
-    const storedCount = localStorage.getItem('visitorCount');
-    const count = storedCount ? parseInt(storedCount) : 0;
-    
-    // زيادة العداد بمقدار 1 مع كل زيارة
-    const newCount = count + 1;
-    setVisitorCount(newCount);
-    
-    // حفظ العدد الجديد
-    localStorage.setItem('visitorCount', newCount.toString());
-    
-    // إنهاء التحميل
-    setTimeout(() => setIsLoading(false), 500);
+    incrementCounter();
   }, []);
+
+  const incrementCounter = async () => {
+    try {
+      // استدعاء دالة زيادة العداد من قاعدة البيانات
+      const { data, error } = await supabase.rpc('increment_visitor_counter');
+      
+      if (error) {
+        console.error('Error incrementing counter:', error);
+        // في حالة الخطأ، استخدم localStorage كبديل
+        const storedCount = localStorage.getItem('visitorCount');
+        const count = storedCount ? parseInt(storedCount) : 0;
+        const newCount = count + 1;
+        setVisitorCount(newCount);
+        localStorage.setItem('visitorCount', newCount.toString());
+      } else {
+        setVisitorCount(data || 0);
+      }
+    } catch (error) {
+      console.error('Error incrementing counter:', error);
+      // في حالة الخطأ، استخدم localStorage كبديل
+      const storedCount = localStorage.getItem('visitorCount');
+      const count = storedCount ? parseInt(storedCount) : 0;
+      const newCount = count + 1;
+      setVisitorCount(newCount);
+      localStorage.setItem('visitorCount', newCount.toString());
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // تحويل الرقم إلى مصفوفة من الأرقام مع الصفر البادئ (7 خانات)
   const formatNumber = (num: number): string[] => {
