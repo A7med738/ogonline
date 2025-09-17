@@ -17,6 +17,7 @@ interface MedicalCenter {
   description?: string;
   image_url?: string;
   logo_url?: string;
+  google_maps_url?: string;
   established_year?: number;
   capacity?: number;
   operating_hours?: string;
@@ -143,6 +144,20 @@ const MedicalServicesMedicalCenters = () => {
               const TypeIcon = getTypeIcon(center.type);
               return (
                 <Card key={center.id} className="hover:shadow-lg transition-shadow duration-300">
+                  {/* Medical Center Image */}
+                  {center.image_url && (
+                    <div className="aspect-video relative">
+                      <img
+                        src={center.image_url}
+                        alt={center.name}
+                        className="w-full h-full object-cover rounded-t-lg"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )}
+                  
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex items-center space-x-3">
@@ -201,6 +216,19 @@ const MedicalServicesMedicalCenters = () => {
                           <div className="flex items-center space-x-2 text-sm text-gray-600">
                             <Clock className="h-4 w-4" />
                             <span>{center.operating_hours}</span>
+                          </div>
+                        )}
+                        {center.google_maps_url && (
+                          <div className="flex items-center space-x-2 text-sm text-gray-600">
+                            <MapPin className="h-4 w-4" />
+                            <a
+                              href={center.google_maps_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline"
+                            >
+                              عرض الموقع على خرائط جوجل
+                            </a>
                           </div>
                         )}
                       </div>

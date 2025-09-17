@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useNewsNotifications } from "@/hooks/useNewsNotifications";
 import { NewsNotificationBadge } from "@/components/NewsNotificationBadge";
 import { LatestNewsSection } from "@/components/LatestNewsSection";
+import VisitorStats from "@/components/VisitorStats";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 const Index = () => {
@@ -59,12 +60,13 @@ const Index = () => {
     }
   };
   const navigationItems = [
+    // الصف الأول
     {
       id: "news",
       title: "أخبار المدينة",
       description: "تابع آخر الأخبار والمستجدات في مدينتك",
       icon: Newspaper,
-      color: "from-green-500 to-emerald-500",
+      color: "from-white to-white",
       onClick: () => navigate("/news"),
       badge: unreadCount > 0 ? <NewsNotificationBadge count={unreadCount} /> : undefined
     },
@@ -73,7 +75,7 @@ const Index = () => {
       title: "جهاز المدينة",
       description: "تواصل مع إدارات المدينة المختلفة",
       icon: Building,
-      color: "from-blue-500 to-cyan-500",
+      color: "from-white to-white",
       onClick: () => navigate("/city")
     },
     {
@@ -81,56 +83,58 @@ const Index = () => {
       title: "شرطة المدينة",
       description: "أرقام التواصل مع مركز الشرطة للطوارئ والخدمات",
       icon: Shield,
-      color: "from-blue-800 to-blue-900",
+      color: "from-white to-white",
       onClick: () => navigate("/police")
     },
+    // الصف الثاني
     {
-      id: "business",
-      title: "المال والأعمال",
-      description: "استكشف الفرص التجارية في المدينة",
-      icon: Handshake,
-      color: "from-yellow-500 to-orange-500",
-      onClick: () => navigate("/business")
+      id: "city-malls",
+      title: "مولات المدينة",
+      description: "مولات ومراكز تسوق في المدينة",
+      icon: ShoppingBag,
+      color: "from-white to-white",
+      onClick: () => navigate("/city-malls")
     },
     {
       id: "services",
       title: "خدمات المدينة",
       description: "خدمات ومرافق البلدية للمواطنين",
       icon: Wrench,
-      color: "from-purple-500 to-indigo-500",
+      color: "from-white to-white",
       onClick: () => navigate("/city-services")
-    },
-    {
-      id: "real-estate",
-      title: "عقار ماب",
-      description: "ابحث عن العقارات المتاحة للبيع والإيجار",
-      icon: Home,
-      color: "from-emerald-500 to-teal-500",
-      onClick: () => navigate("/real-estate")
     },
     {
       id: "educational-services",
       title: "خدمات تعليمية",
       description: "خدمات تعليمية ومدارس في المدينة",
       icon: GraduationCap,
-      color: "from-indigo-500 to-purple-500",
+      color: "from-white to-white",
       onClick: () => navigate("/educational-services")
     },
+    // الصف الثالث
     {
       id: "medical-services",
       title: "خدمات طبية",
       description: "مستشفيات ومراكز طبية في المدينة",
       icon: Heart,
-      color: "from-rose-500 to-pink-500",
+      color: "from-white to-white",
       onClick: () => navigate("/medical-services")
     },
     {
-      id: "city-malls",
-      title: "مولات المدينة",
-      description: "مولات ومراكز تسوق في المدينة",
-      icon: ShoppingBag,
-      color: "from-amber-500 to-yellow-500",
-      onClick: () => navigate("/city-malls")
+      id: "real-estate",
+      title: "عقار ماب المدينة",
+      description: "ابحث عن العقارات المتاحة للبيع والإيجار",
+      icon: Home,
+      color: "from-white to-white",
+      onClick: () => navigate("/real-estate")
+    },
+    {
+      id: "business",
+      title: "المال والأعمال",
+      description: "استكشف الفرص التجارية في المدينة",
+      icon: Handshake,
+      color: "from-white to-white",
+      onClick: () => navigate("/business")
     },
   ];
   return (
@@ -205,7 +209,7 @@ const Index = () => {
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="grid grid-cols-4 gap-2 sm:gap-3 md:gap-4"
+            className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4"
           >
             {navigationItems.map((item, index) => {
               const IconComponent = item.icon;
@@ -228,11 +232,11 @@ const Index = () => {
                       <motion.div
                         whileHover={{ rotate: 360 }}
                         transition={{ duration: 0.6 }}
-                        className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-1 sm:mb-2 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center"
+                        className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-1 sm:mb-2 bg-white rounded-lg flex items-center justify-center flex-shrink-0"
                       >
-                        <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                        <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 flex-shrink-0" />
                       </motion.div>
-                      <h3 className="text-white font-semibold text-xs leading-tight">
+                      <h3 className="text-black font-semibold text-xs leading-tight">
                         {item.title}
                       </h3>
                       {item.badge && (
@@ -275,6 +279,16 @@ const Index = () => {
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
           <LatestNewsSection />
+        </motion.div>
+
+        {/* Visitor Stats Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+          className="mt-8 sm:mt-12"
+        >
+          <VisitorStats />
         </motion.div>
       </div>
     </div>

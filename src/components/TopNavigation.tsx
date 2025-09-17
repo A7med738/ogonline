@@ -125,7 +125,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         </div>
 
         <div className="flex items-center space-x-2">
-          <h1 className="text-white text-lg font-semibold">حدائق أكتوبر</h1>
+          <h1 className="text-white text-lg font-semibold">حدائق اكتوبر اونلاين</h1>
           <ChevronDown className="h-4 w-4 text-white" />
         </div>
 

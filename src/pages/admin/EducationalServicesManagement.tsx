@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { GraduationCap, Baby, BookOpen, Users, Building2, Plus, Edit, Trash2, Eye, Star, MapPin, Phone, Mail, Globe, Clock, Users as UsersIcon, DollarSign } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import ImageUploadField from '@/components/ImageUploadField';
 
 interface School {
   id: string;
@@ -344,10 +345,10 @@ const EducationalServicesManagement = () => {
                 <GraduationCap className="h-6 w-6 text-blue-600" />
                 <div>
                   <CardTitle className="text-lg">{school.name}</CardTitle>
-                  <CardDescription>
+                  <div className="text-sm text-muted-foreground">
                     <Badge variant="secondary" className="mr-2">{school.type}</Badge>
                     <Badge variant="outline">{school.level}</Badge>
-                  </CardDescription>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center space-x-1">
@@ -413,9 +414,9 @@ const EducationalServicesManagement = () => {
                 <Baby className="h-6 w-6 text-pink-600" />
                 <div>
                   <CardTitle className="text-lg">{nursery.name}</CardTitle>
-                  <CardDescription>
+                  <div className="text-sm text-muted-foreground">
                     <Badge variant="secondary" className="mr-2">{nursery.type}</Badge>
-                  </CardDescription>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center space-x-1">
@@ -481,9 +482,9 @@ const EducationalServicesManagement = () => {
                 <BookOpen className="h-6 w-6 text-green-600" />
                 <div>
                   <CardTitle className="text-lg">{center.name}</CardTitle>
-                  <CardDescription>
+                  <div className="text-sm text-muted-foreground">
                     <Badge variant="secondary" className="mr-2">{center.type}</Badge>
-                  </CardDescription>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center space-x-1">
@@ -549,10 +550,10 @@ const EducationalServicesManagement = () => {
                 <Users className="h-6 w-6 text-purple-600" />
                 <div>
                   <CardTitle className="text-lg">{teacher.name}</CardTitle>
-                  <CardDescription>
+                  <div className="text-sm text-muted-foreground">
                     <Badge variant="secondary" className="mr-2">{teacher.specialization}</Badge>
                     {teacher.is_verified && <Badge variant="default" className="bg-green-600">معتمد</Badge>}
-                  </CardDescription>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center space-x-1">
@@ -612,12 +613,12 @@ const EducationalServicesManagement = () => {
                 <Building2 className="h-6 w-6 text-blue-600" />
                 <div>
                   <CardTitle className="text-lg">{university.name}</CardTitle>
-                  <CardDescription>
+                  <div className="text-sm text-muted-foreground">
                     <Badge variant="secondary" className="mr-2">{university.type}</Badge>
                     {university.established_year && (
                       <Badge variant="outline">تأسست {university.established_year}</Badge>
                     )}
-                  </CardDescription>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center space-x-1">
@@ -735,6 +736,29 @@ const EducationalServicesManagement = () => {
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             placeholder="أدخل الوصف"
             rows={3}
+          />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ImageUploadField
+            label="صورة الخدمة"
+            value={formData.image_url || ''}
+            onChange={(url) => setFormData({ ...formData, image_url: url })}
+            placeholder="أدخل رابط الصورة"
+          />
+          <ImageUploadField
+            label="شعار الخدمة"
+            value={formData.logo_url || ''}
+            onChange={(url) => setFormData({ ...formData, logo_url: url })}
+            placeholder="أدخل رابط الشعار"
+          />
+        </div>
+        <div>
+          <Label htmlFor="google_maps_url">رابط خرائط جوجل</Label>
+          <Input
+            id="google_maps_url"
+            value={formData.google_maps_url || ''}
+            onChange={(e) => setFormData({ ...formData, google_maps_url: e.target.value })}
+            placeholder="أدخل رابط خرائط جوجل"
           />
         </div>
       </>

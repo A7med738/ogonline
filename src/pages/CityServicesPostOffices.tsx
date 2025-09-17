@@ -110,20 +110,7 @@ const CityServicesPostOffices = () => {
                 phone={office.phone}
                 logoUrl={office.image_url}
                 icon={<Mail className="h-6 w-6 text-red-600" />}
-                features={[
-                  {
-                    label: "موقف سيارات",
-                    available: office.parking_available || false
-                  },
-                  {
-                    label: "إمكانية وصول",
-                    available: office.wheelchair_accessible || false
-                  },
-                  {
-                    label: "صراف آلي",
-                    available: office.atm_available || false
-                  }
-                ]}
+                features={[]}
                 onViewLocation={office.google_maps_url ? () => window.open(office.google_maps_url, '_blank') : undefined}
               />
             ))}

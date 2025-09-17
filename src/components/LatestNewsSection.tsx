@@ -159,7 +159,7 @@ export const LatestNewsSection = () => {
           <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-lg flex items-center justify-center shadow-lg">
             <Newspaper className="w-4 h-4 text-white" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent">
+          <h2 className="text-xl sm:text-2xl font-bold text-black">
             أحدث أخبار المدينة
           </h2>
         </div>
@@ -297,33 +297,6 @@ export const LatestNewsSection = () => {
         )}
       </motion.div>
 
-      {/* View All Button */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="text-center mt-8"
-      >
-        <motion.div
-          whileHover={{ scale: 1.05, y: -2 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <Button
-            onClick={() => navigate('/news')}
-            className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white shadow-xl hover:shadow-2xl px-8 py-3 rounded-2xl transition-all duration-300 font-semibold text-sm hover:scale-105 ring-2 ring-emerald-200/50 hover:ring-emerald-300/50"
-          >
-            <span className="flex items-center gap-2">
-              عرض جميع الأخبار
-              <motion.div
-                animate={{ x: [0, 4, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <ArrowRight className="w-4 h-4" />
-              </motion.div>
-            </span>
-          </Button>
-        </motion.div>
-      </motion.div>
     </motion.div>
   );
 };

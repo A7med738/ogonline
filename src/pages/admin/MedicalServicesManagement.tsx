@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Hospital, Stethoscope, Heart, Building2, Plus, Edit, Trash2, Star, MapPin, Phone, Mail, Globe, Clock, Users, DollarSign, Ambulance, Car, Pill, Microscope, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import ImageUploadField from '@/components/ImageUploadField';
 
 interface Hospital {
   id: string;
@@ -302,10 +303,10 @@ const MedicalServicesManagement = () => {
                 <Hospital className="h-6 w-6 text-red-600" />
                 <div>
                   <CardTitle className="text-lg">{hospital.name}</CardTitle>
-                  <CardDescription>
+                  <div className="text-sm text-muted-foreground">
                     <Badge variant="secondary" className="mr-2">{hospital.type}</Badge>
                     <Badge variant="outline">{hospital.level}</Badge>
-                  </CardDescription>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center space-x-1">
@@ -332,6 +333,19 @@ const MedicalServicesManagement = () => {
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <Users className="h-4 w-4" />
                   <span>السعة: {hospital.bed_capacity} سرير</span>
+                </div>
+              )}
+              {hospital.google_maps_url && (
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <MapPin className="h-4 w-4" />
+                  <a 
+                    href={hospital.google_maps_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    عرض الموقع على خرائط جوجل
+                  </a>
                 </div>
               )}
               <div className="flex items-center space-x-2 text-sm">
@@ -365,9 +379,9 @@ const MedicalServicesManagement = () => {
                 <Stethoscope className="h-6 w-6 text-blue-600" />
                 <div>
                   <CardTitle className="text-lg">{clinic.name}</CardTitle>
-                  <CardDescription>
+                  <div className="text-sm text-muted-foreground">
                     <Badge variant="secondary" className="mr-2">{clinic.type}</Badge>
-                  </CardDescription>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center space-x-1">
@@ -394,6 +408,19 @@ const MedicalServicesManagement = () => {
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <DollarSign className="h-4 w-4" />
                   <span>{clinic.consultation_fee} جنيه</span>
+                </div>
+              )}
+              {clinic.google_maps_url && (
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <MapPin className="h-4 w-4" />
+                  <a 
+                    href={clinic.google_maps_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    عرض الموقع على خرائط جوجل
+                  </a>
                 </div>
               )}
               <div className="flex items-center space-x-2 text-sm">
@@ -427,9 +454,9 @@ const MedicalServicesManagement = () => {
                 <Heart className="h-6 w-6 text-green-600" />
                 <div>
                   <CardTitle className="text-lg">{unit.name}</CardTitle>
-                  <CardDescription>
+                  <div className="text-sm text-muted-foreground">
                     <Badge variant="secondary" className="mr-2">{unit.type}</Badge>
-                  </CardDescription>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center space-x-1">
@@ -456,6 +483,19 @@ const MedicalServicesManagement = () => {
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <Users className="h-4 w-4" />
                   <span>السعة: {unit.capacity}</span>
+                </div>
+              )}
+              {unit.google_maps_url && (
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <MapPin className="h-4 w-4" />
+                  <a 
+                    href={unit.google_maps_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    عرض الموقع على خرائط جوجل
+                  </a>
                 </div>
               )}
               <div className="flex items-center space-x-2 text-sm">
@@ -489,9 +529,9 @@ const MedicalServicesManagement = () => {
                 <Building2 className="h-6 w-6 text-purple-600" />
                 <div>
                   <CardTitle className="text-lg">{center.name}</CardTitle>
-                  <CardDescription>
+                  <div className="text-sm text-muted-foreground">
                     <Badge variant="secondary" className="mr-2">{center.type}</Badge>
-                  </CardDescription>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center space-x-1">
@@ -518,6 +558,19 @@ const MedicalServicesManagement = () => {
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <Users className="h-4 w-4" />
                   <span>السعة: {center.capacity}</span>
+                </div>
+              )}
+              {center.google_maps_url && (
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <MapPin className="h-4 w-4" />
+                  <a 
+                    href={center.google_maps_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    عرض الموقع على خرائط جوجل
+                  </a>
                 </div>
               )}
               <div className="flex items-center space-x-2 text-sm">
@@ -604,6 +657,29 @@ const MedicalServicesManagement = () => {
             rows={3}
           />
         </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ImageUploadField
+            label="صورة الخدمة"
+            value={formData.image_url || ''}
+            onChange={(url) => setFormData({ ...formData, image_url: url })}
+            placeholder="أدخل رابط الصورة"
+          />
+          <ImageUploadField
+            label="شعار الخدمة"
+            value={formData.logo_url || ''}
+            onChange={(url) => setFormData({ ...formData, logo_url: url })}
+            placeholder="أدخل رابط الشعار"
+          />
+        </div>
+        <div>
+          <Label htmlFor="google_maps_url">رابط خرائط جوجل</Label>
+          <Input
+            id="google_maps_url"
+            value={formData.google_maps_url || ''}
+            onChange={(e) => setFormData({ ...formData, google_maps_url: e.target.value })}
+            placeholder="أدخل رابط خرائط جوجل"
+          />
+        </div>
       </>
     );
 
@@ -628,16 +704,17 @@ const MedicalServicesManagement = () => {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="level">المستوى *</Label>
+                <Label htmlFor="level">المستوى</Label>
                 <Select value={formData.level || ''} onValueChange={(value) => setFormData({ ...formData, level: value })}>
                   <SelectTrigger>
-                    <SelectValue placeholder="اختر المستوى" />
+                    <SelectValue placeholder="اختر المستوى (اختياري)" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="primary">أولي</SelectItem>
                     <SelectItem value="secondary">ثانوي</SelectItem>
                     <SelectItem value="tertiary">ثالثي</SelectItem>
                     <SelectItem value="quaternary">رابعي</SelectItem>
+                    <SelectItem value="غير محدد">غير محدد</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

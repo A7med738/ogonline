@@ -18,6 +18,7 @@ interface Hospital {
   description?: string;
   image_url?: string;
   logo_url?: string;
+  google_maps_url?: string;
   established_year?: number;
   bed_capacity?: number;
   emergency_services: boolean;
@@ -137,6 +138,20 @@ const MedicalServicesHospitals = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {hospitals.map((hospital) => (
               <Card key={hospital.id} className="hover:shadow-lg transition-shadow duration-300">
+                {/* Hospital Image */}
+                {hospital.image_url && (
+                  <div className="aspect-video relative">
+                    <img
+                      src={hospital.image_url}
+                      alt={hospital.name}
+                      className="w-full h-full object-cover rounded-t-lg"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
+                
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center space-x-3">
@@ -198,6 +213,19 @@ const MedicalServicesHospitals = () => {
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <Clock className="h-4 w-4" />
                           <span>{hospital.operating_hours}</span>
+                        </div>
+                      )}
+                      {hospital.google_maps_url && (
+                        <div className="flex items-center space-x-2 text-sm text-gray-600">
+                          <MapPin className="h-4 w-4" />
+                          <a
+                            href={hospital.google_maps_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            عرض الموقع على خرائط جوجل
+                          </a>
                         </div>
                       )}
                     </div>
