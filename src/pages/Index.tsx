@@ -141,6 +141,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-cyan-50 to-blue-50">
       <div className="px-4">
         {/* Hero Section - Mobile Optimized */}
+
         <motion.div 
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -290,6 +291,9 @@ const Index = () => {
         >
           <VisitorStats />
         </motion.div>
+
+        {/* مساحة إضافية لتجنب تغطية الزر العائم */}
+        <div className="h-20 sm:h-24"></div>
       </div>
     </div>
   );
