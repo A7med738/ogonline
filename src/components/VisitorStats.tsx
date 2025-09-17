@@ -6,10 +6,15 @@ const VisitorStats = () => {
   const [visitorCount, setVisitorCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isNewVisitor, setIsNewVisitor] = useState(false);
+  const [hasIncremented, setHasIncremented] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    // تحميل العداد الحالي وزيادته
-    loadAndIncrementCounter();
+    // تحميل العداد الحالي وزيادته (مرة واحدة فقط)
+    if (!hasIncremented) {
+      loadAndIncrementCounter();
+      setHasIncremented(true);
+    }
     
     // الاشتراك في التحديثات المباشرة
     const subscription = supabase
@@ -23,16 +28,47 @@ const VisitorStats = () => {
           filter: 'id=eq.1'
         },
         (payload) => {
-          console.log('Counter updated:', payload);
+          console.log('Counter updated via Realtime:', payload);
           const newCount = payload.new.counter_value;
+          
+          // تحديث العداد فوراً
           setVisitorCount(newCount);
           setIsNewVisitor(true);
-          
-          // إخفاء تأثير الزائر الجديد بعد 3 ثوان
           setTimeout(() => setIsNewVisitor(false), 3000);
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Realtime subscription status:', status);
+        setIsConnected(status === 'SUBSCRIBED');
+        
+        // إعادة المحاولة في حالة فشل الاتصال
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          console.log('Reconnection attempt...');
+          setTimeout(() => {
+            subscription.unsubscribe();
+            // إعادة الاشتراك
+            const newSubscription = supabase
+              .channel('visitor_counter_changes_retry')
+              .on(
+                'postgres_changes',
+                {
+                  event: 'UPDATE',
+                  schema: 'public',
+                  table: 'visitor_counter',
+                  filter: 'id=eq.1'
+                },
+                (payload) => {
+                  console.log('Counter updated via Realtime (retry):', payload);
+                  const newCount = payload.new.counter_value;
+                  setVisitorCount(newCount);
+                  setIsNewVisitor(true);
+                  setTimeout(() => setIsNewVisitor(false), 3000);
+                }
+              )
+              .subscribe();
+          }, 5000);
+        }
+      });
 
     return () => {
       subscription.unsubscribe();
@@ -41,29 +77,25 @@ const VisitorStats = () => {
 
   const loadAndIncrementCounter = async () => {
     try {
-      // أولاً: تحميل العداد الحالي
-      const { data: currentData, error: currentError } = await supabase.rpc('get_visitor_counter');
+      // زيادة العداد مباشرة والحصول على القيمة الجديدة
+      const { data: incrementData, error: incrementError } = await supabase.rpc('increment_visitor_counter');
       
-      if (currentError) {
-        console.error('Error getting current counter:', currentError);
+      if (incrementError) {
+        console.error('Error incrementing counter:', incrementError);
         // في حالة الخطأ، استخدم localStorage كبديل
         const storedCount = localStorage.getItem('visitorCount');
         const count = storedCount ? parseInt(storedCount) : 0;
         const newCount = count + 1;
         setVisitorCount(newCount);
         localStorage.setItem('visitorCount', newCount.toString());
+        setIsNewVisitor(true);
+        setTimeout(() => setIsNewVisitor(false), 3000);
       } else {
-        setVisitorCount(currentData || 0);
-        
-        // ثانياً: زيادة العداد
-        const { data: incrementData, error: incrementError } = await supabase.rpc('increment_visitor_counter');
-        
-        if (incrementError) {
-          console.error('Error incrementing counter:', incrementError);
-        } else {
-          // العداد سيتم تحديثه عبر Realtime subscription
-          console.log('Counter incremented to:', incrementData);
-        }
+        // تعيين القيمة الجديدة مباشرة
+        setVisitorCount(incrementData || 0);
+        setIsNewVisitor(true);
+        setTimeout(() => setIsNewVisitor(false), 3000);
+        console.log('Counter incremented to:', incrementData);
       }
     } catch (error) {
       console.error('Error in counter operations:', error);
@@ -73,6 +105,8 @@ const VisitorStats = () => {
       const newCount = count + 1;
       setVisitorCount(newCount);
       localStorage.setItem('visitorCount', newCount.toString());
+      setIsNewVisitor(true);
+      setTimeout(() => setIsNewVisitor(false), 3000);
     } finally {
       setIsLoading(false);
     }
@@ -110,9 +144,15 @@ const VisitorStats = () => {
       }`}
     >
       <div className="text-center">
-        <h2 className="text-base sm:text-lg font-bold mb-3 text-white">
-          عدد الزائرين:
-        </h2>
+        <div className="flex items-center justify-center mb-3">
+          <h2 className="text-base sm:text-lg font-bold text-white">
+            عدد الزائرين:
+          </h2>
+          {/* مؤشر حالة الاتصال */}
+          <div className={`ml-2 w-2 h-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'}`} 
+               title={isConnected ? 'متصل - تحديثات مباشرة' : 'غير متصل - تحديث يدوي'}>
+          </div>
+        </div>
         
         {/* إشعار زائر جديد */}
         {isNewVisitor && (
