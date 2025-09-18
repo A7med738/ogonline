@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Hospital, Stethoscope, Heart, Building2, Plus, Edit, Trash2, Star, MapPin, Phone, Mail, Globe, Clock, Users, DollarSign, Ambulance, Car, Pill, Microscope, X } from 'lucide-react';
+import { Hospital, Stethoscope, Heart, Building2, Plus, Edit, Trash2, Star, MapPin, Phone, Mail, Globe, Clock, Users, DollarSign, Ambulance, Car, Pill, Microscope, X, MessageCircle, Facebook } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import ImageUploadField from '@/components/ImageUploadField';
 
@@ -18,9 +18,11 @@ interface Hospital {
   id: string;
   name: string;
   type: string;
-  level: string;
   address?: string;
   phone?: string;
+  phone2?: string;
+  whatsapp?: string;
+  facebook_url?: string;
   email?: string;
   website?: string;
   description?: string;
@@ -57,6 +59,9 @@ interface Clinic {
   type: string;
   address?: string;
   phone?: string;
+  phone2?: string;
+  whatsapp?: string;
+  facebook_url?: string;
   email?: string;
   website?: string;
   description?: string;
@@ -86,6 +91,9 @@ interface HealthUnit {
   type: string;
   address?: string;
   phone?: string;
+  phone2?: string;
+  whatsapp?: string;
+  facebook_url?: string;
   email?: string;
   website?: string;
   description?: string;
@@ -115,6 +123,9 @@ interface MedicalCenter {
   type: string;
   address?: string;
   phone?: string;
+  phone2?: string;
+  whatsapp?: string;
+  facebook_url?: string;
   email?: string;
   website?: string;
   description?: string;
@@ -304,8 +315,7 @@ const MedicalServicesManagement = () => {
                 <div>
                   <CardTitle className="text-lg">{hospital.name}</CardTitle>
                   <div className="text-sm text-muted-foreground">
-                    <Badge variant="secondary" className="mr-2">{hospital.type}</Badge>
-                    <Badge variant="outline">{hospital.level}</Badge>
+                    <Badge variant="secondary">{hospital.type}</Badge>
                   </div>
                 </div>
               </div>
@@ -329,17 +339,35 @@ const MedicalServicesManagement = () => {
                   <span>{hospital.phone}</span>
                 </div>
               )}
+              {hospital.phone2 && (
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <Phone className="h-4 w-4" />
+                  <span>{hospital.phone2}</span>
+                </div>
+              )}
+              {hospital.whatsapp && (
+                <div className="flex items-center space-x-2 text-sm text-green-600">
+                  <MessageCircle className="h-4 w-4" />
+                  <span>{hospital.whatsapp}</span>
+                </div>
+              )}
+              {hospital.facebook_url && (
+                <div className="flex items-center space-x-2 text-sm text-blue-600">
+                  <Facebook className="h-4 w-4" />
+                  <span>صفحة الفيسبوك</span>
+                </div>
+              )}
               {hospital.bed_capacity && (
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <Users className="h-4 w-4" />
                   <span>السعة: {hospital.bed_capacity} سرير</span>
                 </div>
               )}
-              {hospital.google_maps_url && (
+              {hospital.address && (
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <MapPin className="h-4 w-4" />
                   <a 
-                    href={hospital.google_maps_url} 
+                    href={hospital.google_maps_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hospital.address)}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:underline"
@@ -404,17 +432,35 @@ const MedicalServicesManagement = () => {
                   <span>{clinic.phone}</span>
                 </div>
               )}
+              {clinic.phone2 && (
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <Phone className="h-4 w-4" />
+                  <span>{clinic.phone2}</span>
+                </div>
+              )}
+              {clinic.whatsapp && (
+                <div className="flex items-center space-x-2 text-sm text-green-600">
+                  <MessageCircle className="h-4 w-4" />
+                  <span>{clinic.whatsapp}</span>
+                </div>
+              )}
+              {clinic.facebook_url && (
+                <div className="flex items-center space-x-2 text-sm text-blue-600">
+                  <Facebook className="h-4 w-4" />
+                  <span>صفحة الفيسبوك</span>
+                </div>
+              )}
               {clinic.consultation_fee && (
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <DollarSign className="h-4 w-4" />
                   <span>{clinic.consultation_fee} جنيه</span>
                 </div>
               )}
-              {clinic.google_maps_url && (
+              {clinic.address && (
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <MapPin className="h-4 w-4" />
                   <a 
-                    href={clinic.google_maps_url} 
+                    href={clinic.google_maps_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(clinic.address)}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:underline"
@@ -479,17 +525,35 @@ const MedicalServicesManagement = () => {
                   <span>{unit.phone}</span>
                 </div>
               )}
+              {unit.phone2 && (
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <Phone className="h-4 w-4" />
+                  <span>{unit.phone2}</span>
+                </div>
+              )}
+              {unit.whatsapp && (
+                <div className="flex items-center space-x-2 text-sm text-green-600">
+                  <MessageCircle className="h-4 w-4" />
+                  <span>{unit.whatsapp}</span>
+                </div>
+              )}
+              {unit.facebook_url && (
+                <div className="flex items-center space-x-2 text-sm text-blue-600">
+                  <Facebook className="h-4 w-4" />
+                  <span>صفحة الفيسبوك</span>
+                </div>
+              )}
               {unit.capacity && (
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <Users className="h-4 w-4" />
                   <span>السعة: {unit.capacity}</span>
                 </div>
               )}
-              {unit.google_maps_url && (
+              {unit.address && (
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <MapPin className="h-4 w-4" />
                   <a 
-                    href={unit.google_maps_url} 
+                    href={unit.google_maps_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(unit.address)}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:underline"
@@ -554,17 +618,35 @@ const MedicalServicesManagement = () => {
                   <span>{center.phone}</span>
                 </div>
               )}
+              {center.phone2 && (
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <Phone className="h-4 w-4" />
+                  <span>{center.phone2}</span>
+                </div>
+              )}
+              {center.whatsapp && (
+                <div className="flex items-center space-x-2 text-sm text-green-600">
+                  <MessageCircle className="h-4 w-4" />
+                  <span>{center.whatsapp}</span>
+                </div>
+              )}
+              {center.facebook_url && (
+                <div className="flex items-center space-x-2 text-sm text-blue-600">
+                  <Facebook className="h-4 w-4" />
+                  <span>صفحة الفيسبوك</span>
+                </div>
+              )}
               {center.capacity && (
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <Users className="h-4 w-4" />
                   <span>السعة: {center.capacity}</span>
                 </div>
               )}
-              {center.google_maps_url && (
+              {center.address && (
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <MapPin className="h-4 w-4" />
                   <a 
-                    href={center.google_maps_url} 
+                    href={center.google_maps_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(center.address)}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:underline"
@@ -614,6 +696,35 @@ const MedicalServicesManagement = () => {
               value={formData.phone || ''}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               placeholder="أدخل رقم الهاتف"
+            />
+          </div>
+          <div>
+            <Label htmlFor="phone2">رقم الهاتف الإضافي</Label>
+            <Input
+              id="phone2"
+              value={formData.phone2 || ''}
+              onChange={(e) => setFormData({ ...formData, phone2: e.target.value })}
+              placeholder="أدخل رقم هاتف إضافي"
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="whatsapp">رقم الواتساب</Label>
+            <Input
+              id="whatsapp"
+              value={formData.whatsapp || ''}
+              onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+              placeholder="أدخل رقم الواتساب"
+            />
+          </div>
+          <div>
+            <Label htmlFor="facebook_url">رابط صفحة الفيسبوك</Label>
+            <Input
+              id="facebook_url"
+              value={formData.facebook_url || ''}
+              onChange={(e) => setFormData({ ...formData, facebook_url: e.target.value })}
+              placeholder="أدخل رابط صفحة الفيسبوك"
             />
           </div>
         </div>
@@ -700,21 +811,6 @@ const MedicalServicesManagement = () => {
                     <SelectItem value="private">خاص</SelectItem>
                     <SelectItem value="specialized">متخصص</SelectItem>
                     <SelectItem value="university">جامعي</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="level">المستوى</Label>
-                <Select value={formData.level || ''} onValueChange={(value) => setFormData({ ...formData, level: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="اختر المستوى (اختياري)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="primary">أولي</SelectItem>
-                    <SelectItem value="secondary">ثانوي</SelectItem>
-                    <SelectItem value="tertiary">ثالثي</SelectItem>
-                    <SelectItem value="quaternary">رابعي</SelectItem>
-                    <SelectItem value="غير محدد">غير محدد</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Building2, MapPin, Phone, Mail, Globe, Star, Users, Clock, Microscope, X, Heart, Brain, Eye, Calendar, CheckCircle, XCircle } from 'lucide-react';
+import { Building2, MapPin, Phone, Mail, Globe, Star, Users, Clock, Microscope, X, Heart, Brain, Eye, Calendar, CheckCircle, XCircle, MessageCircle, Facebook } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface MedicalCenter {
@@ -12,6 +12,9 @@ interface MedicalCenter {
   type: string;
   address?: string;
   phone?: string;
+  phone2?: string;
+  whatsapp?: string;
+  facebook_url?: string;
   email?: string;
   website?: string;
   description?: string;
@@ -111,6 +114,15 @@ const MedicalServicesMedicalCenters = () => {
   const handleCall = (phoneNumber: string) => {
     // فتح تطبيق الهاتف للاتصال
     window.open(`tel:${phoneNumber}`, '_self');
+  };
+
+  const handleWhatsApp = (phone: string) => {
+    const whatsappUrl = `https://wa.me/${phone.replace(/[^0-9]/g, '')}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const handleFacebook = (url: string) => {
+    window.open(url, '_blank');
   };
 
   const handleBookAppointment = (centerName: string) => {
@@ -224,6 +236,24 @@ const MedicalServicesMedicalCenters = () => {
                             <span>{center.phone}</span>
                           </div>
                         )}
+                        {center.phone2 && (
+                          <div className="flex items-center space-x-2 text-sm text-gray-600">
+                            <Phone className="h-4 w-4" />
+                            <span>{center.phone2}</span>
+                          </div>
+                        )}
+                        {center.whatsapp && (
+                          <div className="flex items-center space-x-2 text-sm text-green-600">
+                            <MessageCircle className="h-4 w-4" />
+                            <span>{center.whatsapp}</span>
+                          </div>
+                        )}
+                        {center.facebook_url && (
+                          <div className="flex items-center space-x-2 text-sm text-blue-600">
+                            <Facebook className="h-4 w-4" />
+                            <span>صفحة الفيسبوك</span>
+                          </div>
+                        )}
                         {center.capacity && (
                           <div className="flex items-center space-x-2 text-sm text-gray-600">
                             <Users className="h-4 w-4" />
@@ -236,17 +266,19 @@ const MedicalServicesMedicalCenters = () => {
                             <span>{center.operating_hours}</span>
                           </div>
                         )}
-                        {center.google_maps_url && (
+                        {center.address && (
                           <div className="flex items-center space-x-2 text-sm text-gray-600">
                             <MapPin className="h-4 w-4" />
-                            <a
-                              href={center.google_maps_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline"
+                            <button
+                              onClick={() => {
+                                const mapsUrl = center.google_maps_url || 
+                                  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(center.address)}`;
+                                window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+                              }}
+                              className="text-blue-600 hover:text-blue-800 hover:underline text-left"
                             >
                               عرض الموقع على خرائط جوجل
-                            </a>
+                            </button>
                           </div>
                         )}
                       </div>
@@ -346,7 +378,7 @@ const MedicalServicesMedicalCenters = () => {
                       )}
 
                       {/* Action Buttons */}
-                      <div className="flex space-x-2 mt-4">
+                      <div className="grid grid-cols-2 gap-2 mt-4">
                         {center.phone && (
                           <Button 
                             size="sm" 
@@ -356,6 +388,28 @@ const MedicalServicesMedicalCenters = () => {
                           >
                             <Phone className="h-4 w-4 ml-1" />
                             اتصل
+                          </Button>
+                        )}
+                        {center.whatsapp && (
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="flex-1 text-green-600 border-green-600 hover:bg-green-50"
+                            onClick={() => handleWhatsApp(center.whatsapp!)}
+                          >
+                            <MessageCircle className="h-4 w-4 ml-1" />
+                            واتساب
+                          </Button>
+                        )}
+                        {center.facebook_url && (
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="flex-1 text-blue-600 border-blue-600 hover:bg-blue-50"
+                            onClick={() => handleFacebook(center.facebook_url!)}
+                          >
+                            <Facebook className="h-4 w-4 ml-1" />
+                            فيسبوك
                           </Button>
                         )}
                         {center.appointment_required && (
@@ -378,6 +432,21 @@ const MedicalServicesMedicalCenters = () => {
                           >
                             <Globe className="h-4 w-4 ml-1" />
                             الموقع
+                          </Button>
+                        )}
+                        {center.address && (
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="flex-1"
+                            onClick={() => {
+                              const mapsUrl = center.google_maps_url || 
+                                `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(center.address)}`;
+                              window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+                            }}
+                          >
+                            <MapPin className="h-4 w-4 ml-1" />
+                            خرائط جوجل
                           </Button>
                         )}
                       </div>

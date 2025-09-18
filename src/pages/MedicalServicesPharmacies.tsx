@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Pill, MapPin, Phone, Clock, Star, Car, Accessibility, Languages, CheckCircle, XCircle, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Pill, MapPin, Phone, Clock, Star, Car, Accessibility, Languages, CheckCircle, XCircle, ExternalLink, MessageCircle, Facebook } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,9 @@ interface Pharmacy {
   name: string;
   address: string;
   phone: string;
+  phone2?: string;
+  whatsapp?: string;
+  facebook_url?: string;
   email?: string;
   description?: string;
   image_url?: string;
@@ -65,6 +68,15 @@ const MedicalServicesPharmacies = () => {
 
   const handleContact = (phone: string) => {
     window.open(`tel:${phone}`, '_self');
+  };
+
+  const handleWhatsApp = (phone: string) => {
+    const whatsappUrl = `https://wa.me/${phone.replace(/[^0-9]/g, '')}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const handleFacebook = (url: string) => {
+    window.open(url, '_blank');
   };
 
   const handleLocation = (url?: string) => {
@@ -195,6 +207,24 @@ const MedicalServicesPharmacies = () => {
                       <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
                       <span className="text-sm">{pharmacy.phone}</span>
                     </div>
+                    {pharmacy.phone2 && (
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
+                        <span className="text-sm">{pharmacy.phone2}</span>
+                      </div>
+                    )}
+                    {pharmacy.whatsapp && (
+                      <div className="flex items-center gap-2">
+                        <MessageCircle className="h-4 w-4 text-green-600 shrink-0" />
+                        <span className="text-sm text-green-600">{pharmacy.whatsapp}</span>
+                      </div>
+                    )}
+                    {pharmacy.facebook_url && (
+                      <div className="flex items-center gap-2">
+                        <Facebook className="h-4 w-4 text-blue-600 shrink-0" />
+                        <span className="text-sm text-blue-600">صفحة الفيسبوك</span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
                       <span className="text-sm">{pharmacy.operating_hours}</span>
@@ -263,7 +293,7 @@ const MedicalServicesPharmacies = () => {
                   )}
 
                   {/* Action Buttons */}
-                  <div className="flex gap-2 pt-2">
+                  <div className="grid grid-cols-2 gap-2 pt-2">
                     <Button
                       onClick={() => handleContact(pharmacy.phone)}
                       size="sm"
@@ -272,6 +302,28 @@ const MedicalServicesPharmacies = () => {
                       <Phone className="h-4 w-4 mr-1" />
                       اتصل
                     </Button>
+                    {pharmacy.whatsapp && (
+                      <Button
+                        onClick={() => handleWhatsApp(pharmacy.whatsapp)}
+                        size="sm"
+                        variant="outline"
+                        className="flex-1 text-green-600 border-green-600 hover:bg-green-50"
+                      >
+                        <MessageCircle className="h-4 w-4 mr-1" />
+                        واتساب
+                      </Button>
+                    )}
+                    {pharmacy.facebook_url && (
+                      <Button
+                        onClick={() => handleFacebook(pharmacy.facebook_url)}
+                        size="sm"
+                        variant="outline"
+                        className="flex-1 text-blue-600 border-blue-600 hover:bg-blue-50"
+                      >
+                        <Facebook className="h-4 w-4 mr-1" />
+                        فيسبوك
+                      </Button>
+                    )}
                     {pharmacy.google_maps_url && (
                       <Button
                         onClick={() => handleLocation(pharmacy.google_maps_url)}

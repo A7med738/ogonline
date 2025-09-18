@@ -197,17 +197,19 @@ const MedicalServicesHealthUnits = () => {
                           <span>{unit.operating_hours}</span>
                         </div>
                       )}
-                      {unit.google_maps_url && (
+                      {unit.address && (
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <MapPin className="h-4 w-4" />
-                          <a
-                            href={unit.google_maps_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
+                          <button
+                            onClick={() => {
+                              const mapsUrl = unit.google_maps_url || 
+                                `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(unit.address)}`;
+                              window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+                            }}
+                            className="text-blue-600 hover:text-blue-800 hover:underline text-left"
                           >
                             عرض الموقع على خرائط جوجل
-                          </a>
+                          </button>
                         </div>
                       )}
                     </div>
@@ -306,6 +308,21 @@ const MedicalServicesHealthUnits = () => {
                         <Button size="sm" variant="outline" className="flex-1">
                           <Globe className="h-4 w-4 ml-1" />
                           الموقع
+                        </Button>
+                      )}
+                      {unit.address && (
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="flex-1"
+                          onClick={() => {
+                            const mapsUrl = unit.google_maps_url || 
+                              `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(unit.address)}`;
+                            window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+                          }}
+                        >
+                          <MapPin className="h-4 w-4 ml-1" />
+                          خرائط جوجل
                         </Button>
                       )}
                     </div>
