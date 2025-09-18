@@ -2,6 +2,17 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 
+/**
+ * عداد الزوار الذكي - يحسب الزوار الحقيقيين مرة واحدة فقط لكل جلسة
+ * 
+ * كيف يعمل:
+ * 1. يستخدم sessionStorage لتتبع ما إذا كان المستخدم محسوب مسبقاً
+ * 2. عند فتح الصفحة لأول مرة في الجلسة: يزيد العداد ويضع علامة في sessionStorage
+ * 3. عند فتح الصفحة مرة أخرى في نفس الجلسة: يحمل العداد الحالي فقط بدون زيادته
+ * 4. عند إغلاق المتصفح وإعادة فتحه: يعتبر جلسة جديدة ويعد مرة أخرى
+ * 
+ * هذا يضمن أن العداد يعكس عدد الزوار الحقيقيين وليس عدد مرات فتح الصفحة
+ */
 const VisitorStats = () => {
   const [visitorCount, setVisitorCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -10,9 +21,15 @@ const VisitorStats = () => {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    // تحميل العداد الحالي وزيادته (مرة واحدة فقط)
-    if (!hasIncremented) {
+    // تحميل العداد الحالي وزيادته (مرة واحدة فقط لكل جلسة)
+    if (!hasIncremented && !sessionStorage.getItem('visitorCounted')) {
       loadAndIncrementCounter();
+      setHasIncremented(true);
+      // وضع علامة في sessionStorage أن هذا المستخدم تم حسابه
+      sessionStorage.setItem('visitorCounted', 'true');
+    } else if (sessionStorage.getItem('visitorCounted')) {
+      // إذا كان المستخدم محسوب مسبقاً، فقط احمل العداد الحالي
+      loadCurrentCounter();
       setHasIncremented(true);
     }
     
@@ -74,6 +91,32 @@ const VisitorStats = () => {
       subscription.unsubscribe();
     };
   }, []);
+
+  const loadCurrentCounter = async () => {
+    try {
+      // تحميل العداد الحالي فقط بدون زيادته
+      const { data: currentCount, error: getError } = await supabase.rpc('get_visitor_counter');
+      
+      if (getError) {
+        console.error('Error getting current counter:', getError);
+        // في حالة الخطأ، استخدم localStorage كبديل
+        const storedCount = localStorage.getItem('visitorCount');
+        const count = storedCount ? parseInt(storedCount) : 0;
+        setVisitorCount(count);
+      } else {
+        setVisitorCount(currentCount || 0);
+        console.log('Current counter loaded:', currentCount);
+      }
+    } catch (error) {
+      console.error('Error loading current counter:', error);
+      // في حالة الخطأ، استخدم localStorage كبديل
+      const storedCount = localStorage.getItem('visitorCount');
+      const count = storedCount ? parseInt(storedCount) : 0;
+      setVisitorCount(count);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const loadAndIncrementCounter = async () => {
     try {
