@@ -108,6 +108,24 @@ const MedicalServicesMedicalCenters = () => {
     ));
   };
 
+  const handleCall = (phoneNumber: string) => {
+    // فتح تطبيق الهاتف للاتصال
+    window.open(`tel:${phoneNumber}`, '_self');
+  };
+
+  const handleBookAppointment = (centerName: string) => {
+    toast({
+      title: 'حجز موعد',
+      description: `سيتم توجيهك لحجز موعد في ${centerName}`,
+    });
+    // هنا يمكن إضافة منطق حجز المواعيد
+  };
+
+  const handleVisitWebsite = (website: string) => {
+    // فتح الموقع في تبويب جديد
+    window.open(website, '_blank', 'noopener,noreferrer');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -174,11 +192,11 @@ const MedicalServicesMedicalCenters = () => {
                         )}
                         <div>
                           <CardTitle className="text-lg">{center.name}</CardTitle>
-                          <CardDescription>
+                          <div className="mt-1">
                             <Badge variant="secondary">
                               {getTypeLabel(center.type)}
                             </Badge>
-                          </CardDescription>
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center space-x-1">
@@ -330,19 +348,34 @@ const MedicalServicesMedicalCenters = () => {
                       {/* Action Buttons */}
                       <div className="flex space-x-2 mt-4">
                         {center.phone && (
-                          <Button size="sm" variant="outline" className="flex-1">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="flex-1"
+                            onClick={() => handleCall(center.phone!)}
+                          >
                             <Phone className="h-4 w-4 ml-1" />
                             اتصل
                           </Button>
                         )}
                         {center.appointment_required && (
-                          <Button size="sm" variant="outline" className="flex-1">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="flex-1"
+                            onClick={() => handleBookAppointment(center.name)}
+                          >
                             <Calendar className="h-4 w-4 ml-1" />
                             احجز موعد
                           </Button>
                         )}
                         {center.website && (
-                          <Button size="sm" variant="outline" className="flex-1">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="flex-1"
+                            onClick={() => handleVisitWebsite(center.website!)}
+                          >
                             <Globe className="h-4 w-4 ml-1" />
                             الموقع
                           </Button>
