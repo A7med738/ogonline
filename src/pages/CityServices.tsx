@@ -84,8 +84,8 @@ const CityServices = () => {
       isActive: true
     },
     {
-      title: "النوادي ومراكز الشباب",
-      description: `${counts.youthClubs} نادي ومركز شباب`,
+      title: "خدمات رياضية",
+      description: `${counts.youthClubs} خدمة رياضية متاحة`,
       icon: Users,
       onClick: () => navigate("/city-services/youth-clubs"),
       isActive: true
