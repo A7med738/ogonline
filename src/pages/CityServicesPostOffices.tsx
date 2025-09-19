@@ -86,7 +86,6 @@ const CityServicesPostOffices = () => {
             <Mail className="h-12 w-12 text-red-600 ml-4" />
             <h1 className="text-4xl font-bold text-gray-900">مكاتب البريد</h1>
           </div>
-          <p className="text-gray-600 text-lg">اكتشف أقرب مكاتب البريد والخدمات البريدية في المدينة</p>
         </div>
 
         {/* Post Offices Grid */}

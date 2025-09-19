@@ -102,12 +102,6 @@ export const ModernServiceCard = ({
               </div>
             </div>
           </div>
-          <div className="flex items-center space-x-1">
-            <span className="text-sm text-gray-500">({rating})</span>
-            <div className="flex space-x-0.5">
-              {renderStars(rating)}
-            </div>
-          </div>
         </div>
       </CardHeader>
 

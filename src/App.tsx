@@ -80,6 +80,7 @@ import CityServices from "./pages/CityServices";
 import CityServicesATMs from "./pages/CityServicesATMs";
 import CityServicesBanks from "./pages/CityServicesBanks";
 import CityServicesYouthClubs from "./pages/CityServicesYouthClubs";
+import CityServicesChildren from "./pages/CityServicesChildren";
 import CityServicesEvents from "./pages/CityServicesEvents";
 import CityServicesPostOffices from "./pages/CityServicesPostOffices";
 import CityServicesCraftsmen from "./pages/CityServicesCraftsmen";
@@ -180,6 +181,7 @@ const AppContent = () => {
           <Route path="/city-services/atms" element={<CityServicesATMs />} />
           <Route path="/city-services/banks" element={<CityServicesBanks />} />
           <Route path="/city-services/youth-clubs" element={<CityServicesYouthClubs />} />
+          <Route path="/city-services/children-services" element={<CityServicesChildren />} />
           <Route path="/city-services/events" element={<CityServicesEvents />} />
           <Route path="/city-services/post-offices" element={<CityServicesPostOffices />} />
           <Route path="/city-services/craftsmen" element={<CityServicesCraftsmen />} />

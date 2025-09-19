@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
-import { CreditCard, Building2, Users, Calendar, Mail, Moon, Wrench, Bus, Car, FileText, ShoppingCart, Phone, Scale, Home, Hotel, Fuel, Zap, Flame } from "lucide-react";
+import { CreditCard, Building2, Users, Calendar, Mail, Moon, Wrench, Bus, Car, FileText, ShoppingCart, Phone, Scale, Home, Hotel, Fuel, Zap, Flame, Baby } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import AuthGuard from "@/components/AuthGuard";
@@ -88,6 +88,13 @@ const CityServices = () => {
       description: `${counts.youthClubs} خدمة رياضية متاحة`,
       icon: Users,
       onClick: () => navigate("/city-services/youth-clubs"),
+      isActive: true
+    },
+    {
+      title: "خدمات الأطفال",
+      description: "ملاهي وكيدز ايريا وأنشطة ترفيهية",
+      icon: Baby,
+      onClick: () => navigate("/city-services/children-services"),
       isActive: true
     },
     {

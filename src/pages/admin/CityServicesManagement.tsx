@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { CreditCard, Building2, Users, Calendar, Mail, Plus, Edit, Trash2, Star, MapPin, Phone, Mail as MailIcon, Globe, Clock, DollarSign, ExternalLink } from 'lucide-react';
+import { CreditCard, Building2, Users, Calendar, Mail, Plus, Edit, Trash2, Star, MapPin, Phone, Mail as MailIcon, Globe, Clock, DollarSign, ExternalLink, Baby } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 interface ATM {
@@ -131,6 +131,25 @@ interface PostOffice {
   updated_at: string;
 }
 
+interface ChildrenService {
+  id: string;
+  name: string;
+  type: string;
+  address?: string;
+  phone?: string;
+  phone2?: string;
+  whatsapp?: string;
+  facebook_url?: string;
+  google_maps_url?: string;
+  website?: string;
+  description?: string;
+  image_url?: string;
+  logo_url?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 const CityServicesManagement = () => {
   const [activeTab, setActiveTab] = useState('atms');
   const [atms, setAtms] = useState<ATM[]>([]);
@@ -138,6 +157,7 @@ const CityServicesManagement = () => {
   const [youthClubs, setYouthClubs] = useState<YouthClub[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [postOffices, setPostOffices] = useState<PostOffice[]>([]);
+  const [childrenServices, setChildrenServices] = useState<ChildrenService[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
@@ -185,6 +205,13 @@ const CityServicesManagement = () => {
             .select('*')
             .order('created_at', { ascending: false });
           setPostOffices(postOfficesData || []);
+          break;
+        case 'children-services':
+          const { data: childrenServicesData } = await supabase
+            .from('children_services')
+            .select('*')
+            .order('created_at', { ascending: false });
+          setChildrenServices(childrenServicesData || []);
           break;
       }
     } catch (error) {
@@ -255,6 +282,21 @@ const CityServicesManagement = () => {
         email: '', 
         services: [], 
         operating_hours: '', 
+        is_active: true 
+      },
+      'children-services': { 
+        name: '', 
+        type: '', 
+        address: '', 
+        phone: '', 
+        phone2: '', 
+        whatsapp: '', 
+        facebook_url: '', 
+        google_maps_url: '', 
+        website: '', 
+        description: '', 
+        image_url: '', 
+        logo_url: '', 
         is_active: true 
       }
     };
@@ -347,6 +389,15 @@ const CityServicesManagement = () => {
         return;
       }
 
+      if (activeTab === 'children-services' && (!data.name || !data.type || !data.address)) {
+        toast({
+          title: 'خطأ',
+          description: 'يرجى ملء جميع الحقول المطلوبة (اسم الخدمة، نوع الخدمة، والعنوان)',
+          variant: 'destructive',
+        });
+        return;
+      }
+
       if (editingItem) {
         const { error } = await supabase
           .from(table)
@@ -387,6 +438,7 @@ const CityServicesManagement = () => {
       case 'youth-clubs': return 'youth_clubs';
       case 'events': return 'events';
       case 'post-offices': return 'post_offices';
+      case 'children-services': return 'children_services';
       default: return 'atms';
     }
   };
@@ -428,7 +480,7 @@ const CityServicesManagement = () => {
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
-                {editingItem ? 'تعديل' : 'إضافة'} {activeTab === 'atms' ? 'جهاز صراف آلي' : activeTab === 'banks' ? 'بنك' : activeTab === 'youth-clubs' ? 'نادي شباب' : activeTab === 'events' ? 'فعالية' : 'مكتب بريد'}
+                {editingItem ? 'تعديل' : 'إضافة'} {activeTab === 'atms' ? 'جهاز صراف آلي' : activeTab === 'banks' ? 'بنك' : activeTab === 'youth-clubs' ? 'نادي شباب' : activeTab === 'children-services' ? 'خدمة أطفال' : activeTab === 'events' ? 'فعالية' : 'مكتب بريد'}
               </DialogTitle>
               <DialogDescription>
                 {editingItem ? 'قم بتعديل البيانات أدناه' : 'أدخل البيانات المطلوبة أدناه'}
@@ -757,6 +809,138 @@ const CityServicesManagement = () => {
                   </div>
                 </>
               )}
+
+              {activeTab === 'children-services' && (
+                <>
+                  <div>
+                    <Label htmlFor="name">اسم الخدمة *</Label>
+                    <Input
+                      id="name"
+                      value={formData.name || ''}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      placeholder="مثل: ملاهي المدينة الترفيهية"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="type">نوع الخدمة *</Label>
+                    <Select
+                      value={formData.type || ''}
+                      onValueChange={(value) => setFormData({...formData, type: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="اختر نوع الخدمة" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="playground">ملاهي</SelectItem>
+                        <SelectItem value="kids_area">كيدز ايريا</SelectItem>
+                        <SelectItem value="entertainment">أنشطة ترفيهية</SelectItem>
+                        <SelectItem value="games">ألعاب</SelectItem>
+                        <SelectItem value="art">فنون</SelectItem>
+                        <SelectItem value="music">موسيقى</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="address">العنوان *</Label>
+                    <Input
+                      id="address"
+                      value={formData.address || ''}
+                      onChange={(e) => setFormData({...formData, address: e.target.value})}
+                      placeholder="مثل: شارع النيل، وسط المدينة"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone">رقم الهاتف الرئيسي</Label>
+                    <Input
+                      id="phone"
+                      value={formData.phone || ''}
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      placeholder="مثل: 01001234567"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone2">رقم الهاتف الثانوي</Label>
+                    <Input
+                      id="phone2"
+                      value={formData.phone2 || ''}
+                      onChange={(e) => setFormData({...formData, phone2: e.target.value})}
+                      placeholder="مثل: 01001234568"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="whatsapp">رقم الواتساب</Label>
+                    <Input
+                      id="whatsapp"
+                      value={formData.whatsapp || ''}
+                      onChange={(e) => setFormData({...formData, whatsapp: e.target.value})}
+                      placeholder="مثل: 01001234567"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="facebook_url">رابط صفحة الفيسبوك</Label>
+                    <Input
+                      id="facebook_url"
+                      value={formData.facebook_url || ''}
+                      onChange={(e) => setFormData({...formData, facebook_url: e.target.value})}
+                      placeholder="https://facebook.com/..."
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="website">رابط الموقع الإلكتروني</Label>
+                    <Input
+                      id="website"
+                      value={formData.website || ''}
+                      onChange={(e) => setFormData({...formData, website: e.target.value})}
+                      placeholder="https://example.com"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="google_maps_url">رابط Google Maps</Label>
+                    <Input
+                      id="google_maps_url"
+                      value={formData.google_maps_url || ''}
+                      onChange={(e) => setFormData({...formData, google_maps_url: e.target.value})}
+                      placeholder="https://maps.google.com/..."
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="description">وصف الخدمة</Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description || ''}
+                      onChange={(e) => setFormData({...formData, description: e.target.value})}
+                      placeholder="وصف مفصل للخدمة والأنشطة المتاحة"
+                      rows={3}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="image_url">رابط صورة المكان</Label>
+                    <Input
+                      id="image_url"
+                      value={formData.image_url || ''}
+                      onChange={(e) => setFormData({...formData, image_url: e.target.value})}
+                      placeholder="https://example.com/image.jpg"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="logo_url">رابط شعار المكان</Label>
+                    <Input
+                      id="logo_url"
+                      value={formData.logo_url || ''}
+                      onChange={(e) => setFormData({...formData, logo_url: e.target.value})}
+                      placeholder="https://example.com/logo.jpg"
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="is_active"
+                      checked={formData.is_active || false}
+                      onCheckedChange={(checked) => setFormData({...formData, is_active: checked})}
+                    />
+                    <Label htmlFor="is_active">نشط</Label>
+                  </div>
+                </>
+              )}
             </div>
             <div className="flex justify-end space-x-2 mt-6">
               <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
@@ -771,26 +955,30 @@ const CityServicesManagement = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="atms" className="flex items-center space-x-2">
+        <TabsList className="grid w-full grid-cols-6 gap-1">
+          <TabsTrigger value="atms" className="flex flex-col items-center space-y-1 px-1 py-2 text-xs">
             <CreditCard className="h-4 w-4" />
-            <span>أجهزة الصراف الآلي</span>
+            <span>صراف</span>
           </TabsTrigger>
-          <TabsTrigger value="banks" className="flex items-center space-x-2">
+          <TabsTrigger value="banks" className="flex flex-col items-center space-y-1 px-1 py-2 text-xs">
             <Building2 className="h-4 w-4" />
-            <span>البنوك</span>
+            <span>بنوك</span>
           </TabsTrigger>
-          <TabsTrigger value="youth-clubs" className="flex items-center space-x-2">
+          <TabsTrigger value="youth-clubs" className="flex flex-col items-center space-y-1 px-1 py-2 text-xs">
             <Users className="h-4 w-4" />
-            <span>النوادي</span>
+            <span>نوادي</span>
           </TabsTrigger>
-          <TabsTrigger value="events" className="flex items-center space-x-2">
+          <TabsTrigger value="children-services" className="flex flex-col items-center space-y-1 px-1 py-2 text-xs">
+            <Baby className="h-4 w-4" />
+            <span>أطفال</span>
+          </TabsTrigger>
+          <TabsTrigger value="events" className="flex flex-col items-center space-y-1 px-1 py-2 text-xs">
             <Calendar className="h-4 w-4" />
-            <span>الفعاليات</span>
+            <span>فعاليات</span>
           </TabsTrigger>
-          <TabsTrigger value="post-offices" className="flex items-center space-x-2">
+          <TabsTrigger value="post-offices" className="flex flex-col items-center space-y-1 px-1 py-2 text-xs">
             <Mail className="h-4 w-4" />
-            <span>مكاتب البريد</span>
+            <span>بريد</span>
           </TabsTrigger>
         </TabsList>
 
@@ -982,6 +1170,85 @@ const CityServicesManagement = () => {
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => handleDelete(club.id, 'youth_clubs')}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="children-services" className="mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {childrenServices.map((service) => (
+              <Card key={service.id} className="hover:shadow-lg transition-shadow duration-300">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Baby className="h-6 w-6 text-pink-600" />
+                      <div>
+                        <CardTitle className="text-lg">{service.name}</CardTitle>
+                        <CardDescription>
+                          {service.type === 'playground' ? 'ملاهي' :
+                           service.type === 'kids_area' ? 'كيدز ايريا' :
+                           service.type === 'entertainment' ? 'أنشطة ترفيهية' :
+                           service.type === 'games' ? 'ألعاب' :
+                           service.type === 'art' ? 'فنون' :
+                           service.type === 'music' ? 'موسيقى' : service.type}
+                        </CardDescription>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm">
+                      <Switch checked={service.is_active} disabled />
+                      <span className={service.is_active ? 'text-green-600' : 'text-red-600'}>
+                        {service.is_active ? 'نشط' : 'غير نشط'}
+                      </span>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {service.address && (
+                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        <MapPin className="h-4 w-4" />
+                        <span>{service.address}</span>
+                      </div>
+                    )}
+                    {service.phone && (
+                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        <Phone className="h-4 w-4" />
+                        <span>{service.phone}</span>
+                      </div>
+                    )}
+                    {service.whatsapp && (
+                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        <span>💬</span>
+                        <span>{service.whatsapp}</span>
+                      </div>
+                    )}
+                    {service.description && (
+                      <div className="text-sm text-gray-600 line-clamp-2">
+                        {service.description}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex justify-end space-x-2 mt-4">
+                    {service.google_maps_url && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => window.open(service.google_maps_url, '_blank')}
+                        className="text-blue-600 hover:text-blue-700"
+                      >
+                        <ExternalLink className="h-4 w-4 mr-1" />
+                        الموقع
+                      </Button>
+                    )}
+                    <Button variant="outline" size="sm" onClick={() => handleEdit(service)}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleDelete(service.id, 'children_services')}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
