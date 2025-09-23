@@ -113,7 +113,6 @@ const Auth = () => {
           email: formData.email,
           password: formData.password,
           options: {
-            emailRedirectTo: `${window.location.origin}/email-confirmation`,
             data: {
               full_name: formData.fullName,
               age: parseInt(formData.age)
@@ -123,10 +122,18 @@ const Auth = () => {
         
         if (error) throw error
         
+        // Store email for OTP verification
+        localStorage.setItem('pendingEmail', formData.email);
+        
         toast({
           title: "تم إنشاء الحساب بنجاح!",
-          description: "يرجى فحص بريدك الإلكتروني والنقر على رابط التفعيل"
+          description: "تم إرسال رمز التأكيد إلى بريدك الإلكتروني"
         })
+        
+        // Navigate to OTP verification
+        navigate('/otp-verification', { 
+          state: { email: formData.email } 
+        });
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: formData.email,

@@ -203,6 +203,80 @@ const Index = () => {
 
         </motion.div>
 
+        {/* خدمة احجزلي - Mobile Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="mb-6"
+        >
+          <div 
+            className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg mx-2 sm:mx-0 cursor-pointer hover:shadow-xl transition-all duration-300"
+            onClick={() => navigate('/book-service')}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-green-600/20 to-emerald-700/20"></div>
+            <div className="relative px-4 py-3 sm:px-6 sm:py-4 flex items-center justify-center">
+              <motion.div
+                animate={{ 
+                  scale: [1, 1.05, 1],
+                  rotate: [0, 2, -2, 0]
+                }}
+                transition={{ 
+                  duration: 3, 
+                  repeat: Infinity, 
+                  ease: "easeInOut" 
+                }}
+                whileHover={{ scale: 1.1 }}
+                className="flex items-center space-x-2 sm:space-x-3 rtl:space-x-reverse"
+              >
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                    className="text-white text-lg sm:text-xl"
+                  >
+                    📱
+                  </motion.div>
+                </div>
+                <div className="text-center">
+                  <h3 className="text-white font-bold text-sm sm:text-base leading-tight">
+                    خدمة احجزلي
+                  </h3>
+                  <p className="text-white/80 text-xs sm:text-sm">
+                    احجز خدماتك بسهولة
+                  </p>
+                </div>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="text-white text-lg sm:text-xl"
+                  >
+                    ✨
+                  </motion.div>
+                </div>
+              </motion.div>
+            </div>
+            
+            {/* Floating particles effect */}
+            <motion.div
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute top-2 right-4 w-2 h-2 bg-white/30 rounded-full"
+            ></motion.div>
+            <motion.div
+              animate={{ y: [0, 10, 0] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              className="absolute bottom-2 left-4 w-1.5 h-1.5 bg-white/40 rounded-full"
+            ></motion.div>
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              className="absolute top-1/2 right-8 w-1 h-1 bg-white/50 rounded-full"
+            ></motion.div>
+          </div>
+        </motion.div>
+
         {/* Services Grid - Mobile Optimized */}
         <motion.div 
           initial={{ opacity: 0 }}

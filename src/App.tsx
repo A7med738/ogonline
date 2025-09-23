@@ -42,6 +42,9 @@ import JoinTrip from "./pages/JoinTrip";
 import CityServicesTraffic from "./pages/CityServicesTraffic";
 import CityServicesCivilRegistry from "./pages/CityServicesCivilRegistry";
 import CityServicesWholesaleMarket from "./pages/CityServicesWholesaleMarket";
+import HealthCenters from "./pages/HealthCenters";
+import BookService from "./pages/BookService";
+import OTPVerification from "./pages/OTPVerification";
 import CityServicesCityCenter from "./pages/CityServicesCityCenter";
 import CityServicesFamilyCourt from "./pages/CityServicesFamilyCourt";
 import CityServicesCourts from "./pages/CityServicesCourts";
@@ -143,6 +146,8 @@ const AppContent = () => {
           <Route path="/" element={<Index />} />
           <Route path="/search" element={<Search />} />
           <Route path="/news" element={<News />} />
+          <Route path="/book-service" element={<BookService />} />
+          <Route path="/health-centers" element={<HealthCenters />} />
           <Route path="/police" element={<Police />} />
           <Route path="/police/station/:stationId" element={<PoliceStationDetails />} />
           <Route path="/city" element={<City />} />
@@ -199,6 +204,7 @@ const AppContent = () => {
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/my-jobs" element={<MyJobs />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/otp-verification" element={<OTPVerification />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/educational-services" element={<EducationalServicesManagement />} />
           <Route path="/admin/medical-services" element={<MedicalServicesManagement />} />
