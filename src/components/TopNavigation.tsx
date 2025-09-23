@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Bell, MessageCircle, Menu, Search, ChevronDown, Home, Newspaper, Shield, Building, User, Settings, LogOut, ArrowRight } from 'lucide-react';
+import { Bell, MessageCircle, Menu, Search, ChevronDown, Home, Newspaper, Shield, Building, User, Settings, LogOut, ArrowRight, Stethoscope, Calendar } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -29,7 +29,15 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
     icon: Home,
     label: 'الرئيسية',
     path: '/'
+  }, {
+    icon: Stethoscope,
+    label: 'احجزلي طبيب',
+    path: '/health-centers'
   }, ...(user ? [{
+    icon: Calendar,
+    label: 'مواعيدي',
+    path: '/my-appointments'
+  }, {
     icon: User,
     label: 'الملف الشخصي',
     path: '/profile'
