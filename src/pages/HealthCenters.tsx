@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -13,7 +13,12 @@ import {
   Stethoscope,
   Users,
   Calendar,
-  Navigation
+  Navigation,
+  Building2,
+  Activity,
+  ChevronRight,
+  Eye,
+  ExternalLink
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -49,7 +54,7 @@ const HealthCenters = () => {
   const fetchHealthCenters = async () => {
     try {
       const { data, error } = await supabase
-        .from('health_centers')
+        .from('book_service_health_centers')
         .select('*')
         .eq('is_active', true)
         .order('name');
@@ -69,11 +74,28 @@ const HealthCenters = () => {
     }
   };
 
-  const getMockData = (): HealthCenter[] => [];
+  const getMockData = (): HealthCenter[] => [
+    {
+      id: '550e8400-e29b-41d4-a716-446655440000',
+      name: 'مركز حدائق أكتوبر الطبي المتكامل - احجزلي',
+      address: 'حدائق أكتوبر، شارع النيل، بجوار مول الأندلس، الحي السابع، الجيزة',
+      phone: '01234567890',
+      email: 'info@octobergardens-medical.com',
+      working_hours: '24/7 - خدمة طوارئ متاحة',
+      services: ['طب عام', 'أطفال', 'نساء وتوليد', 'قلب', 'عظام', 'جلدية', 'أنف وأذن وحنجرة', 'عيون', 'أسنان'],
+      rating: 4.8,
+      image_url: '/lovable-uploads/687e6d95-f6ac-4274-b5cf-8969324550b0.png',
+      description: 'مركز طبي متكامل يقدم خدمات طبية شاملة لسكان حدائق أكتوبر مع أحدث التقنيات الطبية - خدمة احجزلي',
+      latitude: 30.0444,
+      longitude: 31.2357,
+      google_maps_url: 'https://maps.google.com/?q=30.0444,31.2357',
+      is_available: true,
+      specializations: ['طب عام', 'أطفال', 'نساء وتوليد', 'قلب', 'عظام', 'جلدية', 'أنف وأذن وحنجرة', 'عيون', 'أسنان']
+    }
+  ];
 
   const handleBookAppointment = (center: HealthCenter) => {
-    // هنا يمكن إضافة منطق الحجز
-    alert(`سيتم توجيهك لحجز موعد في ${center.name}`);
+    navigate(`/clinics/${center.id}`);
   };
 
   const handleCall = (phone: string) => {
@@ -115,7 +137,7 @@ const HealthCenters = () => {
             <span>العودة</span>
           </Button>
           <div className="flex items-center space-x-2 rtl:space-x-reverse">
-            <Heart className="w-6 h-6 text-green-600" />
+            <Building2 className="w-6 h-6 text-emerald-600" />
             <h1 className="text-lg font-bold text-gray-800">المراكز الصحية</h1>
           </div>
           <div className="w-16"></div>
@@ -123,24 +145,38 @@ const HealthCenters = () => {
       </motion.div>
 
       <div className="px-4 py-6">
-        {/* Stats Cards */}
+        {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-2 gap-4 mb-6"
+          className="text-center mb-8"
         >
-          <Card className="bg-gradient-to-r from-green-500 to-emerald-600 text-white">
+          <div className="bg-gradient-to-r from-emerald-500 to-cyan-600 rounded-2xl p-6 text-white mb-6">
+            <Building2 className="w-12 h-12 mx-auto mb-3" />
+            <h2 className="text-xl font-bold mb-2">خدمة احجزلي الطبية</h2>
+            <p className="text-sm opacity-90">احجز موعدك الطبي بسهولة واطمئن على صحتك</p>
+          </div>
+        </motion.div>
+
+        {/* Statistics */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="grid grid-cols-2 gap-4 mb-8"
+        >
+          <Card className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white border-0 shadow-lg">
             <CardContent className="p-4 text-center">
-              <Stethoscope className="w-8 h-8 mx-auto mb-2" />
+              <Activity className="w-8 h-8 mx-auto mb-2" />
               <div className="text-2xl font-bold">{healthCenters.length}</div>
               <div className="text-sm opacity-90">مركز صحي متاح</div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white">
+          <Card className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-0 shadow-lg">
             <CardContent className="p-4 text-center">
               <Users className="w-8 h-8 mx-auto mb-2" />
-              <div className="text-2xl font-bold">قريباً</div>
-              <div className="text-sm opacity-90">مراكز جديدة</div>
+              <div className="text-2xl font-bold">11</div>
+              <div className="text-sm opacity-90">عيادة متخصصة</div>
             </CardContent>
           </Card>
         </motion.div>
@@ -160,89 +196,112 @@ const HealthCenters = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+                <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-0">
                   <CardContent className="p-0">
                     {/* Header with image */}
-                    <div className="relative h-32 bg-gradient-to-r from-green-500 to-emerald-600">
-                      <div className="absolute inset-0 bg-black/20"></div>
+                    <div className="relative h-40 bg-gradient-to-r from-emerald-500 to-cyan-600">
+                      <div className="absolute inset-0 bg-black/10"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                      
+                      {/* Rating */}
                       <div className="absolute bottom-4 right-4 text-white">
-                        <div className="flex items-center space-x-1 rtl:space-x-reverse">
-                          <Star className="w-4 h-4 fill-current" />
-                          <span className="text-sm font-semibold">{center.rating}</span>
+                        <div className="flex items-center space-x-1 rtl:space-x-reverse bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
+                          <Star className="w-4 h-4 fill-current text-yellow-300" />
+                          <span className="text-sm font-bold">{center.rating}</span>
                         </div>
                       </div>
+                      
+                      {/* Status Badge */}
                       <div className="absolute top-4 left-4">
                         <Badge 
                           variant={center.is_available ? "default" : "secondary"}
-                          className={center.is_available ? "bg-green-500" : "bg-gray-500"}
+                          className={center.is_available ? "bg-emerald-500 text-white border-0" : "bg-gray-500 text-white border-0"}
                         >
-                          {center.is_available ? "متاح" : "غير متاح"}
+                          {center.is_available ? "متاح للحجز" : "غير متاح"}
                         </Badge>
+                      </div>
+                      
+                      {/* Center Icon */}
+                      <div className="absolute top-4 right-4">
+                        <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                          <Building2 className="w-6 h-6 text-white" />
+                        </div>
                       </div>
                     </div>
 
                     {/* Content */}
-                    <div className="p-4">
-                      <h3 className="text-lg font-bold text-gray-800 mb-2">{center.name}</h3>
-                      <p className="text-gray-600 text-sm mb-3">{center.description}</p>
+                    <div className="p-5">
+                      <h3 className="text-xl font-bold text-gray-800 mb-2">{center.name}</h3>
+                      <p className="text-gray-600 text-sm mb-4 leading-relaxed">{center.description}</p>
 
                       {/* Services */}
-                      <div className="mb-3">
-                        <div className="text-sm font-semibold text-gray-700 mb-2">الخدمات:</div>
-                        <div className="flex flex-wrap gap-1">
-                          {center.services.slice(0, 3).map((service, idx) => (
-                            <Badge key={idx} variant="outline" className="text-xs">
+                      <div className="mb-4">
+                        <div className="flex items-center space-x-2 rtl:space-x-reverse mb-3">
+                          <Stethoscope className="w-5 h-5 text-emerald-600" />
+                          <span className="text-sm font-bold text-gray-700">العيادات المتاحة:</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {(center.services || []).slice(0, 4).map((service, idx) => (
+                            <Badge key={idx} variant="outline" className="text-xs bg-emerald-50 text-emerald-700 border-emerald-200">
                               {service}
                             </Badge>
                           ))}
-                          {center.services.length > 3 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{center.services.length - 3} أخرى
+                          {(center.services || []).length > 4 && (
+                            <Badge variant="outline" className="text-xs bg-gray-50 text-gray-600 border-gray-200">
+                              +{(center.services || []).length - 4} أخرى
                             </Badge>
                           )}
                         </div>
                       </div>
 
                       {/* Contact Info */}
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm text-gray-600">
-                          <MapPin className="w-4 h-4 text-green-600" />
-                          <span className="flex-1">{center.address}</span>
+                      <div className="space-y-3 mb-6">
+                        <div className="flex items-start space-x-3 rtl:space-x-reverse text-sm text-gray-600">
+                          <MapPin className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                          <span className="flex-1 leading-relaxed">{center.address}</span>
                         </div>
-                        <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm text-gray-600">
-                          <Clock className="w-4 h-4 text-blue-600" />
+                        <div className="flex items-center space-x-3 rtl:space-x-reverse text-sm text-gray-600">
+                          <Clock className="w-5 h-5 text-blue-600 flex-shrink-0" />
                           <span>{center.working_hours}</span>
+                        </div>
+                        <div className="flex items-center space-x-3 rtl:space-x-reverse text-sm text-gray-600">
+                          <Phone className="w-5 h-5 text-green-600 flex-shrink-0" />
+                          <span>{center.phone}</span>
                         </div>
                       </div>
 
-                      {/* Action Buttons */}
-                      <div className="grid grid-cols-3 gap-2">
+                      {/* Main Action Button */}
+                      <div className="space-y-3">
                         <Button
-                          size="sm"
-                          onClick={() => handleCall(center.phone)}
-                          className="flex items-center space-x-1 rtl:space-x-reverse bg-green-600 hover:bg-green-700"
-                        >
-                          <Phone className="w-4 h-4" />
-                          <span className="text-xs">اتصال</span>
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
                           onClick={() => handleBookAppointment(center)}
-                          className="flex items-center space-x-1 rtl:space-x-reverse"
+                          className="w-full bg-gradient-to-r from-emerald-500 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 text-white font-bold py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
                         >
-                          <Calendar className="w-4 h-4" />
-                          <span className="text-xs">حجز</span>
+                          <Calendar className="w-5 h-5 ml-2 rtl:mr-2" />
+                          عرض العيادات وحجز موعد
+                          <ChevronRight className="w-4 h-4 mr-2 rtl:ml-2" />
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleNavigate(center.google_maps_url!)}
-                          className="flex items-center space-x-1 rtl:space-x-reverse"
-                        >
-                          <Navigation className="w-4 h-4" />
-                          <span className="text-xs">خريطة</span>
-                        </Button>
+                        
+                        {/* Secondary Actions */}
+                        <div className="grid grid-cols-2 gap-3">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleCall(center.phone)}
+                            className="flex items-center justify-center space-x-2 rtl:space-x-reverse border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                          >
+                            <Phone className="w-4 h-4" />
+                            <span className="text-sm">اتصال</span>
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleNavigate(center.google_maps_url!)}
+                            className="flex items-center justify-center space-x-2 rtl:space-x-reverse border-blue-200 text-blue-700 hover:bg-blue-50"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                            <span className="text-sm">الموقع</span>
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </CardContent>

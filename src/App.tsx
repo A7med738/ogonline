@@ -45,6 +45,10 @@ import CityServicesWholesaleMarket from "./pages/CityServicesWholesaleMarket";
 import HealthCenters from "./pages/HealthCenters";
 import BookService from "./pages/BookService";
 import OTPVerification from "./pages/OTPVerification";
+import Clinics from "./pages/Clinics";
+import BookAppointment from "./pages/BookAppointment";
+import AppointmentConfirmation from "./pages/AppointmentConfirmation";
+import MyAppointments from "./pages/MyAppointments";
 import CityServicesCityCenter from "./pages/CityServicesCityCenter";
 import CityServicesFamilyCourt from "./pages/CityServicesFamilyCourt";
 import CityServicesCourts from "./pages/CityServicesCourts";
@@ -148,6 +152,10 @@ const AppContent = () => {
           <Route path="/news" element={<News />} />
           <Route path="/book-service" element={<BookService />} />
           <Route path="/health-centers" element={<HealthCenters />} />
+          <Route path="/clinics/:centerId" element={<Clinics />} />
+          <Route path="/book-appointment/:clinicId" element={<BookAppointment />} />
+          <Route path="/appointment-confirmation/:appointmentId" element={<AppointmentConfirmation />} />
+          <Route path="/my-appointments" element={<MyAppointments />} />
           <Route path="/police" element={<Police />} />
           <Route path="/police/station/:stationId" element={<PoliceStationDetails />} />
           <Route path="/city" element={<City />} />
