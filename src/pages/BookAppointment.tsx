@@ -218,6 +218,29 @@ const BookAppointment = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-cyan-50 to-blue-50">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white shadow-lg sticky top-0 z-50"
+      >
+        <div className="px-4 py-4 flex items-center justify-between">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="flex items-center space-x-2 rtl:space-x-reverse"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>العودة</span>
+          </Button>
+          <div className="flex items-center space-x-2 rtl:space-x-reverse">
+            <Calendar className="w-6 h-6 text-green-600" />
+            <h1 className="text-lg font-bold text-gray-800">حجز موعد</h1>
+          </div>
+          <div className="w-16"></div>
+        </div>
+      </motion.div>
 
       <div className="px-4 py-6">
         {/* Clinic Info */}
