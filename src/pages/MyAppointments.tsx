@@ -281,28 +281,6 @@ const MyAppointments = () => {
         // لا نرمي الخطأ هنا لأن الإلغاء تم بنجاح
       }
 
-      // 4. تحديث إجمالي المرضى في الطابور (تقليل واحد)
-      const { data: queueData } = await supabase
-        .from('book_service_clinic_queues')
-        .select('*')
-        .eq('clinic_id', appointment.clinic.id)
-        .single();
-
-      if (queueData) {
-        const { error: updateQueueError } = await supabase
-          .from('book_service_clinic_queues')
-          .update({
-            total_patients_today: Math.max(0, queueData.total_patients_today - 1),
-            last_updated: new Date().toISOString()
-          })
-          .eq('clinic_id', appointment.clinic.id);
-
-        if (updateQueueError) {
-          console.error('Error updating queue total patients:', updateQueueError);
-          // لا نرمي الخطأ هنا لأن الإلغاء تم بنجاح
-        }
-      }
-
       toast({
         title: "تم إلغاء الموعد",
         description: "تم إلغاء موعدك بنجاح",
@@ -361,28 +339,6 @@ const MyAppointments = () => {
       if (updateClinicError) {
         console.error('Error updating clinic waiting patients:', updateClinicError);
         // لا نرمي الخطأ هنا لأن الحذف تم بنجاح
-      }
-
-      // 4. تحديث إجمالي المرضى في الطابور (تقليل واحد)
-      const { data: queueData } = await supabase
-        .from('book_service_clinic_queues')
-        .select('*')
-        .eq('clinic_id', appointment.clinic.id)
-        .single();
-
-      if (queueData) {
-        const { error: updateQueueError } = await supabase
-          .from('book_service_clinic_queues')
-          .update({
-            total_patients_today: Math.max(0, queueData.total_patients_today - 1),
-            last_updated: new Date().toISOString()
-          })
-          .eq('clinic_id', appointment.clinic.id);
-
-        if (updateQueueError) {
-          console.error('Error updating queue total patients:', updateQueueError);
-          // لا نرمي الخطأ هنا لأن الحذف تم بنجاح
-        }
       }
 
       toast({

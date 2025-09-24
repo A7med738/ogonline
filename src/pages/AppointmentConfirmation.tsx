@@ -18,6 +18,7 @@ import {
   Share2
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { getPatientsAheadCount, getCurrentQueueStatus } from '@/utils/patientTracking';
 
 interface AppointmentDetails {
   id: string;
@@ -32,6 +33,7 @@ interface AppointmentDetails {
   status: string;
   queue_number: number;
   queue_position: number;
+  clinic_id: string;
   clinic: {
     name: string;
     doctor_name: string;
@@ -45,17 +47,63 @@ interface AppointmentDetails {
   };
 }
 
+interface QueueStatus {
+  currentServing: number;
+  totalPatients: number;
+  patientsAhead: number;
+  estimatedWaitTime: number;
+}
+
 const AppointmentConfirmation = () => {
   const { appointmentId } = useParams<{ appointmentId: string }>();
   const navigate = useNavigate();
   const [appointment, setAppointment] = useState<AppointmentDetails | null>(null);
   const [loading, setLoading] = useState(true);
+  const [patientsAhead, setPatientsAhead] = useState<number>(0);
+  const [queueStatus, setQueueStatus] = useState<QueueStatus | null>(null);
 
   useEffect(() => {
     if (appointmentId) {
       fetchAppointmentDetails();
     }
   }, [appointmentId]);
+
+  // تحديث عدد المرضى المتبقين كل 30 ثانية
+  useEffect(() => {
+    if (appointment?.id) {
+      const updatePatientsAhead = async () => {
+        try {
+          const aheadCount = await getPatientsAheadCount(appointment.id);
+          setPatientsAhead(aheadCount);
+        } catch (error) {
+          console.error('خطأ في جلب عدد المرضى المتبقين:', error);
+        }
+      };
+
+      // تحديث فوري
+      updatePatientsAhead();
+
+      // تحديث دوري كل 30 ثانية
+      const interval = setInterval(updatePatientsAhead, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [appointment?.id]);
+
+  // تحديث حالة الطابور
+  useEffect(() => {
+    if (appointment?.clinic_id) {
+      const updateQueueStatus = async () => {
+        try {
+          const status = await getCurrentQueueStatus(appointment.clinic_id);
+          setQueueStatus(status);
+        } catch (error) {
+          console.error('خطأ في جلب حالة الطابور:', error);
+        }
+      };
+
+      updateQueueStatus();
+    }
+  }, [appointment?.clinic_id]);
 
   const fetchAppointmentDetails = async () => {
     try {
@@ -105,6 +153,7 @@ const AppointmentConfirmation = () => {
     status: 'pending',
     queue_number: 3,
     queue_position: 2,
+    clinic_id: 'mock-clinic-id',
     clinic: {
       name: 'عيادة الطب العام',
       doctor_name: 'د. أحمد محمد علي',
@@ -321,11 +370,32 @@ const AppointmentConfirmation = () => {
                   <div className="text-sm font-semibold text-gray-700">موضعك في الطابور</div>
                 </div>
                 <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                  <div className="text-3xl font-bold text-red-600 mb-2">{appointment.queue_position - 1}</div>
+                  <div className="text-3xl font-bold text-red-600 mb-2">
+                    {patientsAhead > 0 ? patientsAhead : 0}
+                  </div>
                   <div className="text-sm font-semibold text-gray-700">المرضى المتبقين</div>
+                  {patientsAhead === 0 && appointment.status === 'pending' && (
+                    <div className="text-xs text-green-600 mt-1 font-bold">دورك قريباً!</div>
+                  )}
                 </div>
               </div>
               
+              {/* معلومات إضافية عن الطابور */}
+              {queueStatus && (
+                <div className="mt-4 p-4 bg-green-50 rounded-xl border border-green-200">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-600">{queueStatus.currentServing}</div>
+                      <div className="text-sm font-semibold text-gray-700">الرقم الحالي المقدم</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-600">{queueStatus.estimatedWaitTime}</div>
+                      <div className="text-sm font-semibold text-gray-700">وقت الانتظار المتوقع (دقيقة)</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
                 <div className="flex items-start space-x-3 rtl:space-x-reverse">
                   <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -336,7 +406,8 @@ const AppointmentConfirmation = () => {
                     <div className="text-sm text-blue-700">
                       • يرجى الحضور قبل موعدك بـ 15 دقيقة<br/>
                       • سيتم استدعاؤك حسب رقم الطابور<br/>
-                      • انتظر دورك في الطابور
+                      • انتظر دورك في الطابور<br/>
+                      • يتم تحديث عدد المرضى المتبقين تلقائياً
                     </div>
                   </div>
                 </div>
