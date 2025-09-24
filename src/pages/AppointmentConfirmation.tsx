@@ -12,10 +12,8 @@ import {
   Phone,
   MapPin,
   Stethoscope,
-  ArrowLeft,
   Home,
-  Download,
-  Share2
+  RefreshCw
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { getPatientsAheadCount, getCurrentQueueStatus } from '@/utils/patientTracking';
@@ -167,24 +165,6 @@ const AppointmentConfirmation = () => {
     }
   });
 
-  const handleDownloadTicket = () => {
-    // هنا يمكن إضافة منطق تحميل التذكرة
-    alert('سيتم تحميل تذكرة الموعد قريباً');
-  };
-
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: 'تذكرة موعد طبي',
-        text: `موعد طبي مع ${appointment?.clinic.doctor_name} في ${appointment?.health_center.name}`,
-        url: window.location.href
-      });
-    } else {
-      // نسخ الرابط للحافظة
-      navigator.clipboard.writeText(window.location.href);
-      alert('تم نسخ الرابط للحافظة');
-    }
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -232,30 +212,6 @@ const AppointmentConfirmation = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-cyan-50 to-blue-50">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white shadow-lg sticky top-0 z-50"
-      >
-        <div className="px-4 py-4 flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/health-centers')}
-            className="flex items-center space-x-2 rtl:space-x-reverse"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>العودة</span>
-          </Button>
-          <div className="flex items-center space-x-2 rtl:space-x-reverse">
-            <CheckCircle className="w-6 h-6 text-green-600" />
-            <h1 className="text-lg font-bold text-gray-800">تأكيد الحجز</h1>
-          </div>
-          <div className="w-16"></div>
-        </div>
-      </motion.div>
-
       <div className="px-4 py-6">
         {/* Success Message */}
         <motion.div
@@ -355,10 +311,24 @@ const AppointmentConfirmation = () => {
           {/* Queue Information */}
           <Card className="shadow-lg border-2 border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50">
             <CardContent className="p-6">
-              <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                <Clock className="w-5 h-5 ml-2 rtl:mr-2 text-orange-600" />
-                معلومات الطابور
-              </h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-gray-800 flex items-center">
+                  <Clock className="w-5 h-5 ml-2 rtl:mr-2 text-orange-600" />
+                  معلومات الطابور
+                </h3>
+                <Button
+                  onClick={() => {
+                    fetchPatientsAhead();
+                    fetchQueueStatus();
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center space-x-2 rtl:space-x-reverse text-orange-600 border-orange-600 hover:bg-orange-50"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  <span>تحديث</span>
+                </Button>
+              </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="bg-white rounded-xl p-4 text-center shadow-sm">
@@ -477,42 +447,21 @@ const AppointmentConfirmation = () => {
           transition={{ delay: 0.4 }}
           className="space-y-3"
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Button
-              onClick={handleDownloadTicket}
-              variant="outline"
-              className="flex items-center justify-center space-x-2 rtl:space-x-reverse"
-            >
-              <Download className="w-4 h-4" />
-              <span>تحميل التذكرة</span>
-            </Button>
-            <Button
-              onClick={handleShare}
-              variant="outline"
-              className="flex items-center justify-center space-x-2 rtl:space-x-reverse"
-            >
-              <Share2 className="w-4 h-4" />
-              <span>مشاركة</span>
-            </Button>
-          </div>
-          
-          <div className="space-y-3">
-            <Button
-              onClick={() => navigate('/my-appointments')}
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-3 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse"
-            >
-              <Calendar className="w-5 h-5" />
-              <span>عرض مواعيدي</span>
-            </Button>
-            <Button
-              onClick={() => navigate('/')}
-              variant="outline"
-              className="w-full flex items-center justify-center space-x-2 rtl:space-x-reverse"
-            >
-              <Home className="w-5 h-5" />
-              <span>العودة للرئيسية</span>
-            </Button>
-          </div>
+          <Button
+            onClick={() => navigate('/my-appointments')}
+            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-3 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse"
+          >
+            <Calendar className="w-5 h-5" />
+            <span>عرض مواعيدي</span>
+          </Button>
+          <Button
+            onClick={() => navigate('/')}
+            variant="outline"
+            className="w-full flex items-center justify-center space-x-2 rtl:space-x-reverse"
+          >
+            <Home className="w-5 h-5" />
+            <span>العودة للرئيسية</span>
+          </Button>
         </motion.div>
 
         {/* Bottom spacing */}

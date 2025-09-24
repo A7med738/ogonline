@@ -26,6 +26,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { getPatientsAheadCount } from '@/utils/patientTracking';
 
 interface Appointment {
   id: string;
@@ -475,39 +476,6 @@ const MyAppointments = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-cyan-50 to-blue-50">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white shadow-lg sticky top-0 z-50"
-      >
-        <div className="px-4 py-4 flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/health-centers')}
-            className="flex items-center space-x-2 rtl:space-x-reverse"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>العودة</span>
-          </Button>
-          <div className="flex items-center space-x-2 rtl:space-x-reverse">
-            <Calendar className="w-6 h-6 text-green-600" />
-            <h1 className="text-lg font-bold text-gray-800">مواعيدي</h1>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="flex items-center space-x-2 rtl:space-x-reverse"
-          >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-            <span>تحديث</span>
-          </Button>
-        </div>
-      </motion.div>
-
       <div className="px-4 py-6">
         {/* Last Update Indicator */}
         <motion.div
@@ -761,43 +729,18 @@ const MyAppointments = () => {
                         </div>
                       </div>
 
-                      {/* Queue Information for Past Appointments */}
-                      <div className="bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl p-3 mb-4 border border-gray-200">
-                        <div className="flex items-center space-x-2 rtl:space-x-reverse mb-2">
-                          <Clock className="w-4 h-4 text-gray-600" />
-                          <span className="text-sm font-semibold text-gray-700">معلومات الطابور</span>
-                        </div>
-                        <div className="grid grid-cols-3 gap-2 text-center">
-                          <div className="bg-white rounded-lg p-2 shadow-sm">
-                            <div className="text-lg font-bold text-orange-600">#{appointment.queue_number}</div>
-                            <div className="text-xs text-gray-600">رقم الطابور</div>
-                          </div>
-                          <div className="bg-white rounded-lg p-2 shadow-sm">
-                            <div className="text-lg font-bold text-blue-600">{appointment.queue_position}</div>
-                            <div className="text-xs text-gray-600">موضعك</div>
-                          </div>
-                          <div className="bg-white rounded-lg p-2 shadow-sm">
-                            <div className="text-lg font-bold text-red-600">{Math.max(0, appointment.queue_position - 1)}</div>
-                            <div className="text-xs text-gray-600">كان أمامك</div>
-                          </div>
-                        </div>
-                        <div className="mt-3 text-center">
-                          <Badge className="bg-gray-500 text-white">
-                            {appointment.status === 'completed' ? 'تم الانتهاء' : 'موعد سابق'}
-                          </Badge>
-                        </div>
-                      </div>
-
-                      <div className="flex space-x-2 rtl:space-x-reverse">
+                      {/* معرفة دوري Button */}
+                      <div className="mb-4">
                         <Button
                           onClick={() => handleViewAppointment(appointment.id)}
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 flex items-center justify-center space-x-1 rtl:space-x-reverse"
+                          className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse"
                         >
-                          <Eye className="w-4 h-4" />
-                          <span>عرض</span>
+                          <Activity className="w-5 h-5" />
+                          <span>معرفة دوري</span>
                         </Button>
+                      </div>
+
+                      <div className="flex justify-end">
                         <Button
                           onClick={() => handleDeleteAppointment(appointment.id)}
                           variant="outline"

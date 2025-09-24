@@ -18,7 +18,8 @@ import {
   Activity,
   ChevronRight,
   Eye,
-  ExternalLink
+  ExternalLink,
+  Search
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -44,6 +45,9 @@ interface HealthCenter {
 const HealthCenters = () => {
   const navigate = useNavigate();
   const [healthCenters, setHealthCenters] = useState<HealthCenter[]>([]);
+  const [clinics, setClinics] = useState<any[]>([]);
+  const [filteredHealthCenters, setFilteredHealthCenters] = useState<HealthCenter[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [selectedCenter, setSelectedCenter] = useState<HealthCenter | null>(null);
 
@@ -51,24 +55,110 @@ const HealthCenters = () => {
     fetchHealthCenters();
   }, []);
 
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setFilteredHealthCenters(healthCenters);
+    } else {
+      const searchLower = searchTerm.toLowerCase();
+      
+      // البحث في المراكز الصحية
+      const filteredCenters = healthCenters.filter(center => 
+        center.name.toLowerCase().includes(searchLower) ||
+        center.address.toLowerCase().includes(searchLower) ||
+        (center.specializations && center.specializations.some(spec => 
+          spec.toLowerCase().includes(searchLower)
+        ))
+      );
+
+      // البحث في العيادات والأطباء
+      const filteredClinics = clinics.filter(clinic => 
+        clinic.name.toLowerCase().includes(searchLower) ||
+        clinic.doctor_name.toLowerCase().includes(searchLower) ||
+        clinic.specialization.toLowerCase().includes(searchLower) ||
+        (clinic.book_service_health_centers && 
+         clinic.book_service_health_centers.name.toLowerCase().includes(searchLower))
+      );
+
+      // دمج النتائج - إضافة العيادات المطابقة كمراكز صحية مؤقتة للعرض
+      const combinedResults = [...filteredCenters];
+      
+      // إضافة العيادات المطابقة كمراكز صحية مؤقتة
+      filteredClinics.forEach(clinic => {
+        const existingCenter = combinedResults.find(center => 
+          center.id === clinic.health_center_id
+        );
+        
+        if (!existingCenter) {
+          // إنشاء مركز صحي مؤقت للعيادة
+          const tempCenter = {
+            id: clinic.health_center_id || clinic.id,
+            name: clinic.book_service_health_centers?.name || clinic.name,
+            address: clinic.book_service_health_centers?.address || 'عنوان غير محدد',
+            phone: clinic.book_service_health_centers?.phone || 'غير محدد',
+            email: clinic.book_service_health_centers?.email || '',
+            working_hours: clinic.book_service_health_centers?.working_hours || 'غير محدد',
+            services: [clinic.specialization],
+            rating: 4.5,
+            image_url: clinic.book_service_health_centers?.image_url || '',
+            description: `عيادة ${clinic.name} - د. ${clinic.doctor_name} - تخصص ${clinic.specialization}`,
+            latitude: clinic.book_service_health_centers?.latitude || 0,
+            longitude: clinic.book_service_health_centers?.longitude || 0,
+            google_maps_url: clinic.book_service_health_centers?.google_maps_url || '',
+            is_available: clinic.is_available,
+            specializations: [clinic.specialization]
+          };
+          combinedResults.push(tempCenter);
+        }
+      });
+
+      setFilteredHealthCenters(combinedResults);
+    }
+  }, [searchTerm, healthCenters, clinics]);
+
   const fetchHealthCenters = async () => {
     try {
-      const { data, error } = await supabase
+      // جلب المراكز الصحية
+      const { data: healthCentersData, error: healthCentersError } = await supabase
         .from('book_service_health_centers')
         .select('*')
         .eq('is_active', true)
         .order('name');
 
-      if (error) {
-        console.error('Error fetching health centers:', error);
-        // بيانات تجريبية في حالة عدم وجود البيانات
-        setHealthCenters(getMockData());
-      } else {
-        setHealthCenters(data || getMockData());
+      // جلب العيادات والأطباء
+      const { data: clinicsData, error: clinicsError } = await supabase
+        .from('book_service_clinics')
+        .select(`
+          *,
+          book_service_health_centers!inner(*)
+        `)
+        .eq('is_available', true);
+
+      if (healthCentersError) {
+        console.error('Error fetching health centers:', healthCentersError);
       }
+
+      if (clinicsError) {
+        console.error('Error fetching clinics:', clinicsError);
+      }
+
+      // معالجة بيانات المراكز الصحية
+      const processedHealthCenters = (healthCentersData || []).map(center => ({
+        ...center,
+        specializations: center.specializations || []
+      }));
+
+      // معالجة بيانات العيادات
+      const processedClinics = (clinicsData || []).map(clinic => ({
+        ...clinic,
+        specializations: [clinic.specialization] || []
+      }));
+
+      setHealthCenters(processedHealthCenters.length > 0 ? processedHealthCenters : getMockData());
+      setClinics(processedClinics);
     } catch (error) {
       console.error('Error:', error);
       setHealthCenters(getMockData());
+      setClinics([]);
     } finally {
       setLoading(false);
     }
@@ -120,76 +210,45 @@ const HealthCenters = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-cyan-50 to-blue-50">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white shadow-lg sticky top-0 z-50"
-      >
-        <div className="px-4 py-4 flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/')}
-            className="flex items-center space-x-2 rtl:space-x-reverse"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>العودة</span>
-          </Button>
-          <div className="flex items-center space-x-2 rtl:space-x-reverse">
-            <Building2 className="w-6 h-6 text-emerald-600" />
-            <h1 className="text-lg font-bold text-gray-800">المراكز الصحية</h1>
-          </div>
-          <div className="w-16"></div>
-        </div>
-      </motion.div>
-
       <div className="px-4 py-6">
-        {/* Welcome Section */}
+        
+        {/* Search Bar */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
+          className="mb-6"
         >
-          <div className="bg-gradient-to-r from-emerald-500 to-cyan-600 rounded-2xl p-6 text-white mb-6">
-            <Building2 className="w-12 h-12 mx-auto mb-3" />
-            <h2 className="text-xl font-bold mb-2">خدمة احجزلي الطبية</h2>
-            <p className="text-sm opacity-90">احجز موعدك الطبي بسهولة واطمئن على صحتك</p>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="ابحث عن مركز صحي، عيادة، طبيب، أو تخصص طبي..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+            />
           </div>
-        </motion.div>
-
-        {/* Statistics */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="grid grid-cols-2 gap-4 mb-8"
-        >
-          <Card className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <Activity className="w-8 h-8 mx-auto mb-2" />
-              <div className="text-2xl font-bold">{healthCenters.length}</div>
-              <div className="text-sm opacity-90">مركز صحي متاح</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <Users className="w-8 h-8 mx-auto mb-2" />
-              <div className="text-2xl font-bold">11</div>
-              <div className="text-sm opacity-90">عيادة متخصصة</div>
-            </CardContent>
-          </Card>
+          {searchTerm && (
+            <div className="mt-2 text-sm text-gray-600">
+              {filteredHealthCenters.length > 0 
+                ? `تم العثور على ${filteredHealthCenters.length} نتيجة` 
+                : 'لم يتم العثور على نتائج'
+              }
+            </div>
+          )}
         </motion.div>
 
         {/* Health Centers List */}
-        {healthCenters.length > 0 ? (
+        {filteredHealthCenters.length > 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ staggerChildren: 0.1 }}
             className="space-y-4"
           >
-            {healthCenters.map((center, index) => (
+            {filteredHealthCenters.map((center, index) => (
               <motion.div
                 key={center.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -317,13 +376,27 @@ const HealthCenters = () => {
           >
             <Card className="bg-gradient-to-r from-gray-100 to-gray-200">
               <CardContent className="p-8">
-                <div className="text-6xl mb-4">🏥</div>
-                <h3 className="text-xl font-bold text-gray-700 mb-2">لا توجد مراكز صحية متاحة حالياً</h3>
+                <div className="text-6xl mb-4">{searchTerm ? '🔍' : '🏥'}</div>
+                <h3 className="text-xl font-bold text-gray-700 mb-2">
+                  {searchTerm ? 'لم يتم العثور على نتائج' : 'لا توجد مراكز صحية متاحة حالياً'}
+                </h3>
                 <p className="text-gray-600 mb-4">
-                  نعمل على إضافة المراكز الصحية المتعاقد معها قريباً
+                  {searchTerm 
+                    ? 'جرب البحث بكلمات مختلفة أو امسح البحث لعرض جميع المراكز'
+                    : 'نعمل على إضافة المراكز الصحية المتعاقد معها قريباً'
+                  }
                 </p>
+                {searchTerm && (
+                  <Button
+                    onClick={() => setSearchTerm('')}
+                    variant="outline"
+                    className="border-emerald-500 text-emerald-600 hover:bg-emerald-50 mb-3"
+                  >
+                    مسح البحث
+                  </Button>
+                )}
                 <div className="text-sm text-gray-500">
-                  سيتم إشعارك عند توفر المراكز الصحية الجديدة
+                  {searchTerm ? '' : 'سيتم إشعارك عند توفر المراكز الصحية الجديدة'}
                 </div>
               </CardContent>
             </Card>

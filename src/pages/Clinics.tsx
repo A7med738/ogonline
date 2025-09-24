@@ -198,93 +198,69 @@ const Clinics = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-cyan-50 to-blue-50">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white shadow-lg sticky top-0 z-50"
-      >
-        <div className="px-4 py-4 flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/health-centers')}
-            className="flex items-center space-x-2 rtl:space-x-reverse"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>العودة</span>
-          </Button>
-          <div className="flex items-center space-x-2 rtl:space-x-reverse">
-            <Building2 className="w-6 h-6 text-emerald-600" />
-            <h1 className="text-lg font-bold text-gray-800">العيادات</h1>
-          </div>
-          <div className="w-16"></div>
-        </div>
-      </motion.div>
-
-      <div className="px-4 py-6">
+      <div className="px-3 py-4">
         {/* Health Center Info */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6"
         >
           <Card className="overflow-hidden shadow-lg border-0">
-            <div className="relative h-40 bg-gradient-to-r from-emerald-500 to-cyan-600">
+            <div className="relative h-32 bg-gradient-to-r from-emerald-500 to-cyan-600">
               <div className="absolute inset-0 bg-black/10"></div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
               
               {/* Rating */}
-              <div className="absolute bottom-4 right-4 text-white">
-                <div className="flex items-center space-x-1 rtl:space-x-reverse bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
-                  <Star className="w-4 h-4 fill-current text-yellow-300" />
-                  <span className="text-sm font-bold">4.8</span>
+              <div className="absolute bottom-3 right-3 text-white">
+                <div className="flex items-center space-x-1 rtl:space-x-reverse bg-white/20 backdrop-blur-sm rounded-full px-2 py-1">
+                  <Star className="w-3 h-3 fill-current text-yellow-300" />
+                  <span className="text-xs font-bold">4.8</span>
                 </div>
               </div>
               
               {/* Center Icon */}
-              <div className="absolute top-4 right-4">
-                <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                  <Building2 className="w-6 h-6 text-white" />
+              <div className="absolute top-3 right-3">
+                <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                  <Building2 className="w-4 h-4 text-white" />
                 </div>
               </div>
             </div>
-            <CardContent className="p-5">
-              <h2 className="text-xl font-bold text-gray-800 mb-2">{healthCenter.name}</h2>
-              <p className="text-gray-600 text-sm mb-4 leading-relaxed">{healthCenter.description}</p>
+            <CardContent className="p-4">
+              <h2 className="text-lg font-bold text-gray-800 mb-2">{healthCenter.name}</h2>
+              <p className="text-gray-600 text-xs mb-3 leading-relaxed">{healthCenter.description}</p>
               
-              <div className="space-y-3 mb-6">
-                <div className="flex items-start space-x-3 rtl:space-x-reverse text-sm text-gray-600">
-                  <MapPin className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
+              <div className="space-y-2 mb-4">
+                <div className="flex items-start space-x-2 rtl:space-x-reverse text-xs text-gray-600">
+                  <MapPin className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
                   <span className="flex-1 leading-relaxed">{healthCenter.address}</span>
                 </div>
-                <div className="flex items-center space-x-3 rtl:space-x-reverse text-sm text-gray-600">
-                  <Clock className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                <div className="flex items-center space-x-2 rtl:space-x-reverse text-xs text-gray-600">
+                  <Clock className="w-4 h-4 text-blue-600 flex-shrink-0" />
                   <span>{healthCenter.working_hours}</span>
                 </div>
-                <div className="flex items-center space-x-3 rtl:space-x-reverse text-sm text-gray-600">
-                  <Phone className="w-5 h-5 text-green-600 flex-shrink-0" />
+                <div className="flex items-center space-x-2 rtl:space-x-reverse text-xs text-gray-600">
+                  <Phone className="w-4 h-4 text-green-600 flex-shrink-0" />
                   <span>{healthCenter.phone}</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2">
                 <Button
                   size="sm"
                   onClick={() => handleCall(healthCenter.phone)}
-                  className="flex items-center justify-center space-x-2 rtl:space-x-reverse border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                  className="flex items-center justify-center space-x-1 rtl:space-x-reverse border-emerald-200 text-emerald-700 hover:bg-emerald-50 text-xs py-2"
                 >
-                  <Phone className="w-4 h-4" />
-                  <span className="text-sm">اتصال</span>
+                  <Phone className="w-3 h-3" />
+                  <span>اتصال</span>
                 </Button>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => handleNavigate(healthCenter.google_maps_url!)}
-                  className="flex items-center justify-center space-x-2 rtl:space-x-reverse border-blue-200 text-blue-700 hover:bg-blue-50"
+                  className="flex items-center justify-center space-x-1 rtl:space-x-reverse border-blue-200 text-blue-700 hover:bg-blue-50 text-xs py-2"
                 >
-                  <MapPin className="w-4 h-4" />
-                  <span className="text-sm">الموقع</span>
+                  <MapPin className="w-3 h-3" />
+                  <span>الموقع</span>
                 </Button>
               </div>
             </CardContent>
@@ -296,27 +272,27 @@ const Clinics = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="grid grid-cols-3 gap-4 mb-8"
+          className="grid grid-cols-3 gap-2 mb-6"
         >
           <Card className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <Stethoscope className="w-8 h-8 mx-auto mb-2" />
-              <div className="text-xl font-bold">{clinics.length}</div>
-              <div className="text-sm opacity-90">عيادة متاحة</div>
+            <CardContent className="p-3 text-center">
+              <Stethoscope className="w-6 h-6 mx-auto mb-1" />
+              <div className="text-lg font-bold">{clinics.length}</div>
+              <div className="text-xs opacity-90">عيادة متاحة</div>
             </CardContent>
           </Card>
           <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <Users className="w-8 h-8 mx-auto mb-2" />
-              <div className="text-xl font-bold">{clinics.reduce((sum, clinic) => sum + clinic.waiting_patients, 0)}</div>
-              <div className="text-sm opacity-90">مرضى منتظرون</div>
+            <CardContent className="p-3 text-center">
+              <Users className="w-6 h-6 mx-auto mb-1" />
+              <div className="text-lg font-bold">{clinics.reduce((sum, clinic) => sum + clinic.waiting_patients, 0)}</div>
+              <div className="text-xs opacity-90">مرضى منتظرون</div>
             </CardContent>
           </Card>
           <Card className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <TrendingUp className="w-8 h-8 mx-auto mb-2" />
-              <div className="text-xl font-bold">{clinics.filter(c => c.is_available).length}</div>
-              <div className="text-sm opacity-90">متاح للحجز</div>
+            <CardContent className="p-3 text-center">
+              <TrendingUp className="w-6 h-6 mx-auto mb-1" />
+              <div className="text-lg font-bold">{clinics.filter(c => c.is_available).length}</div>
+              <div className="text-xs opacity-90">متاح للحجز</div>
             </CardContent>
           </Card>
         </motion.div>
@@ -326,7 +302,7 @@ const Clinics = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ staggerChildren: 0.1 }}
-          className="space-y-4"
+          className="space-y-3"
         >
           {clinics.map((clinic, index) => (
             <motion.div
@@ -338,65 +314,65 @@ const Clinics = () => {
               <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-0">
                 <CardContent className="p-0">
                   {/* Header with specialization color */}
-                  <div className={`relative h-32 bg-gradient-to-r ${getSpecializationColor(clinic.specialization)}`}>
+                  <div className={`relative h-24 bg-gradient-to-r ${getSpecializationColor(clinic.specialization)}`}>
                     <div className="absolute inset-0 bg-black/10"></div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                     
                     {/* Specialization Icon */}
-                    <div className="absolute top-4 left-4 text-white">
-                      <div className="text-3xl">{getSpecializationIcon(clinic.specialization)}</div>
+                    <div className="absolute top-2 left-2 text-white">
+                      <div className="text-2xl">{getSpecializationIcon(clinic.specialization)}</div>
                     </div>
                     
                     {/* Waiting Patients */}
-                    <div className="absolute bottom-4 right-4 text-white">
-                      <div className="flex items-center space-x-1 rtl:space-x-reverse bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
-                        <Users className="w-4 h-4" />
-                        <span className="text-sm font-bold">{clinic.waiting_patients}</span>
+                    <div className="absolute bottom-2 right-2 text-white">
+                      <div className="flex items-center space-x-1 rtl:space-x-reverse bg-white/20 backdrop-blur-sm rounded-full px-2 py-1">
+                        <Users className="w-3 h-3" />
+                        <span className="text-xs font-bold">{clinic.waiting_patients}</span>
                       </div>
                     </div>
                     
                     {/* Specialization Badge */}
-                    <div className="absolute top-4 right-4">
-                      <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
+                    <div className="absolute top-2 right-2">
+                      <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm text-xs px-2 py-0.5">
                         {clinic.specialization}
                       </Badge>
                     </div>
                     
                     {/* Status Indicator */}
-                    <div className="absolute bottom-4 left-4">
-                      <div className={`w-3 h-3 rounded-full ${clinic.is_available ? 'bg-green-400' : 'bg-red-400'} shadow-lg`}></div>
+                    <div className="absolute bottom-2 left-2">
+                      <div className={`w-2 h-2 rounded-full ${clinic.is_available ? 'bg-green-400' : 'bg-red-400'} shadow-lg`}></div>
                     </div>
                   </div>
 
                   {/* Content */}
-                  <div className="p-5">
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">{clinic.name}</h3>
-                    <div className="flex items-center space-x-2 rtl:space-x-reverse mb-4">
-                      <User className="w-5 h-5 text-emerald-600" />
-                      <span className="text-gray-700 font-medium">{clinic.doctor_name}</span>
+                  <div className="p-4">
+                    <h3 className="text-lg font-bold text-gray-800 mb-2">{clinic.name}</h3>
+                    <div className="flex items-center space-x-2 rtl:space-x-reverse mb-3">
+                      <User className="w-4 h-4 text-emerald-600" />
+                      <span className="text-gray-700 font-medium text-sm">{clinic.doctor_name}</span>
                     </div>
 
                     {/* Info Cards */}
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 p-4 rounded-xl border border-emerald-200">
-                        <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                          <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center">
-                            <DollarSign className="w-5 h-5 text-white" />
+                    <div className="grid grid-cols-2 gap-2 mb-4">
+                      <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 p-3 rounded-lg border border-emerald-200">
+                        <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                          <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
+                            <DollarSign className="w-4 h-4 text-white" />
                           </div>
                           <div>
-                            <div className="text-lg font-bold text-emerald-800">{clinic.consultation_fee} ج.م</div>
-                            <div className="text-sm text-emerald-600">رسوم الاستشارة</div>
+                            <div className="text-sm font-bold text-emerald-800">{clinic.consultation_fee} ج.م</div>
+                            <div className="text-xs text-emerald-600">رسوم الاستشارة</div>
                           </div>
                         </div>
                       </div>
-                      <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-4 rounded-xl border border-orange-200">
-                        <div className="flex items-center space-x-3 rtl:space-x-reverse">
-                          <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
-                            <Users className="w-5 h-5 text-white" />
+                      <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-3 rounded-lg border border-orange-200">
+                        <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                          <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                            <Users className="w-4 h-4 text-white" />
                           </div>
                           <div>
-                            <div className="text-lg font-bold text-orange-800">{clinic.waiting_patients} شخص</div>
-                            <div className="text-sm text-orange-600">في الانتظار</div>
+                            <div className="text-sm font-bold text-orange-800">{clinic.waiting_patients} شخص</div>
+                            <div className="text-xs text-orange-600">في الانتظار</div>
                           </div>
                         </div>
                       </div>
@@ -405,11 +381,11 @@ const Clinics = () => {
                     {/* Action Button */}
                     <Button
                       onClick={() => handleBookAppointment(clinic)}
-                      className="w-full bg-gradient-to-r from-emerald-500 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3 rtl:space-x-reverse"
+                      className="w-full bg-gradient-to-r from-emerald-500 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 text-white font-bold py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 rtl:space-x-reverse text-sm"
                     >
-                      <Calendar className="w-6 h-6" />
+                      <Calendar className="w-4 h-4" />
                       <span>احجز موعد مع الدكتور</span>
-                      <ChevronRight className="w-5 h-5" />
+                      <ChevronRight className="w-4 h-4" />
                     </Button>
                   </div>
                 </CardContent>
@@ -419,7 +395,7 @@ const Clinics = () => {
         </motion.div>
 
         {/* Bottom spacing */}
-        <div className="h-20"></div>
+        <div className="h-16"></div>
       </div>
     </div>
   );
