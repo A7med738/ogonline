@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,7 +16,12 @@ import {
   XCircle,
   AlertCircle,
   Eye,
-  Trash2
+  Trash2,
+  RefreshCw,
+  Users,
+  Activity,
+  Pause,
+  Play
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -37,10 +42,14 @@ interface Appointment {
   queue_position: number;
   created_at: string;
   clinic: {
+    id: string;
     name: string;
     doctor_name: string;
     specialization: string;
     consultation_fee: number;
+    waiting_patients: number;
+    max_patients_per_day: number;
+    is_available: boolean;
   };
   health_center: {
     name: string;
@@ -49,16 +58,43 @@ interface Appointment {
   };
 }
 
+interface QueueStatus {
+  clinic_id: string;
+  status: 'active' | 'paused' | 'closed';
+  current_serving_queue_number: number;
+  next_queue_number: number;
+  last_updated: string;
+}
+
+interface ClinicQueue {
+  clinic_id: string;
+  current_queue_number: number;
+  total_patients_today: number;
+  last_updated: string;
+}
+
 const MyAppointments = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [queueStatuses, setQueueStatuses] = useState<Record<string, QueueStatus>>({});
+  const [clinicQueues, setClinicQueues] = useState<Record<string, ClinicQueue>>({});
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
 
   useEffect(() => {
     if (user) {
       fetchAppointments();
+      fetchQueueData();
+      
+      // تحديث بيانات الطابور كل 30 ثانية
+      const interval = setInterval(() => {
+        fetchQueueData();
+      }, 30000);
+
+      return () => clearInterval(interval);
     } else {
       navigate('/auth');
     }
@@ -71,10 +107,14 @@ const MyAppointments = () => {
         .select(`
           *,
           clinic:book_service_clinics(
+            id,
             name,
             doctor_name,
             specialization,
             consultation_fee,
+            waiting_patients,
+            max_patients_per_day,
+            is_available,
             health_center:book_service_health_centers(
               name,
               address,
@@ -99,6 +139,52 @@ const MyAppointments = () => {
     }
   };
 
+  const fetchQueueData = useCallback(async () => {
+    try {
+      setRefreshing(true);
+      
+      // جلب بيانات حالة الطابور
+      const { data: queueStatusData, error: queueStatusError } = await supabase
+        .from('book_service_queue_status')
+        .select('*');
+
+      if (!queueStatusError && queueStatusData) {
+        const statusMap: Record<string, QueueStatus> = {};
+        queueStatusData.forEach(status => {
+          statusMap[status.clinic_id] = status;
+        });
+        setQueueStatuses(statusMap);
+      }
+
+      // جلب بيانات طابور العيادات
+      const { data: clinicQueueData, error: clinicQueueError } = await supabase
+        .from('book_service_clinic_queues')
+        .select('*');
+
+      if (!clinicQueueError && clinicQueueData) {
+        const queueMap: Record<string, ClinicQueue> = {};
+        clinicQueueData.forEach(queue => {
+          queueMap[queue.clinic_id] = queue;
+        });
+        setClinicQueues(queueMap);
+      }
+
+      setLastUpdate(new Date());
+    } catch (error) {
+      console.error('Error fetching queue data:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
+
+  const handleRefresh = async () => {
+    await fetchQueueData();
+    toast({
+      title: "تم التحديث",
+      description: "تم تحديث بيانات الطابور بنجاح",
+    });
+  };
+
   const getMockAppointments = (): Appointment[] => [
     {
       id: '1',
@@ -112,13 +198,17 @@ const MyAppointments = () => {
       notes: 'فحص دوري',
       status: 'pending',
       queue_number: 3,
-      queue_position: 2,
+      queue_position: 3,
       created_at: new Date().toISOString(),
       clinic: {
+        id: 'clinic-1',
         name: 'عيادة الطب العام',
         doctor_name: 'د. أحمد محمد علي',
         specialization: 'طب عام',
         consultation_fee: 150,
+        waiting_patients: 5,
+        max_patients_per_day: 20,
+        is_available: true,
         health_center: {
           name: 'مركز حدائق أكتوبر الطبي المتكامل',
           address: 'حدائق أكتوبر، شارع النيل، بجوار مول الأندلس، الحي السابع',
@@ -138,13 +228,17 @@ const MyAppointments = () => {
       notes: 'متابعة',
       status: 'completed',
       queue_number: 2,
-      queue_position: 1,
+      queue_position: 2,
       created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
       clinic: {
+        id: 'clinic-2',
         name: 'عيادة الأطفال',
         doctor_name: 'د. فاطمة عبد الرحمن',
         specialization: 'طب أطفال',
         consultation_fee: 200,
+        waiting_patients: 0,
+        max_patients_per_day: 15,
+        is_available: true,
         health_center: {
           name: 'مركز حدائق أكتوبر الطبي المتكامل',
           address: 'حدائق أكتوبر، شارع النيل، بجوار مول الأندلس، الحي السابع',
@@ -186,6 +280,41 @@ const MyAppointments = () => {
     }
   };
 
+  const handleDeleteAppointment = async (appointmentId: string) => {
+    // تأكيد الحذف
+    const confirmed = window.confirm(
+      "هل أنت متأكد من حذف هذا الموعد؟\n\nسيتم حذف الموعد نهائياً ولا يمكن استرداده."
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const { error } = await supabase
+        .from('book_service_appointments')
+        .delete()
+        .eq('id', appointmentId);
+
+      if (error) throw error;
+
+      toast({
+        title: "تم حذف الموعد",
+        description: "تم حذف الموعد نهائياً من قائمتك",
+      });
+
+      // إزالة الموعد من القائمة
+      setAppointments(prev => 
+        prev.filter(appointment => appointment.id !== appointmentId)
+      );
+    } catch (error: any) {
+      console.error('Delete appointment error:', error);
+      toast({
+        title: "خطأ في الحذف",
+        description: error.message || "حدث خطأ أثناء حذف الموعد",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleViewAppointment = (appointmentId: string) => {
     navigate(`/appointment-confirmation/${appointmentId}`);
   };
@@ -217,6 +346,65 @@ const MyAppointments = () => {
       case 'cancelled': return <XCircle className="w-4 h-4" />;
       case 'completed': return <CheckCircle className="w-4 h-4" />;
       default: return <AlertCircle className="w-4 h-4" />;
+    }
+  };
+
+  // حساب التقدم الفعلي للطابور
+  const getQueueProgress = (appointment: Appointment) => {
+    const clinicId = appointment.clinic.id;
+    const queueStatus = queueStatuses[clinicId];
+    const clinicQueue = clinicQueues[clinicId];
+    
+    if (!queueStatus || !clinicQueue) {
+      return {
+        currentServing: 0,
+        patientsAhead: appointment.queue_position - 1,
+        queueStatus: 'unknown',
+        estimatedWaitTime: 0,
+        isActive: false
+      };
+    }
+
+    const currentServing = queueStatus.current_serving_queue_number;
+    const patientsAhead = Math.max(0, appointment.queue_number - currentServing);
+    const isActive = queueStatus.status === 'active';
+    
+    // تقدير وقت الانتظار (افتراض 15 دقيقة لكل مريض)
+    const estimatedWaitTime = patientsAhead * 15;
+
+    return {
+      currentServing,
+      patientsAhead,
+      queueStatus: queueStatus.status,
+      estimatedWaitTime,
+      isActive
+    };
+  };
+
+  const getQueueStatusIcon = (status: string) => {
+    switch (status) {
+      case 'active': return <Activity className="w-4 h-4 text-green-600" />;
+      case 'paused': return <Pause className="w-4 h-4 text-yellow-600" />;
+      case 'closed': return <XCircle className="w-4 h-4 text-red-600" />;
+      default: return <AlertCircle className="w-4 h-4 text-gray-600" />;
+    }
+  };
+
+  const getQueueStatusText = (status: string) => {
+    switch (status) {
+      case 'active': return 'نشط';
+      case 'paused': return 'متوقف مؤقتاً';
+      case 'closed': return 'مغلق';
+      default: return 'غير محدد';
+    }
+  };
+
+  const getQueueStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-green-500';
+      case 'paused': return 'bg-yellow-500';
+      case 'closed': return 'bg-red-500';
+      default: return 'bg-gray-500';
     }
   };
 
@@ -262,11 +450,43 @@ const MyAppointments = () => {
             <Calendar className="w-6 h-6 text-green-600" />
             <h1 className="text-lg font-bold text-gray-800">مواعيدي</h1>
           </div>
-          <div className="w-16"></div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="flex items-center space-x-2 rtl:space-x-reverse"
+          >
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+            <span>تحديث</span>
+          </Button>
         </div>
       </motion.div>
 
       <div className="px-4 py-6">
+        {/* Last Update Indicator */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-4"
+        >
+          <div className="flex items-center justify-between bg-white rounded-lg p-3 shadow-sm border">
+            <div className="flex items-center space-x-2 rtl:space-x-reverse">
+              <Clock className="w-4 h-4 text-gray-600" />
+              <span className="text-sm text-gray-600">آخر تحديث:</span>
+              <span className="text-sm font-medium text-gray-800">
+                {lastUpdate.toLocaleTimeString('ar-EG')}
+              </span>
+            </div>
+            <div className="flex items-center space-x-2 rtl:space-x-reverse">
+              <div className={`w-2 h-2 rounded-full ${refreshing ? 'bg-yellow-500 animate-pulse' : 'bg-green-500'}`}></div>
+              <span className="text-xs text-gray-500">
+                {refreshing ? 'جاري التحديث...' : 'متصل'}
+              </span>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Stats */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -347,27 +567,74 @@ const MyAppointments = () => {
                         </div>
                       </div>
 
-                      {/* Queue Information */}
-                      <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl p-3 mb-4 border border-orange-200">
-                        <div className="flex items-center space-x-2 rtl:space-x-reverse mb-2">
-                          <Clock className="w-4 h-4 text-orange-600" />
-                          <span className="text-sm font-semibold text-gray-700">معلومات الطابور</span>
-                        </div>
-                        <div className="grid grid-cols-3 gap-2 text-center">
-                          <div className="bg-white rounded-lg p-2 shadow-sm">
-                            <div className="text-lg font-bold text-orange-600">#{appointment.queue_number}</div>
-                            <div className="text-xs text-gray-600">رقم الطابور</div>
+                      {/* Real-time Queue Information */}
+                      {(() => {
+                        const queueProgress = getQueueProgress(appointment);
+                        return (
+                          <div className={`rounded-xl p-3 mb-4 border ${
+                            queueProgress.isActive 
+                              ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200' 
+                              : 'bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-200'
+                          }`}>
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                                <Clock className="w-4 h-4 text-orange-600" />
+                                <span className="text-sm font-semibold text-gray-700">معلومات الطابور المباشرة</span>
+                              </div>
+                              <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                                {getQueueStatusIcon(queueProgress.queueStatus)}
+                                <Badge className={`${getQueueStatusColor(queueProgress.queueStatus)} text-white text-xs`}>
+                                  {getQueueStatusText(queueProgress.queueStatus)}
+                                </Badge>
+                              </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-3 mb-3">
+                              <div className="bg-white rounded-lg p-3 shadow-sm">
+                                <div className="text-lg font-bold text-orange-600">#{appointment.queue_number}</div>
+                                <div className="text-xs text-gray-600">رقم طابورك</div>
+                              </div>
+                              <div className="bg-white rounded-lg p-3 shadow-sm">
+                                <div className="text-lg font-bold text-blue-600">#{queueProgress.currentServing}</div>
+                                <div className="text-xs text-gray-600">المُخدم حالياً</div>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="bg-white rounded-lg p-3 shadow-sm">
+                                <div className={`text-lg font-bold ${queueProgress.patientsAhead === 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                  {queueProgress.patientsAhead}
+                                </div>
+                                <div className="text-xs text-gray-600">المرضى أمامك</div>
+                              </div>
+                              <div className="bg-white rounded-lg p-3 shadow-sm">
+                                <div className="text-lg font-bold text-purple-600">
+                                  {queueProgress.estimatedWaitTime > 0 ? `${queueProgress.estimatedWaitTime} دقيقة` : 'دورك الآن'}
+                                </div>
+                                <div className="text-xs text-gray-600">الوقت المتوقع</div>
+                              </div>
+                            </div>
+
+                            {/* Progress Bar */}
+                            {queueProgress.isActive && (
+                              <div className="mt-3">
+                                <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                                  <span>التقدم</span>
+                                  <span>{queueProgress.currentServing} / {appointment.queue_number}</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                  <div 
+                                    className="bg-gradient-to-r from-green-500 to-emerald-600 h-2 rounded-full transition-all duration-500"
+                                    style={{ 
+                                      width: `${Math.min(100, (queueProgress.currentServing / appointment.queue_number) * 100)}%` 
+                                    }}
+                                  ></div>
+                                </div>
+                              </div>
+                            )}
                           </div>
-                          <div className="bg-white rounded-lg p-2 shadow-sm">
-                            <div className="text-lg font-bold text-blue-600">{appointment.queue_position}</div>
-                            <div className="text-xs text-gray-600">موضعك</div>
-                          </div>
-                          <div className="bg-white rounded-lg p-2 shadow-sm">
-                            <div className="text-lg font-bold text-red-600">{appointment.queue_position - 1}</div>
-                            <div className="text-xs text-gray-600">المتبقي</div>
-                          </div>
-                        </div>
-                      </div>
+                        );
+                      })()}
 
                       <div className="flex space-x-2 rtl:space-x-reverse">
                         <Button
@@ -384,12 +651,20 @@ const MyAppointments = () => {
                             onClick={() => handleCancelAppointment(appointment.id)}
                             variant="outline"
                             size="sm"
-                            className="flex-1 flex items-center justify-center space-x-1 rtl:space-x-reverse text-red-600 border-red-600 hover:bg-red-50"
+                            className="flex-1 flex items-center justify-center space-x-1 rtl:space-x-reverse text-orange-600 border-orange-600 hover:bg-orange-50"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <XCircle className="w-4 h-4" />
                             <span>إلغاء</span>
                           </Button>
                         )}
+                        <Button
+                          onClick={() => handleDeleteAppointment(appointment.id)}
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center justify-center space-x-1 rtl:space-x-reverse text-red-600 border-red-600 hover:bg-red-50 px-3"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -457,21 +732,36 @@ const MyAppointments = () => {
                             <div className="text-xs text-gray-600">موضعك</div>
                           </div>
                           <div className="bg-white rounded-lg p-2 shadow-sm">
-                            <div className="text-lg font-bold text-red-600">{appointment.queue_position - 1}</div>
-                            <div className="text-xs text-gray-600">المتبقي</div>
+                            <div className="text-lg font-bold text-red-600">{Math.max(0, appointment.queue_position - 1)}</div>
+                            <div className="text-xs text-gray-600">كان أمامك</div>
                           </div>
+                        </div>
+                        <div className="mt-3 text-center">
+                          <Badge className="bg-gray-500 text-white">
+                            {appointment.status === 'completed' ? 'تم الانتهاء' : 'موعد سابق'}
+                          </Badge>
                         </div>
                       </div>
 
-                      <Button
-                        onClick={() => handleViewAppointment(appointment.id)}
-                        variant="outline"
-                        size="sm"
-                        className="w-full flex items-center justify-center space-x-1 rtl:space-x-reverse"
-                      >
-                        <Eye className="w-4 h-4" />
-                        <span>عرض التفاصيل</span>
-                      </Button>
+                      <div className="flex space-x-2 rtl:space-x-reverse">
+                        <Button
+                          onClick={() => handleViewAppointment(appointment.id)}
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 flex items-center justify-center space-x-1 rtl:space-x-reverse"
+                        >
+                          <Eye className="w-4 h-4" />
+                          <span>عرض</span>
+                        </Button>
+                        <Button
+                          onClick={() => handleDeleteAppointment(appointment.id)}
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center justify-center space-x-1 rtl:space-x-reverse text-red-600 border-red-600 hover:bg-red-50 px-3"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 </motion.div>
