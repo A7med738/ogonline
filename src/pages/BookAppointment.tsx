@@ -145,8 +145,24 @@ const BookAppointment = () => {
         return;
       }
 
-      // إنشاء الحجز
-      const { data, error } = await supabase
+      // 1. الحصول على بيانات الطابور الحالية للعيادة
+      const { data: queueData, error: queueError } = await supabase
+        .from('book_service_clinic_queues')
+        .select('*')
+        .eq('clinic_id', clinic.id)
+        .single();
+
+      if (queueError && queueError.code !== 'PGRST116') {
+        console.error('Error fetching queue data:', queueError);
+        throw queueError;
+      }
+
+      // 2. حساب رقم الطابور التالي
+      const nextQueueNumber = queueData ? queueData.current_queue_number + 1 : 1;
+      const queuePosition = nextQueueNumber;
+
+      // 3. إنشاء الحجز مع رقم الطابور المحسوب
+      const { data: appointmentData, error: appointmentError } = await supabase
         .from('book_service_appointments')
         .insert({
           user_id: user.id,
@@ -160,22 +176,69 @@ const BookAppointment = () => {
           medical_history: formData.medical_history,
           notes: formData.notes,
           status: 'pending',
-          queue_number: null, // سيتم حسابه تلقائياً بواسطة trigger
-          queue_position: null // سيتم حسابه تلقائياً بواسطة trigger
+          queue_number: nextQueueNumber,
+          queue_position: queuePosition
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (appointmentError) throw appointmentError;
+
+      // 4. تحديث أو إنشاء بيانات الطابور للعيادة
+      if (queueData) {
+        // تحديث الطابور الموجود
+        const { error: updateQueueError } = await supabase
+          .from('book_service_clinic_queues')
+          .update({
+            current_queue_number: nextQueueNumber,
+            total_patients_today: queueData.total_patients_today + 1,
+            last_updated: new Date().toISOString()
+          })
+          .eq('clinic_id', clinic.id);
+
+        if (updateQueueError) {
+          console.error('Error updating queue:', updateQueueError);
+          // لا نرمي الخطأ هنا لأن الحجز تم بنجاح
+        }
+      } else {
+        // إنشاء طابور جديد للعيادة
+        const { error: createQueueError } = await supabase
+          .from('book_service_clinic_queues')
+          .insert({
+            clinic_id: clinic.id,
+            current_queue_number: nextQueueNumber,
+            total_patients_today: 1,
+            last_updated: new Date().toISOString()
+          });
+
+        if (createQueueError) {
+          console.error('Error creating queue:', createQueueError);
+          // لا نرمي الخطأ هنا لأن الحجز تم بنجاح
+        }
+      }
+
+      // 5. تحديث عدد المرضى في العيادة
+      const { error: updateClinicError } = await supabase
+        .from('book_service_clinics')
+        .update({
+          waiting_patients: clinic.waiting_patients + 1,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', clinic.id);
+
+      if (updateClinicError) {
+        console.error('Error updating clinic waiting patients:', updateClinicError);
+        // لا نرمي الخطأ هنا لأن الحجز تم بنجاح
+      }
 
       toast({
         title: "تم الحجز بنجاح! 🎉",
-        description: "سيتم تأكيد موعدك قريباً",
+        description: `تم حجز موعدك برقم الطابور #${nextQueueNumber}`,
         action: <CheckCircle className="text-green-500" />,
       });
 
       // الانتقال لصفحة تأكيد الحجز
-      navigate(`/appointment-confirmation/${data.id}`);
+      navigate(`/appointment-confirmation/${appointmentData.id}`);
       
     } catch (error: any) {
       console.error('Booking error:', error);

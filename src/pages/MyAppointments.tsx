@@ -250,12 +250,58 @@ const MyAppointments = () => {
 
   const handleCancelAppointment = async (appointmentId: string) => {
     try {
-      const { error } = await supabase
+      // 1. الحصول على بيانات الموعد قبل الإلغاء
+      const appointment = appointments.find(apt => apt.id === appointmentId);
+      if (!appointment) {
+        throw new Error('الموعد غير موجود');
+      }
+
+      // 2. إلغاء الموعد
+      const { error: cancelError } = await supabase
         .from('book_service_appointments')
-        .update({ status: 'cancelled' })
+        .update({ 
+          status: 'cancelled',
+          updated_at: new Date().toISOString()
+        })
         .eq('id', appointmentId);
 
-      if (error) throw error;
+      if (cancelError) throw cancelError;
+
+      // 3. تحديث عدد المرضى في العيادة (تقليل واحد)
+      const { error: updateClinicError } = await supabase
+        .from('book_service_clinics')
+        .update({
+          waiting_patients: Math.max(0, appointment.clinic.waiting_patients - 1),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', appointment.clinic.id);
+
+      if (updateClinicError) {
+        console.error('Error updating clinic waiting patients:', updateClinicError);
+        // لا نرمي الخطأ هنا لأن الإلغاء تم بنجاح
+      }
+
+      // 4. تحديث إجمالي المرضى في الطابور (تقليل واحد)
+      const { data: queueData } = await supabase
+        .from('book_service_clinic_queues')
+        .select('*')
+        .eq('clinic_id', appointment.clinic.id)
+        .single();
+
+      if (queueData) {
+        const { error: updateQueueError } = await supabase
+          .from('book_service_clinic_queues')
+          .update({
+            total_patients_today: Math.max(0, queueData.total_patients_today - 1),
+            last_updated: new Date().toISOString()
+          })
+          .eq('clinic_id', appointment.clinic.id);
+
+        if (updateQueueError) {
+          console.error('Error updating queue total patients:', updateQueueError);
+          // لا نرمي الخطأ هنا لأن الإلغاء تم بنجاح
+        }
+      }
 
       toast({
         title: "تم إلغاء الموعد",
@@ -289,12 +335,55 @@ const MyAppointments = () => {
     if (!confirmed) return;
 
     try {
-      const { error } = await supabase
+      // 1. الحصول على بيانات الموعد قبل الحذف
+      const appointment = appointments.find(apt => apt.id === appointmentId);
+      if (!appointment) {
+        throw new Error('الموعد غير موجود');
+      }
+
+      // 2. حذف الموعد
+      const { error: deleteError } = await supabase
         .from('book_service_appointments')
         .delete()
         .eq('id', appointmentId);
 
-      if (error) throw error;
+      if (deleteError) throw deleteError;
+
+      // 3. تحديث عدد المرضى في العيادة (تقليل واحد)
+      const { error: updateClinicError } = await supabase
+        .from('book_service_clinics')
+        .update({
+          waiting_patients: Math.max(0, appointment.clinic.waiting_patients - 1),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', appointment.clinic.id);
+
+      if (updateClinicError) {
+        console.error('Error updating clinic waiting patients:', updateClinicError);
+        // لا نرمي الخطأ هنا لأن الحذف تم بنجاح
+      }
+
+      // 4. تحديث إجمالي المرضى في الطابور (تقليل واحد)
+      const { data: queueData } = await supabase
+        .from('book_service_clinic_queues')
+        .select('*')
+        .eq('clinic_id', appointment.clinic.id)
+        .single();
+
+      if (queueData) {
+        const { error: updateQueueError } = await supabase
+          .from('book_service_clinic_queues')
+          .update({
+            total_patients_today: Math.max(0, queueData.total_patients_today - 1),
+            last_updated: new Date().toISOString()
+          })
+          .eq('clinic_id', appointment.clinic.id);
+
+        if (updateQueueError) {
+          console.error('Error updating queue total patients:', updateQueueError);
+          // لا نرمي الخطأ هنا لأن الحذف تم بنجاح
+        }
+      }
 
       toast({
         title: "تم حذف الموعد",
