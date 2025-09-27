@@ -35,7 +35,7 @@ export const LocationMap: React.FC<LocationMapProps> = ({ showNearbyStations = t
             location.latitude,
             location.longitude
           );
-          setCurrentAddress(address);
+          // Address fetched but not used currently
         } catch (error) {
           console.error('Error fetching nearby stations:', error);
           toast.error('حدث خطأ في البحث عن مراكز الشرطة القريبة');

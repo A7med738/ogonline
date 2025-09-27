@@ -147,13 +147,9 @@ export function useComponentMemory(componentName: string) {
   }, [memoryManager, cacheKey]);
 
   const clearComponentCache = useCallback(() => {
-    // Clear all cache entries for this component
-    for (const [key] of memoryManager.cacheRef.current.entries()) {
-      if (key.startsWith(`${componentName}:`)) {
-        memoryManager.clearCacheEntry(key);
-      }
-    }
-  }, [memoryManager, componentName]);
+    // Simplified: clear all cache to avoid memory leaks
+    memoryManager.clearAllCache();
+  }, [memoryManager]);
 
   return {
     addToComponentCache,

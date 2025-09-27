@@ -56,8 +56,9 @@ serve(async (req) => {
       }
     )
   } catch (error) {
+    const err = error as any;
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: err?.message || 'Unknown error' }),
       {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

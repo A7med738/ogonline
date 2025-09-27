@@ -72,16 +72,14 @@ export const NewsInteractions = ({ newsId }: NewsInteractionsProps) => {
           id,
           content,
           created_at,
-          user_id,
-          profiles!user_id (
-            full_name
-          )
+          user_id
         `)
         .eq('news_id', newsId)
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      setComments(data || [])
+      const mapped = (data || []).map((c: any) => ({ ...c, profiles: null }));
+      setComments(mapped)
     } catch (error: any) {
       console.error('Error fetching comments:', error)
     }

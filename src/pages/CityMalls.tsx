@@ -60,8 +60,8 @@ const CityMalls = () => {
             <ShoppingBag className="w-16 h-16 mx-auto mb-2" />
             <p className="text-lg font-semibold">خطأ في التحميل</p>
           </div>
-          <p className="text-muted-foreground mb-4">{error}</p>
-          <Button onClick={loadMalls} className="mt-4">
+          <p className="text-muted-foreground mb-4">{(error as any)?.message || 'حدث خطأ غير متوقع'}</p>
+          <Button onClick={() => window.location.reload()} className="mt-4">
             المحاولة مرة أخرى
           </Button>
         </div>
@@ -78,7 +78,7 @@ const CityMalls = () => {
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={() => loadMalls(true)}
+              onClick={() => window.location.reload()}
               disabled={loading}
               className="flex items-center gap-2"
             >

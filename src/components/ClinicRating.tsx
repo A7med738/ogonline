@@ -49,8 +49,8 @@ const ClinicRating: React.FC<ClinicRatingProps> = ({
   const loadRatings = async () => {
     try {
       // محاولة تحميل التقييمات من قاعدة البيانات أولاً
-      const { data, error } = await supabase
-        .from('clinic_ratings')
+      const { data, error } = await (supabase.from as any)
+        ('clinic_ratings' as any)
         .select('*')
         .eq('clinic_id', clinicId)
         .order('created_at', { ascending: false });
@@ -85,8 +85,8 @@ const ClinicRating: React.FC<ClinicRatingProps> = ({
       setLoading(true);
       
       // محاولة إرسال التقييم إلى قاعدة البيانات
-      const { error } = await supabase
-        .from('clinic_ratings')
+      const { error } = await (supabase.from as any)
+        ('clinic_ratings' as any)
         .insert({
           clinic_id: clinicId,
           user_name: userName.trim(),

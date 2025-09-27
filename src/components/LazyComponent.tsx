@@ -1,5 +1,5 @@
 import React, { Suspense, ComponentType, lazy } from 'react';
-import { SkeletonLoader } from './SkeletonLoader';
+import SkeletonLoader from './SkeletonLoader';
 
 interface LazyComponentProps {
   fallback?: React.ReactNode;

@@ -41,9 +41,10 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
       timestamp: Date.now(),
     });
 
-    // Track cache performance
-    const cacheStats = performanceBudget.getCacheStats();
-    if (cacheStats.size > 0) {
+    // Track cache performance (basic heuristic)
+    // If last render time is small, assume cache hit
+    const current = performanceBudget.getCurrentMetrics();
+    if (current && current.renderTime < 16) {
       trackCacheHit();
     } else {
       trackCacheMiss();

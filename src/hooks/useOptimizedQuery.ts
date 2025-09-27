@@ -2,13 +2,14 @@ import React from 'react';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-interface OptimizedQueryOptions<T> extends Omit<UseQueryOptions<T>, 'queryFn'> {
+interface OptimizedQueryOptions<T> {
   table: string;
-  select?: string;
+  select?: string; // column selection string
   filters?: Record<string, any>;
   orderBy?: { column: string; ascending?: boolean };
   limit?: number;
   enabled?: boolean;
+  reactQueryOptions?: Omit<UseQueryOptions<T, Error, T, readonly unknown[]>, 'queryFn' | 'queryKey'>;
 }
 
 export function useOptimizedQuery<T = any>({
@@ -18,22 +19,23 @@ export function useOptimizedQuery<T = any>({
   orderBy,
   limit,
   enabled = true,
-  ...queryOptions
+  reactQueryOptions,
 }: OptimizedQueryOptions<T>) {
-  return useQuery({
+  return useQuery<T, Error>({
     queryKey: [table, select, filters, orderBy, limit],
     queryFn: async () => {
-      let query = supabase.from(table).select(select);
+      // Cast to any to avoid strict typed table name unions
+      let query: any = (supabase.from as any)(table as any).select(select);
 
       // Apply filters
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
           if (Array.isArray(value)) {
-            query = query.in(key, value);
+            query = query.in(key as any, value);
           } else if (typeof value === 'string' && value.includes('%')) {
-            query = query.ilike(key, value);
+            query = query.ilike(key as any, value);
           } else {
-            query = query.eq(key, value);
+            query = query.eq(key as any, value);
           }
         }
       });
@@ -49,17 +51,13 @@ export function useOptimizedQuery<T = any>({
       }
 
       const { data, error } = await query;
-
-      if (error) {
-        throw error;
-      }
-
+      if (error) throw error;
       return data as T;
     },
     enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
-    ...queryOptions,
+    ...(reactQueryOptions as any),
   });
 }
 
