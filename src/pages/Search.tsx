@@ -396,9 +396,6 @@ const SearchPage = () => {
       case 'mall':
         navigate('/city-malls');
         break;
-      case 'property':
-        navigate('/real-estate');
-        break;
       case 'bank':
       case 'atm':
         navigate('/city-services/atms');

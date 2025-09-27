@@ -52,9 +52,6 @@ export const LazyEducationalServices = withLazyLoading(
 export const LazyMedicalServices = withLazyLoading(
   () => import('@/pages/MedicalServices')
 );
-export const LazyRealEstate = withLazyLoading(
-  () => import('@/pages/RealEstate')
-);
 export const LazyCityMalls = withLazyLoading(
   () => import('@/pages/CityMalls')
 );

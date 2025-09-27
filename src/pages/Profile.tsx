@@ -16,31 +16,26 @@ import { EmailSubscription } from '@/components/EmailSubscription'
 import { PushNotificationSettings } from '@/components/PushNotificationSettings'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import AddPropertyModal from '@/components/AddPropertyModal'
 
 interface ProfileData {
   full_name: string
-  age: number | null
-  avatar_url: string | null
-  job_title: string | null
-  gender: string | null
   phone: string | null
-  location_details: string | null
+  gender: string | null
+  date_of_birth: string | null
+  avatar_url: string | null
+  address: string | null
 }
 
 const Profile = () => {
   const [loading, setLoading] = useState(false)
   const [uploadLoading, setUploadLoading] = useState(false)
-  const [showAddProperty, setShowAddProperty] = useState(false)
-  const [userRealEstateType, setUserRealEstateType] = useState<'buyer' | 'seller' | 'broker' | null>(null)
   const [profileData, setProfileData] = useState<ProfileData>({
     full_name: '',
-    age: null,
-    avatar_url: null,
-    job_title: null,
-    gender: null,
     phone: null,
-    location_details: null
+    gender: null,
+    date_of_birth: null,
+    avatar_url: null,
+    address: null
   })
   
   const navigate = useNavigate()
@@ -54,39 +49,28 @@ const Profile = () => {
     }
     
     fetchProfile()
-    checkUserRealEstateType()
   }, [user, navigate])
 
-  const checkUserRealEstateType = async () => {
-    if (!user) return
-    
-    try {
-      const { data } = await supabase
-        .from('user_real_estate_preferences')
-        .select('user_type')
-        .eq('user_id', user.id)
-        .single()
-      
-      if (data) {
-        setUserRealEstateType(data.user_type)
-      }
-    } catch (error) {
-      console.error('Error checking user real estate type:', error)
-    }
-  }
 
   const fetchProfile = async () => {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
-        .eq('user_id', user?.id)
+        .select('full_name, phone, gender, date_of_birth, avatar_url, address')
+        .eq('id', user?.id)
         .maybeSingle()
 
       if (error) throw error
 
       if (data) {
-        setProfileData(data)
+        setProfileData({
+          full_name: data.full_name || '',
+          phone: data.phone || null,
+          gender: data.gender || null,
+          date_of_birth: data.date_of_birth || null,
+          avatar_url: data.avatar_url || null,
+          address: data.address || null
+        })
       }
     } catch (error: any) {
       toast({
@@ -106,13 +90,13 @@ const Profile = () => {
         .from('profiles')
         .update({
           full_name: profileData.full_name,
-          age: profileData.age,
-          job_title: profileData.job_title,
-          gender: profileData.gender,
           phone: profileData.phone,
-          location_details: profileData.location_details
+          gender: profileData.gender,
+          date_of_birth: profileData.date_of_birth,
+          avatar_url: profileData.avatar_url,
+          address: profileData.address
         })
-        .eq('user_id', user?.id)
+        .eq('id', user?.id)
 
       if (error) throw error
 
@@ -156,7 +140,7 @@ const Profile = () => {
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ avatar_url: data.publicUrl })
-        .eq('user_id', user?.id)
+        .eq('id', user?.id)
 
       if (updateError) throw updateError
 
@@ -335,66 +319,6 @@ const Profile = () => {
             </Alert>
           </motion.div>
 
-          {/* Real Estate Section - Only for sellers and brokers */}
-          {(userRealEstateType === 'seller' || userRealEstateType === 'broker') && (
-            <motion.div variants={itemVariants} className="space-y-4">
-              <div className="flex items-center space-x-2 rtl:space-x-reverse mb-4">
-                <div className="w-6 h-6 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-lg flex items-center justify-center">
-                  <Building className="w-3 h-3 text-white" />
-                </div>
-                <h2 className="text-lg font-semibold text-gray-800">عقاراتي</h2>
-              </div>
-              
-              <Card className="overflow-hidden border-0 shadow-xl bg-white/90 backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="text-center space-y-4">
-                    <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto">
-                      <Building className="w-8 h-8 text-white" />
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-800 mb-2">إدارة عقاراتك</h3>
-                      <p className="text-gray-600 mb-4">
-                        {userRealEstateType === 'seller' 
-                          ? 'أضف عقاراتك للبيع أو الإيجار وادارها بسهولة'
-                          : 'أضف عقارات عملائك وادارها كوسيط عقاري'
-                        }
-                      </p>
-                    </div>
-                    
-                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                      <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Button
-                          onClick={() => setShowAddProperty(true)}
-                          className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white px-6"
-                        >
-                          <Plus className="w-4 h-4 ml-2" />
-                          إضافة عقار جديد
-                        </Button>
-                      </motion.div>
-                      
-                      <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Button
-                          variant="outline"
-                          onClick={() => navigate('/real-estate')}
-                          className="bg-white/70 backdrop-blur-sm border-white/30 hover:bg-white/90"
-                        >
-                          <Eye className="w-4 h-4 ml-2" />
-                          عرض جميع العقارات
-                        </Button>
-                      </motion.div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
 
           {/* Notification Settings */}
           <motion.div variants={itemVariants} className="space-y-4">
@@ -423,13 +347,14 @@ const Profile = () => {
                 
                 <form onSubmit={handleUpdateProfile} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-6">
+                    {/* الاسم الكامل */}
                     <motion.div 
                       whileHover={{ scale: 1.02 }}
                       className="space-y-2"
                     >
                       <Label htmlFor="fullName" className="text-sm font-medium text-gray-700 flex items-center space-x-2 rtl:space-x-reverse">
                         <User className="w-4 h-4" />
-                        <span>الاسم الثلاثي *</span>
+                        <span>الاسم الكامل *</span>
                       </Label>
                       <Input
                         id="fullName"
@@ -438,70 +363,14 @@ const Profile = () => {
                         onChange={(e) => setProfileData(prev => ({ ...prev, full_name: e.target.value }))}
                         required
                         className="text-right bg-white/70 backdrop-blur-sm border-white/30 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
-                        placeholder="أدخل اسمك الثلاثي"
+                        placeholder="أدخل اسمك الكامل"
                       />
                     </motion.div>
 
+                    {/* رقم الهاتف */}
                     <motion.div 
                       whileHover={{ scale: 1.02 }}
                       className="space-y-2"
-                    >
-                      <Label htmlFor="age" className="text-sm font-medium text-gray-700 flex items-center space-x-2 rtl:space-x-reverse">
-                        <Calendar className="w-4 h-4" />
-                        <span>العمر *</span>
-                      </Label>
-                      <Input
-                        id="age"
-                        type="number"
-                        min="16"
-                        max="100"
-                        value={profileData.age || ''}
-                        onChange={(e) => setProfileData(prev => ({ ...prev, age: parseInt(e.target.value) || null }))}
-                        className="text-right bg-white/70 backdrop-blur-sm border-white/30 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
-                        placeholder="أدخل عمرك"
-                      />
-                    </motion.div>
-
-                    <motion.div 
-                      whileHover={{ scale: 1.02 }}
-                      className="space-y-2"
-                    >
-                      <Label htmlFor="jobTitle" className="text-sm font-medium text-gray-700 flex items-center space-x-2 rtl:space-x-reverse">
-                        <Briefcase className="w-4 h-4" />
-                        <span>المسمى الوظيفي</span>
-                      </Label>
-                      <Input
-                        id="jobTitle"
-                        type="text"
-                        placeholder="مثال: مهندس برمجيات"
-                        value={profileData.job_title || ''}
-                        onChange={(e) => setProfileData(prev => ({ ...prev, job_title: e.target.value }))}
-                        className="text-right bg-white/70 backdrop-blur-sm border-white/30 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
-                      />
-                    </motion.div>
-
-                    <motion.div 
-                      whileHover={{ scale: 1.02 }}
-                      className="space-y-2"
-                    >
-                      <Label htmlFor="gender" className="text-sm font-medium text-gray-700">الجنس</Label>
-                      <Select 
-                        value={profileData.gender || ''} 
-                        onValueChange={(value) => setProfileData(prev => ({ ...prev, gender: value }))}
-                      >
-                        <SelectTrigger className="bg-white/70 backdrop-blur-sm border-white/30 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500">
-                          <SelectValue placeholder="اختر الجنس" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="ذكر">ذكر</SelectItem>
-                          <SelectItem value="أنثى">أنثى</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </motion.div>
-
-                    <motion.div 
-                      whileHover={{ scale: 1.02 }}
-                      className="space-y-2 md:col-span-2"
                     >
                       <Label htmlFor="phone" className="text-sm font-medium text-gray-700 flex items-center space-x-2 rtl:space-x-reverse">
                         <Phone className="w-4 h-4" />
@@ -517,23 +386,107 @@ const Profile = () => {
                       />
                     </motion.div>
 
+                    {/* الجنس */}
+                    <motion.div 
+                      whileHover={{ scale: 1.02 }}
+                      className="space-y-2"
+                    >
+                      <Label htmlFor="gender" className="text-sm font-medium text-gray-700 flex items-center space-x-2 rtl:space-x-reverse">
+                        <User className="w-4 h-4" />
+                        <span>الجنس</span>
+                      </Label>
+                      <Select 
+                        value={profileData.gender || ''} 
+                        onValueChange={(value) => setProfileData(prev => ({ ...prev, gender: value }))}
+                      >
+                        <SelectTrigger className="bg-white/70 backdrop-blur-sm border-white/30 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500">
+                          <SelectValue placeholder="اختر الجنس" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ذكر">ذكر</SelectItem>
+                          <SelectItem value="أنثى">أنثى</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </motion.div>
+
+                    {/* تاريخ الميلاد */}
+                    <motion.div 
+                      whileHover={{ scale: 1.02 }}
+                      className="space-y-2"
+                    >
+                      <Label htmlFor="date_of_birth" className="text-sm font-medium text-gray-700 flex items-center space-x-2 rtl:space-x-reverse">
+                        <Calendar className="w-4 h-4" />
+                        <span>تاريخ الميلاد</span>
+                      </Label>
+                      <Input
+                        id="date_of_birth"
+                        type="date"
+                        value={profileData.date_of_birth || ''}
+                        onChange={(e) => setProfileData(prev => ({ ...prev, date_of_birth: e.target.value || null }))}
+                        className="text-right bg-white/70 backdrop-blur-sm border-white/30 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+                        placeholder="اختر تاريخ ميلادك"
+                      />
+                    </motion.div>
+
+                    {/* العنوان التفصيلي */}
                     <motion.div 
                       whileHover={{ scale: 1.02 }}
                       className="space-y-2 md:col-span-2"
                     >
-                      <Label htmlFor="location" className="text-sm font-medium text-gray-700 flex items-center space-x-2 rtl:space-x-reverse">
+                      <Label htmlFor="address" className="text-sm font-medium text-gray-700 flex items-center space-x-2 rtl:space-x-reverse">
                         <MapPin className="w-4 h-4" />
-                        <span>تفاصيل الموقع</span>
+                        <span>العنوان التفصيلي</span>
                       </Label>
                       <Textarea
-                        id="location"
+                        id="address"
                         placeholder="مثال: حي النخيل، شارع الأمير محمد، مجمع السكن رقم 123، الطابق الثاني"
-                        value={profileData.location_details || ''}
-                        onChange={(e) => setProfileData(prev => ({ ...prev, location_details: e.target.value }))}
+                        value={profileData.address || ''}
+                        onChange={(e) => setProfileData(prev => ({ ...prev, address: e.target.value }))}
                         className="text-right min-h-[100px] bg-white/70 backdrop-blur-sm border-white/30 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
                       />
                     </motion.div>
                   </div>
+
+                  {/* قسم رفع الصورة الشخصية */}
+                  <motion.div 
+                    whileHover={{ scale: 1.02 }}
+                    className="space-y-4 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200"
+                  >
+                    <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                      <Camera className="w-5 h-5 text-blue-600" />
+                      <h3 className="text-lg font-semibold text-gray-800">الصورة الشخصية</h3>
+                    </div>
+                    
+                    <div className="flex items-center space-x-4 rtl:space-x-reverse">
+                      <Avatar className="w-20 h-20 border-4 border-blue-200 shadow-lg">
+                        <AvatarImage src={profileData.avatar_url || undefined} />
+                        <AvatarFallback className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xl">
+                          {profileData.full_name ? profileData.full_name.charAt(0) : 'ن'}
+                        </AvatarFallback>
+                      </Avatar>
+                      
+                      <div className="flex-1">
+                        <label
+                          htmlFor="avatar-upload"
+                          className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg cursor-pointer transition-colors duration-200"
+                        >
+                          <Camera className="w-4 h-4 ml-2" />
+                          {uploadLoading ? 'جاري الرفع...' : 'اختر صورة'}
+                        </label>
+                        <input
+                          id="avatar-upload"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleAvatarUpload}
+                          className="hidden"
+                          disabled={uploadLoading}
+                        />
+                        <p className="text-sm text-gray-600 mt-2">
+                          PNG, JPG, GIF حتى 5MB
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
 
                   <motion.div
                     whileHover={{ scale: 1.02 }}
@@ -554,18 +507,6 @@ const Profile = () => {
           </motion.div>
         </motion.div>
 
-        {/* Add Property Modal */}
-        <AddPropertyModal
-          isOpen={showAddProperty}
-          onClose={() => setShowAddProperty(false)}
-          onSuccess={() => {
-            // Refresh user data or show success message
-            toast({
-              title: "تم إرسال العقار بنجاح!",
-              description: "سيتم مراجعة العقار من قبل الإدارة قبل النشر"
-            });
-          }}
-        />
       </div>
     </div>
   )

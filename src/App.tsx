@@ -56,8 +56,6 @@ import CityServicesHotels from "./pages/CityServicesHotels";
 import CityServicesGasStations from "./pages/CityServicesGasStations";
 import CityServicesGasCompany from "./pages/CityServicesGasCompany";
 import CityServicesElectricityCompany from "./pages/CityServicesElectricityCompany";
-import RealEstate from "./pages/RealEstate";
-import RealEstateDetails from "./pages/RealEstateDetails";
 import EducationalServices from "./pages/EducationalServices";
 import MedicalServices from "./pages/MedicalServices";
 import MallDetails from "./pages/MallDetails";
@@ -172,8 +170,6 @@ const AppContent = () => {
           <Route path="/trip-service/create" element={<CreateTrip />} />
           <Route path="/trip-service/my-trips" element={<MyTrips />} />
           <Route path="/trip-service/join/:tripId" element={<JoinTrip />} />
-          <Route path="/real-estate" element={<RealEstate />} />
-          <Route path="/real-estate/:id" element={<RealEstateDetails />} />
           <Route path="/city-malls" element={<CityMalls />} />
           <Route path="/mall/:id" element={<MallDetails />} />
           <Route path="/worship-places" element={<WorshipPlaces />} />

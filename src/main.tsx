@@ -2,7 +2,6 @@ import React from 'react';
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import './styles/real-estate.css'
 import { registerServiceWorker, performanceMonitor } from './utils/serviceWorker'
 import { measureWebVitals, reportWebVitals } from './utils/webVitals'
 

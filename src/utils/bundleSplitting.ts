@@ -34,7 +34,6 @@ export const routeComponents = {
   // Service pages
   EducationalServices: createLazyComponent(() => import('@/pages/EducationalServices')),
   MedicalServices: createLazyComponent(() => import('@/pages/MedicalServices')),
-  RealEstate: createLazyComponent(() => import('@/pages/RealEstate')),
   CityMalls: createLazyComponent(() => import('@/pages/CityMalls')),
   WorshipPlaces: createLazyComponent(() => import('@/pages/WorshipPlaces')),
 
@@ -51,7 +50,6 @@ export const routeComponents = {
 
   // Heavy components
   FloatingChat: createLazyComponent(() => import('@/components/FloatingChat')),
-  PropertyManagement: createLazyComponent(() => import('@/components/PropertyManagement')),
 };
 
 // Feature-based code splitting
@@ -69,12 +67,6 @@ export const featureComponents = {
     ContentManagement: createLazyComponent(() => import('@/components/ContentManagement')),
   },
 
-  // Real estate features
-  realEstate: {
-    PropertyList: createLazyComponent(() => import('@/components/PropertyList')),
-    PropertyDetails: createLazyComponent(() => import('@/components/PropertyDetails')),
-    PropertyForm: createLazyComponent(() => import('@/components/PropertyForm')),
-  },
 
   // Educational services features
   educational: {
@@ -166,7 +158,6 @@ export const bundleAnalyzer = {
   shouldLazyLoad(componentName: string, size: number): boolean {
     const heavyComponents = [
       'Admin',
-      'PropertyManagement',
       'FloatingChat',
       'EducationalServicesManagement',
       'MedicalServicesManagement',

@@ -66,14 +66,6 @@ const BookService = () => {
       isAvailable: false
     },
     {
-      id: 'real-estate',
-      title: 'العقارات',
-      description: 'حجز عقارات للبيع أو الإيجار',
-      icon: Home,
-      color: 'from-purple-500 to-violet-600',
-      isAvailable: false
-    },
-    {
       id: 'shopping',
       title: 'التسوق',
       description: 'حجز في المولات والمتاجر',

@@ -3035,102 +3035,6 @@ export type Database = {
         }
         Relationships: []
       }
-      properties: {
-        Row: {
-          address: string | null
-          admin_notes: string | null
-          approved_at: string | null
-          approved_by: string | null
-          area: number | null
-          bathrooms: number | null
-          bedrooms: number | null
-          contact_email: string | null
-          contact_phone: string | null
-          created_at: string | null
-          currency: string | null
-          description: string | null
-          features: Json | null
-          floors: number | null
-          id: string
-          images: Json | null
-          latitude: number | null
-          likes_count: number | null
-          location: string
-          longitude: number | null
-          owner_id: string | null
-          price: number
-          property_type: string
-          status: string | null
-          title: string
-          transaction_type: string
-          updated_at: string | null
-          views_count: number | null
-          year_built: number | null
-        }
-        Insert: {
-          address?: string | null
-          admin_notes?: string | null
-          approved_at?: string | null
-          approved_by?: string | null
-          area?: number | null
-          bathrooms?: number | null
-          bedrooms?: number | null
-          contact_email?: string | null
-          contact_phone?: string | null
-          created_at?: string | null
-          currency?: string | null
-          description?: string | null
-          features?: Json | null
-          floors?: number | null
-          id?: string
-          images?: Json | null
-          latitude?: number | null
-          likes_count?: number | null
-          location: string
-          longitude?: number | null
-          owner_id?: string | null
-          price: number
-          property_type: string
-          status?: string | null
-          title: string
-          transaction_type: string
-          updated_at?: string | null
-          views_count?: number | null
-          year_built?: number | null
-        }
-        Update: {
-          address?: string | null
-          admin_notes?: string | null
-          approved_at?: string | null
-          approved_by?: string | null
-          area?: number | null
-          bathrooms?: number | null
-          bedrooms?: number | null
-          contact_email?: string | null
-          contact_phone?: string | null
-          created_at?: string | null
-          currency?: string | null
-          description?: string | null
-          features?: Json | null
-          floors?: number | null
-          id?: string
-          images?: Json | null
-          latitude?: number | null
-          likes_count?: number | null
-          location?: string
-          longitude?: number | null
-          owner_id?: string | null
-          price?: number
-          property_type?: string
-          status?: string | null
-          title?: string
-          transaction_type?: string
-          updated_at?: string | null
-          views_count?: number | null
-          year_built?: number | null
-        }
-        Relationships: []
-      }
       push_tokens: {
         Row: {
           created_at: string
@@ -3939,33 +3843,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_real_estate_preferences: {
-        Row: {
-          created_at: string | null
-          id: string
-          preferences: Json | null
-          updated_at: string | null
-          user_id: string | null
-          user_type: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          preferences?: Json | null
-          updated_at?: string | null
-          user_id?: string | null
-          user_type: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          preferences?: Json | null
-          updated_at?: string | null
-          user_id?: string | null
-          user_type?: string
-        }
-        Relationships: []
-      }
       user_reports: {
         Row: {
           created_at: string
@@ -4481,13 +4358,6 @@ export type Database = {
           total_patients: number
         }[]
       }
-      get_property_contact: {
-        Args: { property_id: string }
-        Returns: {
-          contact_details: string
-          contact_method: string
-        }[]
-      }
       get_queue_details: {
         Args: { p_clinic_id: string }
         Returns: {
@@ -4600,14 +4470,6 @@ export type Database = {
       hnswhandler: {
         Args: { "": unknown }
         Returns: unknown
-      }
-      increment_property_likes: {
-        Args: { property_id: string }
-        Returns: undefined
-      }
-      increment_property_views: {
-        Args: { property_id: string }
-        Returns: undefined
       }
       increment_shop_view: {
         Args: {

@@ -131,15 +131,6 @@ const Index = () => {
       requiresAuth: true
     },
     {
-      id: "real-estate",
-      title: "عقار ماب المدينة",
-      description: "ابحث عن العقارات المتاحة للبيع والإيجار",
-      icon: Home,
-      color: "from-white to-white",
-      onClick: () => navigate("/real-estate"),
-      requiresAuth: true
-    },
-    {
       id: "business",
       title: "المال والأعمال",
       description: "استكشف الفرص التجارية في المدينة",
