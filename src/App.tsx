@@ -24,6 +24,7 @@ import MyJobs from "./pages/MyJobs";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
+import RealEstate from "./pages/RealEstate";
 import NotFound from "./pages/NotFound";
 import EmailConfirmation from "./pages/EmailConfirmation";
 import FloatingChat from "@/components/FloatingChat";
@@ -205,6 +206,7 @@ const AppContent = () => {
           <Route path="/city-services/gas-company" element={<CityServicesGasCompany />} />
           <Route path="/city-services/electricity-company" element={<CityServicesElectricityCompany />} />
           <Route path="/business" element={<Business />} />
+          <Route path="/real-estate" element={<RealEstate />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/my-jobs" element={<MyJobs />} />
           <Route path="/auth" element={<Auth />} />

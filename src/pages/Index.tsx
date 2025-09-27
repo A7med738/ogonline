@@ -1,4 +1,4 @@
-import { Newspaper, Shield, Building, Briefcase, Handshake, Wrench, Home, Star, TrendingUp, GraduationCap, Heart, ShoppingBag } from "lucide-react";
+import { Newspaper, Shield, Building, Briefcase, Handshake, Wrench, Home, Star, TrendingUp, GraduationCap, Heart, ShoppingBag, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { NavigationCard } from "@/components/NavigationCard";
 import { Card, CardContent } from "@/components/ui/card";
@@ -137,6 +137,15 @@ const Index = () => {
       icon: Handshake,
       color: "from-white to-white",
       onClick: () => navigate("/business"),
+      requiresAuth: true
+    },
+    {
+      id: "real-estate",
+      title: "عقار ماب المدينة",
+      description: "استكشف العقارات المتاحة في المدينة",
+      icon: MapPin,
+      color: "from-white to-white",
+      onClick: () => navigate("/real-estate"),
       requiresAuth: true
     },
   ];
